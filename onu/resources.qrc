@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/">
+        <file>startpage.html</file>
+        <file>2048.html</file>
+        <file>themes/dark.qss</file>
+        <file>themes/light.qss</file>
+        <file>onu.svgz</file>
+    </qresource>
+</RCC>

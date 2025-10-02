@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>home</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
+       background: radial-gradient(circle at center, #0f0f3f, #000000);
+      color: #e4e4e7;
+      min-height: 100vh;
+      line-height: 1.4;
+      user-select: none;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 48px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .system-info {
+      font-size: 13px;
+      color: #71717a;
+      font-weight: 500;
+    }
+
+    .time-display {
+      font-size: 13px;
+      color: #a1a1aa;
+      font-weight: 400;
+    }
+
+    .search-section {
+      margin-bottom: 56px;
+    }
+
+    .search-container {
+      position: relative;
+      max-width: 680px;
+      margin: 0 auto;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 16px 20px;
+      font-size: 15px;
+      font-family: inherit;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      color: #e4e4e7;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      border-color: #3f3f46;
+      background: #1c1c1e;
+    }
+
+    .search-input::placeholder {
+      color: #71717a;
+      user-select: text;
+    }
+
+    .search-engines {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: center;
+    }
+
+    .engine-btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: inherit;
+      background: transparent;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+      color: #a1a1aa;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .engine-btn:hover {
+      border-color: #3f3f46;
+      color: #e4e4e7;
+      background: #18181b;
+    }
+
+    .sections {
+      display: grid;
+      gap: 48px;
+    }
+
+    .section {
+      margin-bottom: 0;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #27272a;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e4e4e7;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-count {
+      font-size: 12px;
+      color: #71717a;
+    }
+
+    .bookmarks-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 12px;
+    }
+
+    .bookmark-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px;
+      background: #18181b;
+      border: 1px solid #27272a;
+      border-radius: 6px;
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.15s ease;
+    }
+
+    .bookmark-item:hover {
+      background: #1c1c1e;
+      border-color: #3f3f46;
+    }
+
+    .bookmark-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 3px;
+      flex-shrink: 0;
+      background: #27272a;
+    }
+
+    .bookmark-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .bookmark-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e4e4e7;
+      margin-bottom: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .bookmark-url {
+      font-size: 12px;
+      color: #71717a;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      user-select: text;
+    }
+
+    .add-bookmark {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px;
+      background: transparent;
+      border: 1px dashed #27272a;
+      border-radius: 6px;
+      color: #71717a;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .add-bookmark:hover {
+      border-color: #3f3f46;
+      color: #a1a1aa;
+      background: #18181b;
+    }
+
+    .add-icon {
+      font-size: 16px;
+      font-weight: 300;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .modal-content {
+      background: rgba(24, 24, 27, 0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(39, 39, 42, 0.8);
+      border-radius: 8px;
+      padding: 32px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e4e4e7;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #a1a1aa;
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #0a0a0a;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+      color: #e4e4e7;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+
+    .form-input:focus {
+      border-color: #3f3f46;
+    }
+
+    .form-input::placeholder {
+      color: #52525b;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      margin-top: 32px;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      font-size: 13px;
+      font-family: inherit;
+      font-weight: 500;
+      border: 1px solid #27272a;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: #a1a1aa;
+    }
+
+    .btn-secondary:hover {
+      background: #18181b;
+      border-color: #3f3f46;
+      color: #e4e4e7;
+    }
+
+    .btn-primary {
+      background: #e4e4e7;
+      color: #0a0a0a;
+      border-color: #e4e4e7;
+    }
+
+    .btn-primary:hover {
+      background: #d4d4d8;
+      border-color: #d4d4d8;
+    }
+
+    .status-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 28px;
+      background: #18181b;
+      border-top: 1px solid #27272a;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 16px;
+      font-size: 11px;
+      color: #71717a;
+    }
+
+    .status-left {
+      display: flex;
+      gap: 16px;
+    }
+
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 16px;
+      }
+
+      .header {
+        margin-bottom: 32px;
+      }
+
+      .search-section {
+        margin-bottom: 40px;
+      }
+
+      .bookmarks-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .sections {
+        gap: 32px;
+      }
+
+      .status-bar {
+        display: none;
+      }
+    }
+
+    .shortcuts-hint {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      font-size: 11px;
+      color: #0f0f3f;
+      background: #18181b;
+      padding: 8px 12px;
+      border-radius: 4px;
+      border: 1px solid #27272a;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .shortcuts-hint.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="shortcuts-hint" id="shortcutsHint">
+    ⌘K Search • ⌘B Add Bookmark • ESC Close
+  </div>
+
+  <div class="container">
+    <header class="header">
+      <div class="system-info">onu-home</div>
+      <div class="time-display" id="timeDisplay">--:--</div>
+    </header>
+
+    <section class="search-section">
+      <div class="search-container">
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="Search or enter address"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <div class="search-engines">
+          <button class="engine-btn" onclick="search('google')">Google</button>
+          <button class="engine-btn" onclick="search('duckduckgo')">DuckDuckGo</button>
+          <button class="engine-btn" onclick="search('github')">GitHub</button>
+          <button class="engine-btn" onclick="search('youtube')">YouTube</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="sections">
+      <section class="section">
+        <div class="section-header">
+          <div class="section-title">Quick Access  .</div>
+          <div class="section-count" id="bookmarkCount">0 items</div>
+        </div>
+        <div class="bookmarks-grid" id="bookmarksGrid">
+          <!-- Bookmarks will be populated here -->
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="modal" id="addBookmarkModal">
+    <div class="modal-container">
+      <div class="modal-content">
+        <div class="modal-title">Add Bookmark</div>
+        <div class="form-group">
+          <label class="form-label" for="bookmarkTitle">Title</label>
+          <input
+            type="text"
+            class="form-input"
+            id="bookmarkTitle"
+            placeholder="Enter title"
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="bookmarkUrl">URL</label>
+          <input
+            type="text"
+            class="form-input"
+            id="bookmarkUrl"
+            placeholder="https://example.com"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveBookmark()">Add</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="status-bar">
+    <div class="status-left">
+      <div class="status-item">
+        <span id="bookmarkTotal">0</span>
+        <span>bookmarks</span>
+      </div>
+      <div class="status-item">
+        <span>Ready</span>
+      </div>
+    </div>
+    <div class="status-right">
+      <span id="currentDate">Loading...</span>
+    </div>
+  </div>
+
+  <script>
+    // System bookmarks - clean, focused selection
+    const defaultBookmarks = [
+      { title: 'Gmail', url: 'https://mail.google.com', icon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico' },
+      { title: 'GitHub', url: 'https://github.com', icon: 'https://366icons.com/media/01/github-website-marketing-icon-477.svg' },
+      { title: 'Discord', url: 'https://discord.com/app', icon: 'https://366icons.com/media/02/discord-social-network-communication-icon-19939.svg' },
+      { title: 'YouTube', url: 'https://youtube.com', icon: 'https://youtube.com/favicon.ico' },
+      { title: 'Reddit', url: 'https://reddit.com', icon: 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png' },
+      { title: 'Twitter', url: 'https://twitter.com', icon: 'https://abs.twimg.com/favicons/twitter.2.ico' }
+    ];
+
+    let bookmarks = JSON.parse(localStorage.getItem('systemBookmarks')) || defaultBookmarks;
+
+    function updateTime() {
+      const now = new Date();
+      const timeString = now.toLocaleTimeString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      });
+      const dateString = now.toLocaleDateString('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric'
+      });
+
+      document.getElementById('timeDisplay').textContent = timeString;
+      document.getElementById('currentDate').textContent = dateString;
+    }
+
+    function search(engine = 'google') {
+      const query = document.getElementById('searchInput').value.trim();
+      if (!query) return;
+
+      const urls = {
+        google: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
+        duckduckgo: `https://duckduckgo.com/?q=${encodeURIComponent(query)}`,
+        github: `https://github.com/search?q=${encodeURIComponent(query)}`,
+        youtube: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`
+      };
+
+      // Check if it's a URL
+      if (query.includes('.') && !query.includes(' ')) {
+        let url = query;
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          url = 'https://' + url;
+        }
+        window.open(url, '_blank');
+      } else {
+        window.open(urls[engine] || urls.google, '_blank');
+      }
+    }
+
+    function renderBookmarks() {
+      const grid = document.getElementById('bookmarksGrid');
+      const count = document.getElementById('bookmarkCount');
+      const total = document.getElementById('bookmarkTotal');
+
+      grid.innerHTML = '';
+
+      bookmarks.forEach(bookmark => {
+        const item = document.createElement('a');
+        item.className = 'bookmark-item';
+        item.href = bookmark.url;
+        item.target = '_blank';
+
+        item.innerHTML = `
+          <img class="bookmark-icon" src="${bookmark.icon}" alt="" on
+          error="this.style.display='none'">
+          <div class="bookmark-content">
+            <div class="bookmark-title">${bookmark.title}</div>
+            <div class="bookmark-url">${new URL(bookmark.url).hostname}</div>
+          </div>
+        `;
+
+        grid.appendChild(item);
+      });
+
+      // Add bookmark button
+      const addBtn = document.createElement('div');
+      addBtn.className = 'add-bookmark';
+      addBtn.onclick = openModal;
+      addBtn.innerHTML = `
+        <span class="add-icon">+</span>
+        <span>Add bookmark</span>
+      `;
+      grid.appendChild(addBtn);
+
+      count.textContent = `${bookmarks.length} items`;
+      total.textContent = bookmarks.length;
+    }
+
+    function openModal() {
+      document.getElementById('addBookmarkModal').style.display = 'block';
+      setTimeout(() => document.getElementById('bookmarkTitle').focus(), 100);
+    }
+
+    function closeModal() {
+      document.getElementById('addBookmarkModal').style.display = 'none';
+      document.getElementById('bookmarkTitle').value = '';
+      document.getElementById('bookmarkUrl').value = '';
+    }
+
+    function saveBookmark() {
+      const title = document.getElementById('bookmarkTitle').value.trim();
+      const url = document.getElementById('bookmarkUrl').value.trim();
+
+      if (!title || !url) return;
+
+      let finalUrl = url;
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        finalUrl = 'https://' + url;
+      }
+
+      bookmarks.push({
+        title,
+        url: finalUrl,
+        icon: `https://www.google.com/s2/favicons?domain=${finalUrl}&sz=32`
+      });
+
+      localStorage.setItem('systemBookmarks', JSON.stringify(bookmarks));
+      renderBookmarks();
+      closeModal();
+    }
+
+    // Event listeners
+    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') search();
+    });
+
+    // Global typing to search functionality
+    let typingBuffer = '';
+    let typingTimeout;
+
+    document.addEventListener('keydown', function(e) {
+      const searchInput = document.getElementById('searchInput');
+      const modal = document.getElementById('addBookmarkModal');
+
+      // Skip if modal is open or if typing in form fields
+      if (modal.style.display === 'block' ||
+          e.target.tagName === 'INPUT' ||
+          e.target.tagName === 'TEXTAREA') {
+        return;
+      }
+
+      // Handle shortcuts
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+        return;
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+        e.preventDefault();
+        openModal();
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        closeModal();
+        searchInput.blur();
+        return;
+      }
+
+      // Handle typing for search
+      if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+
+        // Clear previous timeout
+        clearTimeout(typingTimeout);
+
+        // Add character to buffer
+        typingBuffer += e.key;
+
+        // Update search input
+        searchInput.value = typingBuffer;
+        searchInput.focus();
+
+        // Clear buffer after 2 seconds of no typing
+        typingTimeout = setTimeout(() => {
+          typingBuffer = '';
+        }, 2000);
+      }
+
+      // Handle backspace when typing
+      if (e.key === 'Backspace' && typingBuffer && document.activeElement !== searchInput) {
+        e.preventDefault();
+        typingBuffer = typingBuffer.slice(0, -1);
+        searchInput.value = typingBuffer;
+        searchInput.focus();
+
+        clearTimeout(typingTimeout);
+        typingTimeout = setTimeout(() => {
+          typingBuffer = '';
+        }, 2000);
+      }
+
+      // Show shortcuts hint
+      if (e.ctrlKey || e.metaKey) {
+        document.getElementById('shortcutsHint').classList.add('show');
+      }
+    });
+
+    // Sync typing buffer with search input
+    document.getElementById('searchInput').addEventListener('input', function(e) {
+      typingBuffer = e.target.value;
+    });
+
+    document.addEventListener('keyup', function(e) {
+      if (!e.ctrlKey && !e.metaKey) {
+        document.getElementById('shortcutsHint').classList.remove('show');
+      }
+    });
+
+    // Modal click outside
+    document.getElementById('addBookmarkModal').addEventListener('click', function(e) {
+      if (e.target === this) closeModal();
+    });
+
+    // Initialize
+    updateTime();
+    setInterval(updateTime, 1000);
+    renderBookmarks();
+  </script>
+</body>
