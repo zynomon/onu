@@ -1,4 +1,5 @@
-<img width="417" height="69" alt="VirtualBoxVM_pmpQqI2WRF" src="https://github.com/user-attachments/assets/1ca3a522-47a6-489c-987f-4f2c5001b92d" />
+<img width="1326" height="765" alt="image" src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" />
+
 
 # 🌐 Onu Browser
 
