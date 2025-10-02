@@ -1,2 +1,2 @@
 *.html linguist-documentation=true
-/build/* linguist-documentation=false
+/themes/* linguist-documentation=false
