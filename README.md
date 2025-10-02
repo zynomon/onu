@@ -9,7 +9,7 @@ Built entirely from scratch, Onu is not a fork of any existing browser. It’s a
 
 ## 📦 Downloads
 
-- #🔗 [Download .DEB ](https://github.com/zynomon/onu/raw/main/onu-0.1.deb)
+- # 🔗 [Download .DEB ](https://github.com/zynomon/onu/raw/main/onu-0.1.deb)
 the file is only 200KB,     how to run it? -  well type   ```Onu```  in your terminal. it should work
 <img width="1145" height="632" alt="image" src="https://github.com/user-attachments/assets/8a7a8f69-8c3a-4926-83cb-fb3bb2116d07" />
 
