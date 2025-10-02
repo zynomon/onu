@@ -1,2 +1,4 @@
-# onu
-Onu is a fast small browser meant to be smaller than 10 mb but has more than enough features to enjoy
+this is the branch for packaged applications that are tested and got the label when..
+- it installed and runned                                = stable
+- it installed but there is few issues                   = beta
+- completely stable and ready to go                      = alpha
