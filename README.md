@@ -17,7 +17,7 @@ features to make browsing expressive, playful, and powerful to be run on lower e
 
 ### 📦 Downloads
 
-- 🔗 [Download .DEB ](https://github.com/zynomon/onu/raw/main/onu-0.1.deb)
+- 🔗 [Download .DEB ](https://github.com/zynomon/onu/raw/release/beta/onu-0.1.deb)
 the file is only 200KB,     how to run it? -  well type   ```Onu```  in your terminal. it should work
 
 ---
