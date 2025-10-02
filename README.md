@@ -33,7 +33,7 @@ check this buttons for the features,
 - 🕹️ **Built-in Game**  
   A hidden mini-game embedded in the browser—because why not?
 <img width="1165" height="592" alt="image" src="https://github.com/user-attachments/assets/f9e6aa4a-6952-4145-aa2e-8ec5969356c9" />
--# 🤦‍♂️ it seems it can be an issue but the game is fully functional and fun , can you beat 10,000 score?
+🤦‍♂️ it seems it can be an issue but the game is fully functional and fun , can you beat 10,000 score?
 
 ---
 
