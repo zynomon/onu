@@ -1,8 +1,22 @@
-# ⚠️ Onu Beta Release
-this is the branch for packaged applications that are tested and got the label when..
-- it installed and runned                                = stable
-- it installed but there is few issues                   = beta
-- completely stable and ready to go                      = alpha
+# 🛑 Onu Releases
 
+This branch hosts packaged applications that have been tested and labeled based on their behavior:
 
-why not check my other projects - [click here](https://github.com/zynomon?tab=repositories)
+| Label   | Criteria                                      |
+|---------|-----------------------------------------------|
+| `beta`   | ⚠️ experimental release, has a few known issues        |
+| `alpha`  | 🛡️ stable upto date release |
+| `Legacy (LTS)`  | ⚛️ long time servicing release  |
+
+---
+
+Why not check my other projects?  
+👉 [Click here](https://github.com/zynomon?tab=repositories)
+
+---
+
+## 📦 Releases (Chronological Order: Oldest → Newest)
+
+| Version | Package Link                                                                 |
+|---------|-------------------------------------------------------------------------------|
+| `0.1`   | [.deb_64](https://github.com/zynomon/raw/tree/release/beta/onu-0.1.deb)      |
