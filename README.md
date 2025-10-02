@@ -1,14 +1,17 @@
 
 
-  <img src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" />
-  <img src="https://github.com/user-attachments/assets/f4e9ec85-a291-4f75-90a8-aff8217d2b85"  />
 
 
 
 # 🌐 Onu Browser
 
-**Onu** is a fast, minimalist browser designed to stay under **10 MB**—yet packed with enough features to make browsing expressive, playful, and powerful.  
-Built entirely from scratch, Onu is not a fork of any existing browser. It’s a handcrafted engine with modular logic, cinematic branding, and plug-and-play customization.
+**Onu** is a fast, minimalist browser designed to stay under **10 MB**—yet packed with enough
+features to make browsing expressive, playful, and powerful to be run on lower end devices.
+
+---
+# preview 🖼️
+  <img src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" />
+  <img src="https://github.com/user-attachments/assets/f4e9ec85-a291-4f75-90a8-aff8217d2b85"  />
 
 ---
 
