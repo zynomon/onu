@@ -1,5 +1,8 @@
-<img width="1326" height="765" alt="image" src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" />
-
+<h3>_ _</h3>
+<div style="display: flex; overflow-x: auto; gap: 20px; padding: 10px;">
+  <img src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" width="600" alt="Slide 1" />
+  <img src="https://github.com/user-attachments/assets/f4e9ec85-a291-4f75-90a8-aff8217d2b85" width="600" alt="Slide 2" />
+</div>
 
 # 🌐 Onu Browser
 
@@ -16,23 +19,29 @@ the file is only 200KB,     how to run it? -  well type   ```Onu```  in your ter
 ---
 <img width="1145" height="632" alt="image" src="https://github.com/user-attachments/assets/8a7a8f69-8c3a-4926-83cb-fb3bb2116d07" />
 
-> ⚠️ This is the **first release**. (0.1 beta) It can run typical websites, but some features may be unstable or incomplete. Expect quirks—and enjoy the ride.
+> __⚠️ This is the **first release**. (0.1 beta) It can run typical websites, but some features may be unstable or incomplete. Expect quirks—and enjoy the ride.__
 
 ---
 
 ## 🎮 Features
 check this buttons for the features,
 <img width="393" height="95" alt="image" src="https://github.com/user-attachments/assets/deafd1e8-25dd-42b4-b09b-1f9c7632b547" />
+
 ---
+
 - 🕹️ **Built-in Game**  
   A hidden mini-game embedded in the browser—because why not?
 <img width="1165" height="592" alt="image" src="https://github.com/user-attachments/assets/f9e6aa4a-6952-4145-aa2e-8ec5969356c9" />
 -# 🤦‍♂️ it seems it can be an issue but the game is fully functional and fun , can you beat 10,000 score?
+
 ---
+
 - 🎨 **QSS Editor (Plug & Play)**  
   Customize your browser’s look and feel with live QSS editing. No restart needed.
 <img width="1022" height="446" alt="image" src="https://github.com/user-attachments/assets/402d563a-b63e-4d3f-9aee-2d87128f2d26" />
+
 ---
+
 - 🧠 **Tampermonkey-Compatible JS Extension Support**  
   Inject custom scripts, automate websites, and unlock endless possibilities.  
   Onu supports user-defined JavaScript extensions—just like Tampermonkey.
