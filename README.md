@@ -17,6 +17,6 @@ Why not check my other projects?
 
 ## 📦 Releases (Chronological Order: Oldest → Newest)
 
-| Version | Package Link                                                                 |
-|---------|-------------------------------------------------------------------------------|
-| `0.1`   | [.deb_64](https://github.com/zynomon/raw/tree/release/beta/onu-0.1.deb)      |
+| Version | Package Link                                                                 | Type    |
+|---------|-------------------------------------------------------------------------------|--------|
+| `0.1`   | [.deb_64](https://github.com/zynomon/raw/tree/release/beta/onu-0.1.deb)      | ⚠️ beta |
