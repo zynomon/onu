@@ -1,8 +1,9 @@
-<h3>_ _</h3>
+<h3></h3>
 <div style="display: flex; overflow-x: auto; gap: 20px; padding: 10px;">
   <img src="https://github.com/user-attachments/assets/c64652bb-1218-413a-93bc-6d3c3750076e" width="600" alt="Slide 1" />
   <img src="https://github.com/user-attachments/assets/f4e9ec85-a291-4f75-90a8-aff8217d2b85" width="600" alt="Slide 2" />
 </div>
+
 
 # 🌐 Onu Browser
 
