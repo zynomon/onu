@@ -1,4 +1,7 @@
-![onufull](https://github.com/user-attachments/assets/ca1d798c-fc82-46f0-82d8-86ccbd44bf90)
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/ca1d798c-fc82-46f0-82d8-86ccbd44bf90" width="300" />
+</div>
+
 
 # 🌐 Onu Browser
 
