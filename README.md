@@ -1,6 +1,182 @@
 
 
 
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+  <class>BrowserWindow</class>
+  <widget class="QMainWindow" name="BrowserWindow">
+    <property name="geometry">
+      <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>1300</width>
+        <height>768</height>
+      </rect>
+    </property>
+    <property name="windowTitle">
+      <string>Onu Browser</string>
+    </property>
+    <widget class="QWidget" name="centralWidget">
+      <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+          <widget class="QTabWidget" name="tabWidget">
+            <property name="tabsClosable">
+              <bool>true</bool>
+            </property>
+            <property name="movable">
+              <bool>true</bool>
+            </property>
+            <property name="documentMode">
+              <bool>true</bool>
+            </property>
+          </widget>
+        </item>
+      </layout>
+    </widget>
+    <widget class="QToolBar" name="toolBar">
+      <property name="windowTitle">
+        <string>Navigation</string>
+      </property>
+      <attribute name="toolBarArea">
+        <enum>TopToolBarArea</enum>
+      </attribute>
+      <addaction name="actionBack"/>
+      <addaction name="actionForward"/>
+      <addaction name="actionReload"/>
+      <addaction name="actionHome"/>
+      <addaction name="separator"/>
+      <widget class="QLineEdit" name="lineEdit">
+        <property name="placeholderText">
+          <string>Search or enter URL</string>
+        </property>
+        <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+        </sizepolicy>
+      </widget>
+      <addaction name="actionNewTab"/>
+      <addaction name="separator"/>
+      <addaction name="actionSettings"/>
+    </widget>
+    <widget class="QStatusBar" name="statusBar"/>
+    <widget class="QMenuBar" name="menuBar">
+      <widget class="QMenu" name="menuFile">
+        <property name="title">
+          <string>&amp;File</string>
+        </property>
+        <addaction name="actionNewTab"/>
+        <addaction name="actionQuit"/>
+      </widget>
+      <widget class="QMenu" name="menuNavigation">
+        <property name="title">
+          <string>&amp;Navigation</string>
+        </property>
+        <addaction name="actionBack"/>
+        <addaction name="actionForward"/>
+        <addaction name="actionReload"/>
+        <addaction name="actionHome"/>
+      </widget>
+      <widget class="QMenu" name="menuBookmarks">
+        <property name="title">
+          <string>&amp;Bookmarks</string>
+        </property>
+        <addaction name="actionAddBookmark"/>
+        <addaction name="actionManageBookmarks"/>
+      </widget>
+      <widget class="QMenu" name="menuTools">
+        <property name="title">
+          <string>&amp;Tools</string>
+        </property>
+        <addaction name="actionSettings"/>
+      </widget>
+      <addaction name="menuFile"/>
+      <addaction name="menuNavigation"/>
+      <addaction name="menuBookmarks"/>
+      <addaction name="menuTools"/>
+    </widget>
+    <action name="actionNewTab">
+      <property name="icon">
+        <iconset theme="tab-new"/>
+      </property>
+      <property name="text">
+        <string>New Tab</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+T</string>
+      </property>
+    </action>
+    <action name="actionQuit">
+      <property name="text">
+        <string>Quit</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+Q</string>
+      </property>
+    </action>
+    <action name="actionBack">
+      <property name="icon">
+        <iconset theme="go-previous"/>
+      </property>
+      <property name="text">
+        <string>Back</string>
+      </property>
+      <property name="shortcut">
+        <string>Alt+Left</string>
+      </property>
+    </action>
+    <action name="actionForward">
+      <property name="icon">
+        <iconset theme="go-next"/>
+      </property>
+      <property name="text">
+        <string>Forward</string>
+      </property>
+      <property name="shortcut">
+        <string>Alt+Right</string>
+      </property>
+    </action>
+    <action name="actionReload">
+      <property name="icon">
+        <iconset theme="view-refresh"/>
+      </property>
+      <property name="text">
+        <string>Reload</string>
+      </property>
+      <property name="shortcut">
+        <string>F5</string>
+      </property>
+    </action>
+    <action name="actionHome">
+      <property name="icon">
+        <iconset theme="go-home"/>
+      </property>
+      <property name="text">
+        <string>Home</string>
+      </property>
+    </action>
+    <action name="actionAddBookmark">
+      <property name="text">
+        <string>Add Bookmark</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+D</string>
+      </property>
+    </action>
+    <action name="actionManageBookmarks">
+      <property name="text">
+        <string>Manage Bookmarks</string>
+      </property>
+    </action>
+    <action name="actionSettings">
+      <property name="text">
+        <string>Settings</string>
+      </property>
+      <property name="shortcut">
+        <string>Ctrl+,</string>
+      </property>
+    </action>
+  </widget>
+</ui>
 
 
 # 🌐 Onu Browser
