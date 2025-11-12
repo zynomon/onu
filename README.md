@@ -1,7 +1,6 @@
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/ca1d798c-fc82-46f0-82d8-86ccbd44bf90" width="300" />
+<img width="300" alt="Onu browser" src="https://github.com/user-attachments/assets/ca1d798c-fc82-46f0-82d8-86ccbd44bf90"/>
 </div>
-
 
 # 🌐 Onu Browser
 
