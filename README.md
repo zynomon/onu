@@ -4,7 +4,7 @@
 
 # 🌐 Onu Browser
 
-**Onu** is a fast, minimalist browser designed to stay under **10 MB**—yet packed with enough
+**Onu** is a fast, minimalist browser designed to stay under **10 MB** yet packed with enough
 features to make browsing expressive, playful, and powerful to be run on lower end devices.
 
 ---
