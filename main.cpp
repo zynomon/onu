@@ -41,8 +41,11 @@
 #include <QNetworkReply>
 #include <QFileInfo>
 #include <QPointer>
-#include <QSoundEffect>
 #include <QRegularExpression>
+#include <QClipboard>
+#include <QToolButton>
+#include <QDropEvent>
+#include <QMimeData>
 
 class SettingsManager {
 public:
@@ -50,20 +53,18 @@ public:
         static QSettings* settings = new QSettings(QApplication::organizationName(), QApplication::applicationName());
         return settings;
     }
-
     static void setValue(const QString &key, const QVariant &value) {
         instance()->setValue(key, value);
     }
-
     static QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) {
         return instance()->value(key, defaultValue);
     }
 };
 
-class OnuWebPage : public QWebEnginePage {
+class onuWebPage : public QWebEnginePage {
     Q_OBJECT
 public:
-    explicit OnuWebPage(QObject *parent = nullptr) : QWebEnginePage(parent) {
+    explicit onuWebPage(QObject *parent = nullptr) : QWebEnginePage(parent) {
         loadUserscripts();
         loadHostsFilter();
     }
@@ -78,13 +79,36 @@ public:
         return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
     }
 
+    void loadHostsFilter() {
+        blockedHosts.clear();
+        if (!SettingsManager::value("adblock/enabled", true).toBool()) return;
+        QString hostsFile = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/blocked_hosts.txt";
+        QFile file(hostsFile);
+        if (file.open(QIODevice::ReadOnly)) {
+            while (!file.atEnd()) {
+                QByteArray line = file.readLine().trimmed();
+                if (!line.isEmpty() && !line.startsWith('#')) {
+                    QString host = QString::fromUtf8(line).toLower();
+                    blockedHosts.insert(host);
+                }
+            }
+            file.close();
+        }
+    }
+
+    QWebEnginePage* createWindow(WebWindowType type) override {
+        if (type == QWebEnginePage::WebBrowserTab) {
+            emit newTabRequested(QUrl());
+        }
+        return new QWebEnginePage(this);
+    }
+
+private:
     void loadUserscripts() {
         QString scriptDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/userscripts";
         QDir().mkpath(scriptDir);
         QStringList scriptFiles = QDir(scriptDir).entryList(QStringList{"*.js"}, QDir::Files);
-
         this->scripts().clear();
-
         for (const QString &file : scriptFiles) {
             QFile f(scriptDir + "/" + file);
             if (f.open(QIODevice::ReadOnly)) {
@@ -100,29 +124,15 @@ public:
         }
     }
 
-    void loadHostsFilter() {
-        blockedHosts.clear();
-        if (!SettingsManager::value("adblock/enabled", true).toBool()) return;
-        QString hostsFile = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/blocked_hosts.txt";
-        QFile file(hostsFile);
-        if (file.open(QIODevice::ReadOnly)) {
-            while (!file.atEnd()) {
-                QByteArray line = file.readLine().trimmed();
-                if (!line.isEmpty() && !line.startsWith('#')) {
-                    QString host = QString::fromUtf8(line).toLower(); // Convert to lowercase for case-insensitive matching
-                    blockedHosts.insert(host);
-                }
-            }
-            file.close();
-        }
-    }
-
     bool isAdBlocked(const QString &urlStr) const {
         if (!SettingsManager::value("adblock/enabled", true).toBool()) return false;
         QUrl url(urlStr);
-        QString host = url.host().toLower(); // Convert to lowercase for case-insensitive matching
+        QString host = url.host().toLower();
         return blockedHosts.contains(host);
     }
+
+signals:
+    void newTabRequested(const QUrl &url);
 
 private:
     QSet<QString> blockedHosts;
@@ -132,17 +142,13 @@ class QtDownloader : public QObject {
     Q_OBJECT
 public:
     explicit QtDownloader(QObject *parent = nullptr) : QObject(parent) {}
-
     void startDownload(const QUrl &url, const QString &filePath) {
         QDir().mkpath(QFileInfo(filePath).absolutePath());
-
         QNetworkRequest request(url);
         request.setAttribute(QNetworkRequest::RedirectPolicyAttribute, QNetworkRequest::NoLessSafeRedirectPolicy);
-        request.setHeader(QNetworkRequest::UserAgentHeader, "OnuBrowser/2.0");
-
+        request.setHeader(QNetworkRequest::UserAgentHeader, "onuBrowser/0.2");
         QNetworkReply *reply = m_manager.get(request);
         m_activeDownloads[reply] = filePath;
-
         QFile *file = new QFile(filePath);
         if (!file->open(QIODevice::WriteOnly)) {
             emit downloadError(filePath, "Cannot open file for writing");
@@ -152,17 +158,14 @@ public:
             return;
         }
         m_files[reply] = file;
-
         connect(reply, &QNetworkReply::downloadProgress, this, [this, reply](qint64 bytesReceived, qint64 bytesTotal) {
             if (bytesTotal > 0) {
                 emit progress(reply, bytesReceived, bytesTotal);
             }
         });
-
         connect(reply, &QNetworkReply::finished, this, [this, reply]() {
             QFile *file = m_files.take(reply);
             QString path = m_activeDownloads.take(reply);
-
             if (reply->error() == QNetworkReply::NoError) {
                 file->write(reply->readAll());
                 emit downloadFinished(path, true, QString());
@@ -170,18 +173,15 @@ public:
                 QFile::remove(path);
                 emit downloadFinished(path, false, reply->errorString());
             }
-
             file->close();
             file->deleteLater();
             reply->deleteLater();
         });
     }
-
 signals:
     void progress(QNetworkReply* reply, qint64 bytesReceived, qint64 bytesTotal);
     void downloadFinished(const QString &filePath, bool success, const QString &error);
     void downloadError(const QString &filePath, const QString &message);
-
 private:
     QNetworkAccessManager m_manager;
     QHash<QNetworkReply*, QString> m_activeDownloads;
@@ -198,20 +198,16 @@ public:
         QVBoxLayout *layout = new QVBoxLayout(this);
         layout->addWidget(listWidget);
     }
-
     void addDownload(QtDownloader *downloader, const QString &fileName) {
         QString itemText = "📥 " + fileName + " — 0%";
         QListWidgetItem *item = new QListWidgetItem(itemText);
         listWidget->addItem(item);
-
         m_itemMap[downloader] = item;
         m_fileNameMap[downloader] = fileName;
-
         connect(downloader, &QtDownloader::progress, this, [this, downloader, item](QNetworkReply*, qint64 received, qint64 total) {
             int percent = static_cast<int>((received * 100) / total);
             item->setText("📥 " + m_fileNameMap[downloader] + " — " + QString::number(percent) + "%");
         });
-
         connect(downloader, &QtDownloader::downloadFinished, this, [this, downloader, item](const QString &filePath, bool success, const QString &error) {
             QString name = m_fileNameMap[downloader];
             if (success) {
@@ -223,7 +219,6 @@ public:
             m_fileNameMap.remove(downloader);
         });
     }
-
 private:
     QListWidget *listWidget;
     QHash<QtDownloader*, QListWidgetItem*> m_itemMap;
@@ -234,20 +229,15 @@ class SettingsDialog : public QDialog {
     Q_OBJECT
 public:
     explicit SettingsDialog(QWidget *parent = nullptr) : QDialog(parent) {
-        setWindowTitle("Onu Settings");
+        setWindowTitle("onu Settings");
         resize(600, 400);
-
         QTabWidget *tabs = new QTabWidget(this);
         QVBoxLayout *mainLayout = new QVBoxLayout(this);
         mainLayout->addWidget(tabs);
-
-        // General Tab
         QWidget *generalTab = new QWidget;
         QFormLayout *generalLayout = new QFormLayout(generalTab);
-        homepageEdit = new QLineEdit(SettingsManager::value("homepage", "qrc:/startpage.html").toString());
+        homepageEdit = new QLineEdit(SettingsManager::value("homepage", "qrc:/home.html").toString());
         generalLayout->addRow("Homepage:", homepageEdit);
-
-        // Appearance Tab
         QWidget *appearanceTab = new QWidget;
         QFormLayout *appearanceLayout = new QFormLayout(appearanceTab);
         themeCombo = new QComboBox;
@@ -255,20 +245,14 @@ public:
         int themeIndex = SettingsManager::value("theme", 0).toInt();
         themeCombo->setCurrentIndex(themeIndex);
         appearanceLayout->addRow("Theme:", themeCombo);
-
-        // Add Custom Stylesheet
         stylesheetEdit = new QTextEdit(SettingsManager::value("stylesheet", "").toString());
         appearanceLayout->addRow("Custom Stylesheet:", stylesheetEdit);
-
-        // Privacy Tab
         QWidget *privacyTab = new QWidget;
         QVBoxLayout *privacyLayout = new QVBoxLayout(privacyTab);
         adblockCheck = new QCheckBox("Enable AdBlock (blocks known ad hosts)");
         adblockCheck->setChecked(SettingsManager::value("adblock/enabled", true).toBool());
         privacyLayout->addWidget(adblockCheck);
         privacyLayout->addStretch();
-
-        // Downloads Tab
         QWidget *downloadsTab = new QWidget;
         QFormLayout *downloadsLayout = new QFormLayout(downloadsTab);
         QString defaultDownload = QStandardPaths::writableLocation(QStandardPaths::DownloadLocation);
@@ -282,8 +266,6 @@ public:
         downloadLayout->addWidget(downloadPathEdit);
         downloadLayout->addWidget(browseBtn);
         downloadsLayout->addRow("Download Folder:", downloadLayout);
-
-        // Userscripts Info Tab
         QWidget *userscriptsTab = new QWidget;
         QVBoxLayout *userscriptsLayout = new QVBoxLayout(userscriptsTab);
         QString userscriptPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/userscripts";
@@ -293,36 +275,31 @@ public:
         pathEdit->setMaximumHeight(60);
         userscriptsLayout->addWidget(pathEdit);
         userscriptsLayout->addWidget(new QLabel("Scripts run on page load (like Tampermonkey)."));
-
         tabs->addTab(generalTab, "General");
         tabs->addTab(appearanceTab, "Appearance");
         tabs->addTab(privacyTab, "Privacy");
         tabs->addTab(downloadsTab, "Downloads");
         tabs->addTab(userscriptsTab, "Userscripts");
-
         QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
         connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::accept);
         connect(buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::reject);
         mainLayout->addWidget(buttonBox);
     }
-
     void accept() override {
         SettingsManager::setValue("homepage", homepageEdit->text());
         SettingsManager::setValue("theme", themeCombo->currentIndex());
-        SettingsManager::setValue("stylesheet", stylesheetEdit->toPlainText()); // Save custom stylesheet
+        SettingsManager::setValue("stylesheet", stylesheetEdit->toPlainText());
         SettingsManager::setValue("adblock/enabled", adblockCheck->isChecked());
         SettingsManager::setValue("download/path", downloadPathEdit->text());
         QDialog::accept();
         emit settingsChanged();
     }
-
 signals:
     void settingsChanged();
-
 private:
     QLineEdit *homepageEdit;
     QComboBox *themeCombo;
-    QTextEdit *stylesheetEdit; // Add custom stylesheet field
+    QTextEdit *stylesheetEdit;
     QCheckBox *adblockCheck;
     QLineEdit *downloadPathEdit;
 };
@@ -331,54 +308,76 @@ class BrowserWindow : public QMainWindow {
     Q_OBJECT
 public:
     BrowserWindow() {
-        setWindowTitle("Onu Browser");
+        setWindowTitle("onu Browser");
         resize(1300, 768);
-        setWindowIcon(QIcon::fromTheme("web-browser"));
-
+        setWindowIcon(QIcon::fromTheme("onu"));
         applyTheme(SettingsManager::value("theme", 0).toInt());
-        applyStylesheet(SettingsManager::value("stylesheet", "").toString()); // Apply custom stylesheet
-
+        applyStylesheet(SettingsManager::value("stylesheet", "").toString());
         centralWidget = new QWidget(this);
         setCentralWidget(centralWidget);
         layout = new QVBoxLayout(centralWidget);
         layout->setContentsMargins(0, 0, 0, 0);
-
         tabWidget = new QTabWidget(this);
         tabWidget->setTabsClosable(true);
         tabWidget->setMovable(true);
         tabWidget->setDocumentMode(true);
         layout->addWidget(tabWidget);
 
-        createToolBar();
+        newTabButton = new QToolButton(this);
+        newTabButton->setText("+");
+        newTabButton->setToolTip("New Tab");
+        newTabButton->setAutoRaise(true);
+        newTabButton->setFixedSize(20, 20);
+        connect(newTabButton, &QToolButton::clicked, this, &BrowserWindow::newTab);
+        tabWidget->tabBar()->setTabButton(0, QTabBar::LeftSide, newTabButton);
+
+        createToolBars();
         createMenuBar();
         statusBar = new QStatusBar(this);
         setStatusBar(statusBar);
-
         downloadManager = new DownloadManagerWidget(this);
 
         connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
                 this, &BrowserWindow::handleDownload);
 
-        restoreSession();
+        tabWidget->tabBar()->setAcceptDrops(true);
+        tabWidget->tabBar()->setElideMode(Qt::ElideRight);
+        tabWidget->tabBar()->installEventFilter(this);
 
+        restoreSession();
         connect(tabWidget, &QTabWidget::tabCloseRequested, this, &BrowserWindow::closeTab);
         connect(tabWidget, &QTabWidget::currentChanged, this, &BrowserWindow::updateToolbar);
     }
 
     ~BrowserWindow() { saveSession(); }
 
-    int addNewTab(const QUrl &url = QUrl("qrc:/startpage.html")) {
+    int addNewTab(const QUrl &url = QUrl("qrc:/home.html")) {
         QWidget *tab = new QWidget();
         QVBoxLayout *tabLayout = new QVBoxLayout(tab);
         tabLayout->setContentsMargins(0, 0, 0, 0);
-
         QWebEngineView *webView = new QWebEngineView(tab);
-        OnuWebPage *page = new OnuWebPage(webView);
+        onuWebPage *page = new onuWebPage(webView);
         webView->setPage(page);
         webView->setUrl(url);
 
-        tabLayout->addWidget(webView);
+        webView->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(webView, &QWidget::customContextMenuRequested, this, [this, webView](const QPoint &pos) {
+            QMenu menu(this);
+            QAction *inspectAction = menu.addAction("Inspect Element");
+            connect(inspectAction, &QAction::triggered, this, [this, webView]() {
+                QWebEngineView *devTools = new QWebEngineView();
+                webView->page()->setDevToolsPage(devTools->page());
+                devTools->resize(800, 600);
+                devTools->show();
+            });
+            menu.exec(webView->mapToGlobal(pos));
+        });
 
+        connect(page, &onuWebPage::newTabRequested, this, [this](const QUrl &) {
+            addNewTab();
+        });
+
+        tabLayout->addWidget(webView);
         int index = tabWidget->addTab(tab, "New Tab");
         tabWidget->setCurrentIndex(index);
         tab->setProperty("url", url);
@@ -386,16 +385,40 @@ public:
         connect(webView, &QWebEngineView::loadStarted, this, &BrowserWindow::loadStarted);
         connect(webView, &QWebEngineView::loadFinished, this, &BrowserWindow::loadFinished);
         connect(webView, &QWebEngineView::urlChanged, this, &BrowserWindow::urlChanged);
-        connect(webView, &QWebEngineView::titleChanged, this, [=](const QString &title) {
+        connect(webView, &QWebEngineView::titleChanged, this, [=, this](const QString &title) {
             tabWidget->setTabText(index, title.isEmpty() ? "New Tab" : title);
+        });
+        connect(webView, &QWebEngineView::iconChanged, this, [=, this](const QIcon &icon) {
+            tabWidget->setTabIcon(index, icon);
         });
         connect(webView->page(), &QWebEnginePage::linkHovered, this, &BrowserWindow::linkHovered);
 
-        if (url != QUrl("qrc:/startpage.html") && url != QUrl("qrc:/2048.html")) {
+        if (url != QUrl("qrc:/home.html") && url != QUrl("qrc:/game.html")) {
             addToHistory(url);
         }
-
         return index;
+    }
+
+protected:
+    bool eventFilter(QObject *obj, QEvent *event) override {
+        if (obj == tabWidget->tabBar() && event->type() == QEvent::Drop) {
+            QDropEvent *drop = static_cast<QDropEvent*>(event);
+            QUrl url;
+            if (drop->mimeData()->hasUrls()) {
+                url = drop->mimeData()->urls().first();
+            } else if (drop->mimeData()->hasText()) {
+                QString text = drop->mimeData()->text();
+                if (QUrl(text).isValid()) {
+                    url = QUrl(text);
+                }
+            }
+            if (url.isValid() && (url.scheme() == "http" || url.scheme() == "https")) {
+                addNewTab(url);
+                drop->acceptProposedAction();
+                return true;
+            }
+        }
+        return QMainWindow::eventFilter(obj, event);
     }
 
 private slots:
@@ -412,21 +435,18 @@ private slots:
         }
         currentWebView()->setUrl(url);
     }
-
     void updateUrl(const QUrl &url) {
         urlBar->setText(url.toString());
         urlBar->setCursorPosition(0);
     }
-
     void goBack() { if (currentWebView()) currentWebView()->back(); }
     void goForward() { if (currentWebView()) currentWebView()->forward(); }
     void reloadPage() { if (currentWebView()) currentWebView()->reload(); }
     void stopPage() { if (currentWebView()) currentWebView()->stop(); }
     void homePage() {
-        QString home = SettingsManager::value("homepage", "qrc:/startpage.html").toString();
+        QString home = SettingsManager::value("homepage", "qrc:/home.html").toString();
         currentWebView()->setUrl(QUrl(home));
     }
-
     void newTab() { addNewTab(); }
     void closeTab(int index) {
         if (tabWidget->count() > 1) {
@@ -436,28 +456,25 @@ private slots:
             QApplication::quit();
         }
     }
-
     void openGame() {
-        addNewTab(QUrl("qrc:/2048.html"));
+        addNewTab(QUrl("qrc:/game.html"));
     }
-
     void openSettings() {
         SettingsDialog dialog(this);
         connect(&dialog, &SettingsDialog::settingsChanged, this, [this]() {
             applyTheme(SettingsManager::value("theme", 0).toInt());
-            applyStylesheet(SettingsManager::value("stylesheet", "").toString()); // Apply custom stylesheet
+            applyStylesheet(SettingsManager::value("stylesheet", "").toString());
             for (int i = 0; i < tabWidget->count(); ++i) {
                 QWidget *tab = tabWidget->widget(i);
                 QWebEngineView *view = tab->findChild<QWebEngineView*>();
                 if (view) {
-                    OnuWebPage *page = qobject_cast<OnuWebPage*>(view->page());
+                    onuWebPage *page = qobject_cast<onuWebPage*>(view->page());
                     if (page) page->loadHostsFilter();
                 }
             }
         });
         dialog.exec();
     }
-
     void manageBookmarks() {
         QMenu menu(this);
         QSettings settings;
@@ -483,7 +500,6 @@ private slots:
         }
         menu.exec(QCursor::pos());
     }
-
     void addBookmark() {
         QWebEngineView *view = currentWebView();
         if (!view) return;
@@ -495,45 +511,35 @@ private slots:
         settings.setValue(url.toString(), title);
         QMessageBox::information(this, "Bookmark Added", "Saved: " + title);
     }
-
     void showDownloads() {
         downloadManager->show();
         downloadManager->raise();
     }
-
     void handleDownload(QWebEngineDownloadRequest *download) {
         download->cancel();
-
         QString fileName = download->downloadFileName();
         if (fileName.isEmpty()) {
             QUrl url = download->url();
             fileName = url.fileName();
-            if (fileName.isEmpty()) {
-                fileName = "download";
-            }
+            if (fileName.isEmpty()) fileName = "download";
         }
-
         QString downloadDir = SettingsManager::value("download/path",
                                                      QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString();
         QString fullPath = QDir(downloadDir).filePath(fileName);
-
         QtDownloader *downloader = new QtDownloader(this);
         downloadManager->addDownload(downloader, fileName);
         downloader->startDownload(download->url(), fullPath);
     }
-
     void loadStarted() {
         stopAction->setVisible(true);
         reloadAction->setVisible(false);
         statusBar->showMessage("Loading...");
     }
-
     void loadFinished(bool ok) {
         stopAction->setVisible(false);
         reloadAction->setVisible(true);
         statusBar->showMessage(ok ? "Done" : "Failed to load page", 2000);
     }
-
     void urlChanged(const QUrl &url) {
         if (currentWebView() && sender() == currentWebView()) {
             updateUrl(url);
@@ -542,11 +548,9 @@ private slots:
             }
         }
     }
-
     void linkHovered(const QString &url) {
         statusBar->showMessage(url, 3000);
     }
-
     void updateToolbar(int index) {
         if (index < 0) return;
         QWebEngineView *view = currentWebView();
@@ -557,50 +561,91 @@ private slots:
     }
 
 private:
-    void createToolBar() {
-        toolBar = addToolBar("Navigation");
-        toolBar->setMovable(false);
+    void createToolBars() {
+        tabToolBar = addToolBar("Tabs");
+        tabToolBar->setMovable(true);
+        tabToolBar->setFloatable(true);
+        tabToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        tabToolBar->addAction(QIcon::fromTheme("games-puzzle"), "Game", this, &BrowserWindow::openGame);
+        tabToolBar->addSeparator();
+        tabToolBar->addAction(QIcon::fromTheme("bookmarks"), "Bookmarks", this, &BrowserWindow::manageBookmarks);
+        tabToolBar->addAction(QIcon::fromTheme("document-properties"), "Settings", this, &BrowserWindow::openSettings);
+        connect(tabToolBar, &QToolBar::orientationChanged, this, [this](Qt::Orientation orientation) {
+            tabToolBar->setToolButtonStyle(
+                orientation == Qt::Vertical ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextBesideIcon);
+        });
 
-        backAction = toolBar->addAction(QIcon::fromTheme("go-previous"), "Back", this, &BrowserWindow::goBack);
-        forwardAction = toolBar->addAction(QIcon::fromTheme("go-next"), "Forward", this, &BrowserWindow::goForward);
-        reloadAction = toolBar->addAction(QIcon::fromTheme("view-refresh"), "Reload", this, &BrowserWindow::reloadPage);
-        stopAction = toolBar->addAction(QIcon::fromTheme("process-stop"), "Stop", this, &BrowserWindow::stopPage);
+        navToolBar = addToolBar("Navigation");
+        navToolBar->setMovable(true);
+        navToolBar->setFloatable(true);
+        navToolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+        backAction = navToolBar->addAction(QIcon::fromTheme("go-previous"), "Back", this, &BrowserWindow::goBack);
+        forwardAction = navToolBar->addAction(QIcon::fromTheme("go-next"), "Forward", this, &BrowserWindow::goForward);
+        reloadAction = navToolBar->addAction(QIcon::fromTheme("view-refresh"), "Reload", this, &BrowserWindow::reloadPage);
+        stopAction = navToolBar->addAction(QIcon::fromTheme("process-stop"), "Stop", this, &BrowserWindow::stopPage);
         stopAction->setVisible(false);
-        toolBar->addSeparator();
-        toolBar->addAction(QIcon::fromTheme("tab-new"), "New Tab", this, &BrowserWindow::newTab);
-        toolBar->addAction(QIcon::fromTheme("games-puzzle"), "🕹️", this, &BrowserWindow::openGame);
-        toolBar->addSeparator();
+        navToolBar->addAction(QIcon::fromTheme("go-home"), "Home", this, &BrowserWindow::homePage);
+        connect(navToolBar, &QToolBar::orientationChanged, this, [this](Qt::Orientation orientation) {
+            navToolBar->setToolButtonStyle(
+                orientation == Qt::Vertical ? Qt::ToolButtonIconOnly : Qt::ToolButtonTextBesideIcon);
+        });
 
+        searchToolBar = addToolBar("Search");
+        searchToolBar->setMovable(true);
+        searchToolBar->setFloatable(true);
         urlBar = new QLineEdit();
         urlBar->setPlaceholderText("Search or enter URL");
+        urlBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
         connect(urlBar, &QLineEdit::returnPressed, this, &BrowserWindow::navigateToUrl);
-        toolBar->addWidget(urlBar);
+        searchToolBar->addWidget(urlBar);
+        connect(searchToolBar, &QToolBar::orientationChanged, this, [this](Qt::Orientation orientation) {
+            if (orientation == Qt::Vertical) {
+                urlBar->setPlaceholderText("");
+            } else {
+                urlBar->setPlaceholderText("Search or enter URL");
+            }
+        });
     }
 
     void createMenuBar() {
         QMenuBar *menuBar = new QMenuBar(this);
         setMenuBar(menuBar);
-
         QMenu *fileMenu = menuBar->addMenu("&File");
-        fileMenu->addAction("New Tab", this, &BrowserWindow::newTab, QKeySequence::AddTab);
-        fileMenu->addAction("i do not have internet", this, &BrowserWindow::openGame, QKeySequence(Qt::CTRL + Qt::Key_G));
-        fileMenu->addSeparator();
-        fileMenu->addAction("Downloads", this, &BrowserWindow::showDownloads, QKeySequence(Qt::CTRL + Qt::Key_J));
-        fileMenu->addSeparator();
-        fileMenu->addAction("Quit", qApp, &QApplication::quit, QKeySequence::Quit);
-
+        {
+            auto act = fileMenu->addAction("New Tab");
+            act->setShortcut(QKeySequence::AddTab);
+            connect(act, &QAction::triggered, this, &BrowserWindow::newTab);
+            act = fileMenu->addAction("i do not have internet");
+            act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_G));
+            connect(act, &QAction::triggered, this, &BrowserWindow::openGame);
+            fileMenu->addSeparator();
+            act = fileMenu->addAction("Downloads");
+            act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_J));
+            connect(act, &QAction::triggered, this, &BrowserWindow::showDownloads);
+            fileMenu->addSeparator();
+            act = fileMenu->addAction("Quit");
+            act->setShortcut(QKeySequence::Quit);
+            connect(act, &QAction::triggered, qApp, &QApplication::quit);
+        }
         QMenu *navMenu = menuBar->addMenu("&Navigation");
         navMenu->addAction(backAction);
         navMenu->addAction(forwardAction);
         navMenu->addAction(reloadAction);
-        navMenu->addAction("Home", this, &BrowserWindow::homePage);
-
+        auto homeAct = navMenu->addAction("Home");
+        connect(homeAct, &QAction::triggered, this, &BrowserWindow::homePage);
         QMenu *bookmarksMenu = menuBar->addMenu("&Bookmarks");
-        bookmarksMenu->addAction("Add Bookmark", this, &BrowserWindow::addBookmark, QKeySequence(Qt::CTRL + Qt::Key_D));
-        bookmarksMenu->addAction("Manage Bookmarks", this, &BrowserWindow::manageBookmarks);
-
+        {
+            auto act = bookmarksMenu->addAction("Add Bookmark");
+            act->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_D));
+            connect(act, &QAction::triggered, this, &BrowserWindow::addBookmark);
+            bookmarksMenu->addAction("Manage Bookmarks", this, &BrowserWindow::manageBookmarks);
+        }
         QMenu *toolsMenu = menuBar->addMenu("&Tools");
-        toolsMenu->addAction("Settings", this, &BrowserWindow::openSettings, QKeySequence::Preferences);
+        {
+            auto act = toolsMenu->addAction("Settings");
+            act->setShortcut(QKeySequence::Preferences);
+            connect(act, &QAction::triggered, this, &BrowserWindow::openSettings);
+        }
     }
 
     QWebEngineView* currentWebView() {
@@ -620,7 +665,7 @@ private:
 
     void applyTheme(int themeIndex) {
         QPalette palette;
-        if (themeIndex == 2) { // Dark
+        if (themeIndex == 2) {
             palette.setColor(QPalette::Window, QColor(53, 53, 53));
             palette.setColor(QPalette::WindowText, Qt::white);
             palette.setColor(QPalette::Base, QColor(25, 25, 25));
@@ -634,7 +679,7 @@ private:
             palette.setColor(QPalette::Link, QColor(42, 130, 218));
             palette.setColor(QPalette::Highlight, QColor(42, 130, 218));
             palette.setColor(QPalette::HighlightedText, Qt::black);
-        } else if (themeIndex == 1) { // Light
+        } else if (themeIndex == 1) {
             palette = QApplication::style()->standardPalette();
         }
         QApplication::setPalette(themeIndex == 0 ? QApplication::style()->standardPalette() : palette);
@@ -680,11 +725,13 @@ private:
     QWidget *centralWidget{};
     QVBoxLayout *layout{};
     QTabWidget *tabWidget{};
-    QToolBar *toolBar{};
+    QToolBar *tabToolBar{};
+    QToolBar *navToolBar{};
+    QToolBar *searchToolBar{};
     QLineEdit *urlBar{};
     QStatusBar *statusBar{};
     DownloadManagerWidget *downloadManager{};
-
+    QToolButton *newTabButton{};
     QAction *backAction{};
     QAction *forwardAction{};
     QAction *reloadAction{};
@@ -694,13 +741,10 @@ private:
 #include "main.moc"
 
 int main(int argc, char *argv[]) {
-    QApplication::setApplicationName("Onu");
-    QApplication::setOrganizationName("OnuOrg");
-    QApplication::setApplicationVersion("2.0");
-
+    QApplication::setApplicationName("onu");
+    QApplication::setOrganizationName("Onu.");
+    QApplication::setApplicationVersion("0.2");
     QApplication app(argc, argv);
-    app.setAttribute(Qt::AA_EnableHighDpiScaling);
-    app.setAttribute(Qt::AA_UseHighDpiPixmaps);
 
     QWebEngineProfile *profile = QWebEngineProfile::defaultProfile();
     profile->setPersistentStoragePath(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/webengine");
@@ -709,6 +753,5 @@ int main(int argc, char *argv[]) {
 
     BrowserWindow window;
     window.show();
-
     return app.exec();
 }

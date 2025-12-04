@@ -1,0 +1,10 @@
+Architecture: amd64
+Depends: qt6-base-dev, qt6-webengine-dev
+Description: onu — a Qt6 WebEngine-based application
+Maintainer: Zynomon Aelius
+Package: onu
+Priority: optional
+Section: utils
+Version: 0.2
+Installed-Size: 271
+

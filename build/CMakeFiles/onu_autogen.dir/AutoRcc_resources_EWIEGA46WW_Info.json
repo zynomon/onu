@@ -1,0 +1,22 @@
+{
+	"BUILD_DIR" : "/home/user/onu2/build/onu_autogen",
+	"CMAKE_BINARY_DIR" : "/home/user/onu2/build",
+	"CMAKE_CURRENT_BINARY_DIR" : "/home/user/onu2/build",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/home/user/onu2",
+	"CMAKE_SOURCE_DIR" : "/home/user/onu2",
+	"CROSS_CONFIG" : false,
+	"GENERATOR" : "Unix Makefiles",
+	"INCLUDE_DIR" : "/home/user/onu2/build/onu_autogen/include",
+	"INPUTS" : [ "/home/user/onu2/game.html", "/home/user/onu2/home.html" ],
+	"LOCK_FILE" : "/home/user/onu2/build/CMakeFiles/onu_autogen.dir/AutoRcc_resources_EWIEGA46WW_Lock.lock",
+	"MULTI_CONFIG" : false,
+	"OPTIONS" : [ "-name", "resources" ],
+	"OUTPUT_CHECKSUM" : "EWIEGA46WW",
+	"OUTPUT_NAME" : "qrc_resources.cpp",
+	"RCC_EXECUTABLE" : "/usr/lib/qt6/libexec/rcc",
+	"RCC_LIST_OPTIONS" : [ "--list" ],
+	"SETTINGS_FILE" : "/home/user/onu2/build/CMakeFiles/onu_autogen.dir/AutoRcc_resources_EWIEGA46WW_Used.txt",
+	"SOURCE" : "/home/user/onu2/resources.qrc",
+	"USE_BETTER_GRAPH" : true,
+	"VERBOSITY" : 0
+}

@@ -1,0 +1,77 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"install"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 39,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 43,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 54,
+				"parent" : 0
+			}
+		]
+	},
+	"installers" : 
+	[
+		{
+			"backtrace" : 1,
+			"component" : "Unspecified",
+			"destination" : "bin",
+			"paths" : 
+			[
+				"bin/onu"
+			],
+			"targetId" : "onu::@6890427a1f51a3e7e1df",
+			"targetIndex" : 0,
+			"type" : "target"
+		},
+		{
+			"backtrace" : 2,
+			"component" : "Unspecified",
+			"destination" : "share/icons/hicolor/scalable/apps",
+			"paths" : 
+			[
+				"resources/onu.svg"
+			],
+			"type" : "file"
+		},
+		{
+			"backtrace" : 3,
+			"component" : "Unspecified",
+			"destination" : "share/applications",
+			"paths" : 
+			[
+				"build/Desktop-Debug/onu.desktop"
+			],
+			"type" : "file"
+		}
+	],
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	}
+}

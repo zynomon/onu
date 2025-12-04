@@ -1,0 +1,11 @@
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/onu.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/package.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/package_source.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/edit_cache.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/rebuild_cache.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/list_install_components.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/install.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/install/local.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/install/strip.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/onu_autogen_timestamp_deps.dir
+/home/user/onu2/build/Desktop-Debug/CMakeFiles/onu_autogen.dir

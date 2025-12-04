@@ -1,0 +1,11 @@
+/home/user/onu2/build/CMakeFiles/onu.dir
+/home/user/onu2/build/CMakeFiles/package.dir
+/home/user/onu2/build/CMakeFiles/package_source.dir
+/home/user/onu2/build/CMakeFiles/edit_cache.dir
+/home/user/onu2/build/CMakeFiles/rebuild_cache.dir
+/home/user/onu2/build/CMakeFiles/list_install_components.dir
+/home/user/onu2/build/CMakeFiles/install.dir
+/home/user/onu2/build/CMakeFiles/install/local.dir
+/home/user/onu2/build/CMakeFiles/install/strip.dir
+/home/user/onu2/build/CMakeFiles/onu_autogen_timestamp_deps.dir
+/home/user/onu2/build/CMakeFiles/onu_autogen.dir
