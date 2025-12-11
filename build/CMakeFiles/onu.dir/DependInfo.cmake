@@ -9,9 +9,9 @@ set(CMAKE_DEPENDS_LANGUAGES
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "" "onu_autogen/timestamp" "custom" "onu_autogen/deps"
-  "/home/user/onu2/main.cpp" "CMakeFiles/onu.dir/main.cpp.o" "gcc" "CMakeFiles/onu.dir/main.cpp.o.d"
-  "/home/user/onu2/build/onu_autogen/EWIEGA46WW/qrc_resources.cpp" "CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o" "gcc" "CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o.d"
-  "/home/user/onu2/build/onu_autogen/mocs_compilation.cpp" "CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o.d"
+  "/home/user/onu/main.cpp" "CMakeFiles/onu.dir/main.cpp.o" "gcc" "CMakeFiles/onu.dir/main.cpp.o.d"
+  "/home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_resources.cpp" "CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o" "gcc" "CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o.d"
+  "/home/user/onu/build/onu_autogen/mocs_compilation.cpp" "CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o.d"
   "" "bin/onu" "gcc" "CMakeFiles/onu.dir/link.d"
   )
 

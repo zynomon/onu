@@ -14,4 +14,4 @@ StartupNotify=true
 StartupWMClass=onu
 Terminal=false
 Keywords=web;browser;internet;secure;fast;
-Version=0.2
+Version=0.3

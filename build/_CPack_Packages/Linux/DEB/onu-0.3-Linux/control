@@ -1,0 +1,10 @@
+Architecture: amd64
+Depends: libqt6core6, libqt6gui6, libqt6widgets6, libqt6webenginecore6, libqt6webenginewidgets6, libqt6positioning6, libqt6webchannel6
+Description: onu — a Qt6 WebEngine-based privacy-focused browser
+Maintainer: Zynomon Aelius
+Package: onu
+Priority: optional
+Section: web
+Version: 0.3
+Installed-Size: 758
+

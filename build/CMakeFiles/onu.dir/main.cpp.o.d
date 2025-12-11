@@ -1,4 +1,4 @@
-CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
+CMakeFiles/onu.dir/main.cpp.o: /home/user/onu/main.cpp \
  /usr/include/stdc-predef.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QApplication \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qapplication.h \
@@ -189,9 +189,7 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/sys/select.h \
  /usr/include/x86_64-linux-gnu/bits/select.h \
  /usr/include/x86_64-linux-gnu/bits/types/sigset_t.h \
- /usr/include/alloca.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-bsearch.h \
- /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
+ /usr/include/alloca.h /usr/include/x86_64-linux-gnu/bits/stdlib-float.h \
  /usr/include/c++/14/bits/specfun.h \
  /usr/include/c++/14/bits/stl_algobase.h \
  /usr/include/c++/14/debug/debug.h \
@@ -292,7 +290,6 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/bits/types/struct_FILE.h \
  /usr/include/x86_64-linux-gnu/bits/types/cookie_io_functions_t.h \
  /usr/include/x86_64-linux-gnu/bits/stdio_lim.h \
- /usr/include/x86_64-linux-gnu/bits/stdio.h \
  /usr/include/c++/14/bits/charconv.h \
  /usr/include/c++/14/bits/basic_string.tcc \
  /usr/include/c++/14/bits/locale_classes.tcc \
@@ -494,11 +491,17 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginepage.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineProfile \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineprofile.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineScript \
- /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginescript.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineScriptCollection \
- /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginescriptcollection.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginescript.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlScheme \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlscheme.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlSchemeHandler \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlschemehandler.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlRequestJob \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlrequestjob.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineSettings \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginesettings.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QBuffer \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qbuffer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevice.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineDownloadRequest \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginedownloadrequest.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineHistory \
@@ -506,9 +509,25 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qabstractitemmodel.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolBar \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtoolbar.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QListWidget \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlistview.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractitemview.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractscrollarea.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qitemselectionmodel.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractitemdelegate.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyleoption.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractspinbox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qvalidator.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qregularexpression.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qslider.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractslider.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyle.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabbar.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLineEdit \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlineedit.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtextcursor.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtextdocument.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qtextformat.h \
@@ -518,6 +537,8 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qaction.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTabWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTabBar \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabbar.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenuBar \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenubar.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenu.h \
@@ -534,7 +555,6 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qdir.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qdirlisting.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qfiledevice.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qiodevice.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qfile.h \
  /usr/include/c++/14/filesystem /usr/include/c++/14/bits/fs_fwd.h \
  /usr/include/c++/14/bits/fs_path.h /usr/include/c++/14/codecvt \
@@ -552,37 +572,15 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qboxlayout.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCompleter \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcompleter.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QStringListModel \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlistmodel.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QStandardPaths \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qstandardpaths.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QDir \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qdir.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QFile \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qfile.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QInputDialog \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qinputdialog.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlineedit.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QListWidget \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlistwidget.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlistview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractitemview.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractscrollarea.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qitemselectionmodel.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractitemdelegate.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyleoption.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractspinbox.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qvalidator.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qregularexpression.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qslider.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractslider.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyle.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabbar.h \
- /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialog \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialog.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFormLayout \
@@ -636,12 +634,6 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkAccessManager \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QFileInfo \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qfileinfo.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QPointer \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qpointer.h \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/QRegularExpression \
- /usr/include/x86_64-linux-gnu/qt6/QtCore/qregularexpression.h \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/QClipboard \
- /usr/include/x86_64-linux-gnu/qt6/QtGui/qclipboard.h \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolButton \
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtoolbutton.h \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/QDropEvent \
@@ -660,5 +652,48 @@ CMakeFiles/onu.dir/main.cpp.o: /home/user/onu2/main.cpp \
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qscreen_platform.h \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QMimeData \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qmimedata.h \
- /home/user/onu2/build/onu_autogen/include/main.moc \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFontComboBox \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfontcombobox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcombobox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qfontdatabase.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSpinBox \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qspinbox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGroupBox \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgroupbox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGridLayout \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialogButtonBox \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qscrollarea.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qbasictimer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/QShortcut \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qshortcut.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/QClipboard \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qclipboard.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCompleter \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcompleter.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QStringListModel \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qstringlistmodel.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSystemTrayIcon \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsystemtrayicon.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QCommandLineParser \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qcommandlineparser.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qcommandlineoption.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QCommandLineOption \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qcommandlineoption.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineNotification \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginenotification.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEnginePermission \
+ /usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginepermission.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QElapsedTimer \
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qelapsedtimer.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/QMouseEvent \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolTip \
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtooltip.h \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/QCursor \
+ /usr/include/x86_64-linux-gnu/qt6/QtGui/qcursor.h \
+ /home/user/onu/build/onu_autogen/include/main.moc \
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmochelpers.h

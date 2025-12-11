@@ -1,11 +1,11 @@
 onu_autogen/timestamp: \
-	/home/user/onu2/CMakeLists.txt \
-	/home/user/onu2/build/CMakeFiles/3.31.6/CMakeCXXCompiler.cmake \
-	/home/user/onu2/build/CMakeFiles/3.31.6/CMakeSystem.cmake \
-	/home/user/onu2/build/onu_autogen/moc_predefs.h \
-	/home/user/onu2/main.cpp \
-	/home/user/onu2/resources.qrc \
-	/home/user/onu2/resources/onu.desktop.in \
+	/home/user/onu/CMakeLists.txt \
+	/home/user/onu/build/CMakeFiles/3.31.6/CMakeCXXCompiler.cmake \
+	/home/user/onu/build/CMakeFiles/3.31.6/CMakeSystem.cmake \
+	/home/user/onu/build/onu_autogen/moc_predefs.h \
+	/home/user/onu/main.cpp \
+	/home/user/onu/resources.qrc \
+	/home/user/onu/resources/onu.desktop.in \
 	/usr/include/alloca.h \
 	/usr/include/asm-generic/bitsperlong.h \
 	/usr/include/asm-generic/errno-base.h \
@@ -316,8 +316,12 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/c++/14/bits/time_members.h \
 	/usr/include/x86_64-linux-gnu/gnu/stubs-64.h \
 	/usr/include/x86_64-linux-gnu/gnu/stubs.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/QBuffer \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/QCommandLineOption \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/QCommandLineParser \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QDateTime \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QDir \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/QElapsedTimer \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QFile \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QFileInfo \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QFlags \
@@ -326,9 +330,7 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QMetaType \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QMimeData \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QObject \
-	/usr/include/x86_64-linux-gnu/qt6/QtCore/QPointer \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QRect \
-	/usr/include/x86_64-linux-gnu/qt6/QtCore/QRegularExpression \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QSettings \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QSharedDataPointer \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QSize \
@@ -336,6 +338,7 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QStandardPaths \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QString \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QStringListModel \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QUrl \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QVariant \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/QWeakPointer \
@@ -355,13 +358,17 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qatomic.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qatomic_cxx11.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbasicatomic.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbasictimer.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbindingstorage.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbuffer.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearray.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearrayalgorithms.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearraylist.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qbytearrayview.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcalendar.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qchar.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcommandlineoption.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcommandlineparser.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcompare.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcompare_impl.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qcomparehelpers.h \
@@ -428,7 +435,6 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qoverload.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qpair.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h \
-	/usr/include/x86_64-linux-gnu/qt6/QtCore/qpointer.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qprocessordetection.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qrefcount.h \
@@ -469,6 +475,7 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtdeprecationmarkers.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtenvironmentvariables.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtextstream.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtimezone.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qtnoop.h \
@@ -489,10 +496,13 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtCore/qyieldcpu.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QAction \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QClipboard \
+	/usr/include/x86_64-linux-gnu/qt6/QtGui/QCursor \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QDropEvent \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QIcon \
+	/usr/include/x86_64-linux-gnu/qt6/QtGui/QMouseEvent \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QPageLayout \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QPalette \
+	/usr/include/x86_64-linux-gnu/qt6/QtGui/QShortcut \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/QTransform \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qaction.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qbitmap.h \
@@ -503,6 +513,7 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qevent.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qeventpoint.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qfont.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtGui/qfontdatabase.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qfontinfo.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qfontmetrics.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qguiapplication.h \
@@ -528,6 +539,7 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qrgba64.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qscreen.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qscreen_platform.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtGui/qshortcut.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qtextcursor.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qtextdocument.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtGui/qtextformat.h \
@@ -569,22 +581,29 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtQmlIntegration/qqmlintegration.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineDownloadRequest \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineHistory \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineNotification \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEnginePage \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEnginePermission \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineProfile \
-	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineScript \
-	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineScriptCollection \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineSettings \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlRequestJob \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlScheme \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/QWebEngineUrlSchemeHandler \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qtwebenginecore-config.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qtwebenginecoreglobal.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineclientcertificateselection.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginedownloadrequest.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineframe.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginehistory.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginenotification.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginepage.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginepermission.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineprofile.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginequotarequest.h \
-	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginescript.h \
-	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginescriptcollection.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebenginesettings.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlrequestjob.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlscheme.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineCore/qwebengineurlschemehandler.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineWidgets/QWebEngineView \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineWidgets/qtwebenginewidgetsglobal.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWebEngineWidgets/qwebengineview.h \
@@ -593,9 +612,13 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QComboBox \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCompleter \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialog \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialogButtonBox \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFileDialog \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFontComboBox \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFormLayout \
-	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QInputDialog \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGridLayout \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QGroupBox \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QHBoxLayout \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLabel \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLayout \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QLineEdit \
@@ -605,11 +628,16 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenuBar \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMessageBox \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QPushButton \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSpinBox \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QStatusBar \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSystemTrayIcon \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTabBar \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTabWidget \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QTextEdit \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolBar \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolButton \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QToolTip \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QVBoxLayout \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qabstractbutton.h \
@@ -626,10 +654,11 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialog.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfiledialog.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfontcombobox.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qformlayout.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qframe.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgridlayout.h \
-	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qinputdialog.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qgroupbox.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlabel.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayout.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qlayoutitem.h \
@@ -642,16 +671,20 @@ onu_autogen/timestamp: \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmessagebox.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qpushbutton.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qscrollarea.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qslider.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qspinbox.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstatusbar.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyle.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qstyleoption.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsystemtrayicon.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabbar.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtabwidget.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtextedit.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtoolbar.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtoolbutton.h \
+	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtooltip.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgets-config.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsexports.h \
 	/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qtwidgetsglobal.h \

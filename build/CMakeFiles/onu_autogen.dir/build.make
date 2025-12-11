@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/onu2
+CMAKE_SOURCE_DIR = /home/user/onu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/onu2/build
+CMAKE_BINARY_DIR = /home/user/onu/build
 
 # Utility rule file for onu_autogen.
 
@@ -71,9 +71,9 @@ CMakeFiles/onu_autogen: onu_autogen/timestamp
 onu_autogen/timestamp: /usr/lib/qt6/libexec/moc
 onu_autogen/timestamp: /usr/lib/qt6/libexec/uic
 onu_autogen/timestamp: CMakeFiles/onu_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/user/onu2/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target onu"
-	/usr/bin/cmake -E cmake_autogen /home/user/onu2/build/CMakeFiles/onu_autogen.dir/AutogenInfo.json Release
-	/usr/bin/cmake -E touch /home/user/onu2/build/onu_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target onu"
+	/usr/bin/cmake -E cmake_autogen /home/user/onu/build/CMakeFiles/onu_autogen.dir/AutogenInfo.json ""
+	/usr/bin/cmake -E touch /home/user/onu/build/onu_autogen/timestamp
 
 CMakeFiles/onu_autogen.dir/codegen:
 .PHONY : CMakeFiles/onu_autogen.dir/codegen
@@ -92,6 +92,6 @@ CMakeFiles/onu_autogen.dir/clean:
 .PHONY : CMakeFiles/onu_autogen.dir/clean
 
 CMakeFiles/onu_autogen.dir/depend:
-	cd /home/user/onu2/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/onu2 /home/user/onu2 /home/user/onu2/build /home/user/onu2/build /home/user/onu2/build/CMakeFiles/onu_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /home/user/onu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/onu /home/user/onu /home/user/onu/build /home/user/onu/build /home/user/onu/build/CMakeFiles/onu_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/onu_autogen.dir/depend
 

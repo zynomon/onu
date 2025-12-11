@@ -7,8 +7,8 @@ bin/onu: \
   CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o \
   /usr/lib/x86_64-linux-gnu/libQt6WebEngineWidgets.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6WebEngineCore.so.6.8.2 \
-  /usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2 \
+  /usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6PrintSupport.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Quick.so.6.8.2 \
@@ -188,9 +188,9 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 
 /usr/lib/x86_64-linux-gnu/libQt6WebEngineCore.so.6.8.2:
 
-/usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2:
-
 /usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2:
+
+/usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libQt6PrintSupport.so.6.8.2:
 

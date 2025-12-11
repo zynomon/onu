@@ -34,11 +34,11 @@ endif()
 set(__QT_DEPLOY_SYSTEM_NAME "Linux")
 set(__QT_DEPLOY_IS_SHARED_LIBS_BUILD "ON")
 set(__QT_DEPLOY_TOOL "GRD")
-set(__QT_DEPLOY_IMPL_DIR "/home/user/onu2/build/.qt")
+set(__QT_DEPLOY_IMPL_DIR "/home/user/onu/build/.qt")
 set(__QT_DEPLOY_VERBOSE "")
 set(__QT_CMAKE_EXPORT_NAMESPACE "Qt6")
 set(__QT_DEPLOY_GENERATOR_IS_MULTI_CONFIG "0")
-set(__QT_DEPLOY_ACTIVE_CONFIG "Release")
+set(__QT_DEPLOY_ACTIVE_CONFIG "")
 set(__QT_NO_CREATE_VERSIONLESS_FUNCTIONS "")
 set(__QT_DEFAULT_MAJOR_VERSION "6")
 set(__QT_DEPLOY_QT_ADDITIONAL_PACKAGES_PREFIX_PATH "")
@@ -58,7 +58,7 @@ set(__QT_DEPLOY_QT_DEBUG_POSTFIX "")
 
 # Define the CMake commands to be made available during deployment.
 set(__qt_deploy_support_files
-    "/home/user/onu2/build/.qt/QtDeployTargets.cmake"
+    "/home/user/onu/build/.qt/QtDeployTargets.cmake"
     "/usr/lib/x86_64-linux-gnu/cmake/Qt6Core/Qt6CoreDeploySupport.cmake"
     "/usr/lib/x86_64-linux-gnu/cmake/Qt6Qml/Qt6QmlDeploySupport.cmake"
     "/usr/lib/x86_64-linux-gnu/cmake/Qt6WebEngineCore/Qt6WebEngineCoreDeploySupport.cmake"
