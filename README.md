@@ -9,7 +9,8 @@
 - 🔗 **[Download Onu Beta (.deb)](https://github.com/zynomon/onu/raw/release/beta/onu-0.2.deb)**
 
 ---
-i will update it tomorrow;
+i will update it tomorrow; but it will never happen  onu 0.3 is out now our plan is to add cross platform in onu 0.5 ( first stable release) 
+onu 0.4 would be a remake from scratch instead of just improving the  current code base because a clean start could improve the application
 ---
 
 ## 📂 More Screenshots
