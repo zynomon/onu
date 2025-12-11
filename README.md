@@ -1,5 +1,5 @@
 
-**Onu** is a fast, minimalist browser designed to stay under **10 MB** while remaining expressive, playful, and powerful — ideal for low‑end devices and lightweight systems.
+**Onu** is a fast, Fallback browser for error.os it doesn't uses heavy storage the goal is to make the binary of onu small as possible and add bug fixes over features that aren't essential for someone who just can't find a fallback browser. ( not heavy redundant codebase). 
 
 ---
 
