@@ -151,6 +151,7 @@ Dark mode ( the home menu has some issues soon it will be fixed )
 
 <img width="1440" alt="home" src="https://github.com/user-attachments/assets/ac924a96-73e9-4cfd-b5ae-185cff931423" />
 <img width="714" alt="game" src="https://github.com/user-attachments/assets/70b0bdce-719c-4b18-a21e-38c17caf144c" />
+
 ![gameplay](https://github.com/user-attachments/assets/cf97d488-927d-4461-8e68-a0d7913e9aeb)
 
 </div>
