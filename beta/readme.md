@@ -3,5 +3,5 @@
 -  This build is experimental and may contain unfinished features,
 -  visual quirks, or unexpected behavior.
 -  Install at your own risk.
--  We make no guarantees regarding performance
--  if it didn't run using .desktop  run it from terminal using the command " Onu "
+-  We make no guarantees regarding performance in beta versions.
+-  if it didn't run using .desktop  run it from terminal using the command " Onu " or "onu"
