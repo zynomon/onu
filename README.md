@@ -86,7 +86,9 @@ Changelogs,
 For forking older versions check 
 https://github.com/zynomon/onu/blob/release/
 </details>
+
 ---
+
 ## 🖼️ Preview
 
 <div align="center">
