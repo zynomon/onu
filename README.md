@@ -26,8 +26,7 @@ Changelogs,
 ---
 0.3 includes,
 - Rebuilt UI into a single clean navigation toolbar (removed multi-toolbar system from 0.2)
-- Removed userscript support entirely (including engine and settings tab)
-- Simplified tab bar: replaced custom "+" tab button with standard new-tab button in toolbar
+- Removed userscript support entirely (including engine and settings tabs)
 - Improved tab handling: proper title/icon updates, secure/insecure tooltip indicators, and right-click context menu (Close, Duplicate, View Source)
 - Enhanced Settings dialog with new tabs: Privacy (JavaScript/Images toggles), Downloads (duplicate prevention), Developer (Inspect Element toggle), and Engine Flags (GPU, WebRTC, Force Dark Mode, etc.)
 - Added command-line arguments: --nogpu and --force-dark
@@ -43,6 +42,7 @@ Changelogs,
 - Added window dragging via empty menu bar area
 - Improved drag-and-drop support on tab bar for URLs
 - Removed bookmark UI in favor of history-based navigation
+ ⚠️ for some reasons it has few bugs that will be solved soon in the 0.4, most of the bugs are identified .
 <details>
 <summary><b>previous versions changelogs</b> <span style="font-size:14px;">(click to expand)</span></summary>
   
@@ -198,4 +198,5 @@ Dark mode ( the home menu has some issues soon it will be fixed )
 ---
 
 - for more suggestions open a "issue" on this repo, or you can [join us on discord](https://discord.gg/Jn7FBwu99F) if you feel comfort there. 😅
+- This project follows Apache 2.0 license you can fork it or do whatever you want but dont forget to credit me. 
   
