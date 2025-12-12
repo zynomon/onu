@@ -47,6 +47,7 @@ Changelogs
 
 <details>
 <summary><b>Load</b> <span style="font-size:14px;">(click to expand)</span></summary>
+  
 0.2 includes,
 - Added new-tab button directly on the tab bar
 - Implemented drag-and-drop URL opening on tab bar
@@ -86,7 +87,7 @@ Changelogs
 </details>
 
 ## 🖼️ Preview
-
+<details>
 <div align="center">
 <img width="1380" height="467" alt="image" src="https://github.com/user-attachments/assets/b35840f2-f05e-4533-8c89-8b032e7ebcfe" />
 <img width="1440" height="623" alt="image" src="https://github.com/user-attachments/assets/1226e536-8dc3-4a0e-97c8-d12b2841c595" />
@@ -102,7 +103,7 @@ Dark mode ( the home menu has some issues soon it will be fixed )
 <img width="1440" height="900" alt="VirtualBox_QTDEVPRO_12_12_2025_11_34_11" src="https://github.com/user-attachments/assets/cadc3c9d-8ffe-4009-adfd-8cb53917f2f1" />
 <img width="1440" height="900" alt="VirtualBox_QTDEVPRO_12_12_2025_11_34_16" src="https://github.com/user-attachments/assets/aa65d22a-18be-4701-90b5-b2b7f8446ff3" />
 
-
+</details>
 
 <details>
 <summary><b>Screenshots from 0.2 version</b></summary>
