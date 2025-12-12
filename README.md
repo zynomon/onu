@@ -7,17 +7,21 @@
   <a href="https://github.com/zynomon/onu"><img src="https://img.shields.io/github/stars/zynomon/error?style=social"></a>
   <a href="https://github.com/zynomon/onu/fork"><img src="https://img.shields.io/github/forks/zynomon/error?style=social"></a>
 </p>
+
 onu is a small tiny browser. it's main goal is to fit in any low storage devices , fast and every aspect of it is customizable,
 ---
 ## 📦 Download
 most of them are under 300KB if the desktop environment is KDE if its gnome or something else it has some dependency that will take upto 200MB.
+
 - 🔗 **[Download Onu Beta ~ version 0.3 (.deb)](https://github.com/zynomon/onu/raw/release/beta/onu-0.3.deb)**
 - 🔗 **[Download Onu Beta ~ version 0.2 (.deb)](https://github.com/zynomon/onu/raw/release/beta/onu-0.2.deb)**
 - 🔗 **[Download Onu Beta ~ version 0.1 (.deb)](https://github.com/zynomon/onu/raw/release/beta/onu-0.1.deb)**
 - 🔗 **[Download Onu Beta ~ previous version sources (.7zip)](https://github.com/zynomon/onu/blob/release/beta/)**
+
 current version's (0.3) source is in this main branch repo so you could clone it without issues.
 
 --- 
+
 Changelogs
 0.3 includes,
 - Rebuilt UI into a single clean navigation toolbar (removed multi-toolbar system from 0.2)
