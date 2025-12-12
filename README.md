@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img alt="Onu."  src="https://github.com/user-attachments/assets/ea231c30-3c70-43ef-a8f5-37a30f7549b4">
+  <img width="1440" height="900" alt="Onu."  src="https://github.com/user-attachments/assets/ea231c30-3c70-43ef-a8f5-37a30f7549b4">
   <img src="https://img.shields.io/badge/Status-Beta-orange?style=flat-square">
   <img src="https://img.shields.io/badge/License-Apache%202.0-green?style=flat-square">
   <img src="https://img.shields.io/badge/Platform-Linux-green?style=flat-square">
