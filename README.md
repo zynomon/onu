@@ -23,6 +23,7 @@ current version's (0.3) source is in this main branch repo so you could clone it
 --- 
 
 Changelogs
+---
 0.3 includes,
 - Rebuilt UI into a single clean navigation toolbar (removed multi-toolbar system from 0.2)
 - Removed userscript support entirely (including engine and settings tab)
@@ -44,14 +45,6 @@ Changelogs
 - Removed bookmark UI in favor of history-based navigation
 <details>
 <summary><b>previous versions changelogs</b> <span style="font-size:14px;">(click to expand)</span></summary>
-
----
-
-## 📂 Screenshots
-
-<details>
-<summary><b>Load</b> <span style="font-size:14px;">(click to expand)</span></summary>
-  
 0.2 includes,
 - Added new-tab button directly on the tab bar
 - Implemented drag-and-drop URL opening on tab bar
@@ -90,8 +83,10 @@ Changelogs
 
 </details>
 
-## 🖼️ Preview
 <details>
+<summary><b>Load</b> <span style="font-size:14px;">(click to expand)</span></summary>
+## 🖼️ Preview
+
 <div align="center">
 <img width="1380" height="467" alt="image" src="https://github.com/user-attachments/assets/b35840f2-f05e-4533-8c89-8b032e7ebcfe" />
 <img width="1440" height="623" alt="image" src="https://github.com/user-attachments/assets/1226e536-8dc3-4a0e-97c8-d12b2841c595" />
