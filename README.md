@@ -22,7 +22,7 @@ current version's (0.3) source is in this main branch repo so you could clone it
 
 --- 
 
-Changelogs
+Changelogs, 
 ---
 0.3 includes,
 - Rebuilt UI into a single clean navigation toolbar (removed multi-toolbar system from 0.2)
@@ -45,7 +45,9 @@ Changelogs
 - Removed bookmark UI in favor of history-based navigation
 <details>
 <summary><b>previous versions changelogs</b> <span style="font-size:14px;">(click to expand)</span></summary>
-0.2 includes,
+  
+## 0.2 includes,
+  
 - Added new-tab button directly on the tab bar
 - Implemented drag-and-drop URL opening on tab bar
 - Introduced experimental multi-toolbar system (Tabs, Navigation, Search toolbars)
@@ -62,7 +64,7 @@ Changelogs
 - Implemented dynamic tab icon and title updates
 - First version to include developer tools and advanced UX features
   
-0.1 included,
+## 0.1 included,
 
 - Basic tabbed browsing with QTabWidget
 - Unified navigation toolbar with back, forward, reload, stop, new tab, and game button
@@ -81,16 +83,23 @@ Changelogs
 - Basic keyboard shortcuts (Ctrl+T, Ctrl+G, Ctrl+J, Ctrl+D, etc.)
 - First QSettings-based configuration system
 
+For forking older versions check 
+https://github.com/zynomon/onu/blob/release/
 </details>
-
-<details>
-<summary><b>Load</b> <span style="font-size:14px;">(click to expand)</span></summary>
+---
 ## 🖼️ Preview
 
 <div align="center">
 <img width="1380" height="467" alt="image" src="https://github.com/user-attachments/assets/b35840f2-f05e-4533-8c89-8b032e7ebcfe" />
 <img width="1440" height="623" alt="image" src="https://github.com/user-attachments/assets/1226e536-8dc3-4a0e-97c8-d12b2841c595" />
 <img width="1440" height="726" alt="image" src="https://github.com/user-attachments/assets/d4cc68af-8265-4691-86f8-5b7c76cfcaa5" />
+</div>
+
+<details>
+<summary><b>Load screenshots</b> <span style="font-size:14px;">(click to expand)</span></summary>
+
+
+<div align="center">
 <img width="1438" height="334" alt="image" src="https://github.com/user-attachments/assets/a531fbde-5692-415e-a71f-5353a23ea168" />
 <img width="313" height="219" alt="image" src="https://github.com/user-attachments/assets/3bb93ee7-0c8b-4157-b65a-5f1bd9d752bd" />
 <img width="785" height="616" alt="image" src="https://github.com/user-attachments/assets/875f5c8b-5ef9-45b9-abce-c0e720fa29f3" />
@@ -107,7 +116,8 @@ Dark mode ( the home menu has some issues soon it will be fixed )
 <details>
 <summary><b>Screenshots from 0.2 version</b></summary>
 0.2 includes,
- - Added new-tab button on the tab bar
+  
+- Added new-tab button on the tab bar
 - Added drag-and-drop URL opening on tab bar
 - Added multiple toolbars (tabs, navigation, search)
 - Added orientation-aware toolbar behavior
@@ -149,6 +159,7 @@ Dark mode ( the home menu has some issues soon it will be fixed )
 <summary><b>Screenshots from 0.1 version</b></summary>
   
 0.1 included,
+
 - Basic tabbed browsing
 - Basic navigation toolbar
 - Basic adblock (host-based)
