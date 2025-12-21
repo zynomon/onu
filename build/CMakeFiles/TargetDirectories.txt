@@ -1,4 +1,5 @@
 /home/user/onu/build/CMakeFiles/onu.dir
+/home/user/onu/build/CMakeFiles/run.dir
 /home/user/onu/build/CMakeFiles/package.dir
 /home/user/onu/build/CMakeFiles/package_source.dir
 /home/user/onu/build/CMakeFiles/edit_cache.dir

@@ -6,9 +6,8 @@
  /home/user/onu/build/CMakeFiles/3.31.6/CMakeCXXCompiler.cmake
  /home/user/onu/build/CMakeFiles/3.31.6/CMakeSystem.cmake
  /home/user/onu/build/onu_autogen/moc_predefs.h
- /home/user/onu/main.cpp
- /home/user/onu/resources.qrc
- /home/user/onu/resources/onu.desktop.in
+ /home/user/onu/files.qrc
+ /home/user/onu/onu.cpp
  /usr/bin/cmake
  /usr/include/alloca.h
  /usr/include/asm-generic/bitsperlong.h
@@ -30,7 +29,9 @@
  /usr/include/c++/14/bits/allocated_ptr.h
  /usr/include/c++/14/bits/allocator.h
  /usr/include/c++/14/bits/atomic_base.h
+ /usr/include/c++/14/bits/atomic_futex.h
  /usr/include/c++/14/bits/atomic_lockfree_defines.h
+ /usr/include/c++/14/bits/atomic_timed_wait.h
  /usr/include/c++/14/bits/atomic_wait.h
  /usr/include/c++/14/bits/basic_ios.h
  /usr/include/c++/14/bits/basic_ios.tcc
@@ -91,6 +92,7 @@
  /usr/include/c++/14/bits/ranges_util.h
  /usr/include/c++/14/bits/refwrap.h
  /usr/include/c++/14/bits/requires_hosted.h
+ /usr/include/c++/14/bits/semaphore_base.h
  /usr/include/c++/14/bits/shared_ptr.h
  /usr/include/c++/14/bits/shared_ptr_atomic.h
  /usr/include/c++/14/bits/shared_ptr_base.h
@@ -99,6 +101,7 @@
  /usr/include/c++/14/bits/std_abs.h
  /usr/include/c++/14/bits/std_function.h
  /usr/include/c++/14/bits/std_mutex.h
+ /usr/include/c++/14/bits/std_thread.h
  /usr/include/c++/14/bits/stl_algo.h
  /usr/include/c++/14/bits/stl_algobase.h
  /usr/include/c++/14/bits/stl_bvector.h
@@ -124,7 +127,9 @@
  /usr/include/c++/14/bits/streambuf_iterator.h
  /usr/include/c++/14/bits/string_view.tcc
  /usr/include/c++/14/bits/stringfwd.h
+ /usr/include/c++/14/bits/this_thread_sleep.h
  /usr/include/c++/14/bits/uniform_int_dist.h
+ /usr/include/c++/14/bits/unique_lock.h
  /usr/include/c++/14/bits/unique_ptr.h
  /usr/include/c++/14/bits/unordered_map.h
  /usr/include/c++/14/bits/uses_allocator.h
@@ -142,6 +147,7 @@
  /usr/include/c++/14/cmath
  /usr/include/c++/14/compare
  /usr/include/c++/14/concepts
+ /usr/include/c++/14/condition_variable
  /usr/include/c++/14/cstddef
  /usr/include/c++/14/cstdint
  /usr/include/c++/14/cstdio
@@ -163,6 +169,7 @@
  /usr/include/c++/14/filesystem
  /usr/include/c++/14/format
  /usr/include/c++/14/functional
+ /usr/include/c++/14/future
  /usr/include/c++/14/initializer_list
  /usr/include/c++/14/iomanip
  /usr/include/c++/14/ios
@@ -174,6 +181,7 @@
  /usr/include/c++/14/locale
  /usr/include/c++/14/map
  /usr/include/c++/14/memory
+ /usr/include/c++/14/mutex
  /usr/include/c++/14/new
  /usr/include/c++/14/numeric
  /usr/include/c++/14/optional
@@ -181,8 +189,10 @@
  /usr/include/c++/14/pstl/execution_defs.h
  /usr/include/c++/14/pstl/glue_numeric_defs.h
  /usr/include/c++/14/ratio
+ /usr/include/c++/14/semaphore
  /usr/include/c++/14/sstream
  /usr/include/c++/14/stdexcept
+ /usr/include/c++/14/stop_token
  /usr/include/c++/14/streambuf
  /usr/include/c++/14/string
  /usr/include/c++/14/string_view
@@ -221,6 +231,7 @@
  /usr/include/locale.h
  /usr/include/pthread.h
  /usr/include/sched.h
+ /usr/include/semaphore.h
  /usr/include/stdc-predef.h
  /usr/include/stdint.h
  /usr/include/stdio.h
@@ -256,6 +267,7 @@
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h
  /usr/include/x86_64-linux-gnu/bits/sched.h
  /usr/include/x86_64-linux-gnu/bits/select.h
+ /usr/include/x86_64-linux-gnu/bits/semaphore.h
  /usr/include/x86_64-linux-gnu/bits/setjmp.h
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h
  /usr/include/x86_64-linux-gnu/bits/stdint-least.h
@@ -334,6 +346,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QMetaType
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QMimeData
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QProcess
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QRect
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QSettings
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QSharedDataPointer
@@ -342,6 +355,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QStandardPaths
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QStringListModel
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QThread
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QUrl
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVariant
@@ -439,6 +453,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qoverload.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpair.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qprocess.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qprocessordetection.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qrefcount.h
@@ -479,6 +494,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtdeprecationmarkers.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtenvironmentvariables.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtextstream.h
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qthread.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimezone.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h
@@ -556,6 +572,13 @@
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvector2d.h
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/QAudioOutput
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qaudio.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qaudiooutput.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtaudio.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimedia-config.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimediaexports.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimediaglobal.h
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkAccessManager
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkReply
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkRequest
@@ -617,6 +640,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCompleter
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialog
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialogButtonBox
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDockWidget
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFileDialog
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFontComboBox
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFormLayout
@@ -631,7 +655,9 @@
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenu
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenuBar
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMessageBox
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QProgressBar
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QPushButton
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QRadioButton
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QStatusBar
@@ -657,6 +683,7 @@
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcompleter.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialog.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdockwidget.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfiledialog.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfontcombobox.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qformlayout.h
@@ -673,7 +700,9 @@
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenu.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenubar.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmessagebox.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qprogressbar.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qpushbutton.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qradiobutton.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qscrollarea.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h
@@ -696,6 +725,7 @@
  /usr/include/x86_64-linux-gnu/sys/cdefs.h
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/syscall.h
+ /usr/include/x86_64-linux-gnu/sys/time.h
  /usr/include/x86_64-linux-gnu/sys/types.h
  /usr/lib/gcc/x86_64-linux-gnu/14/include/stdarg.h
  /usr/lib/gcc/x86_64-linux-gnu/14/include/stdbool.h
@@ -796,6 +826,16 @@
  /usr/lib/x86_64-linux-gnu/cmake/Qt6GuiTools/Qt6GuiToolsTargets-none.cmake
  /usr/lib/x86_64-linux-gnu/cmake/Qt6GuiTools/Qt6GuiToolsTargets.cmake
  /usr/lib/x86_64-linux-gnu/cmake/Qt6GuiTools/Qt6GuiToolsVersionlessTargets.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaAdditionalTargetInfo.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaConfig.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaConfigVersion.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaConfigVersionImpl.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaDependencies.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaMacros.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaPlugins.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaTargets-none.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaTargets.cmake
+ /usr/lib/x86_64-linux-gnu/cmake/Qt6Multimedia/Qt6MultimediaVersionlessAliasTargets.cmake
  /usr/lib/x86_64-linux-gnu/cmake/Qt6Network/Qt6NetworkAdditionalTargetInfo.cmake
  /usr/lib/x86_64-linux-gnu/cmake/Qt6Network/Qt6NetworkConfig.cmake
  /usr/lib/x86_64-linux-gnu/cmake/Qt6Network/Qt6NetworkConfigVersion.cmake
@@ -1040,6 +1080,7 @@
  /usr/share/cmake-3.31/Modules/FindThreads.cmake
  /usr/share/cmake-3.31/Modules/FindVulkan.cmake
  /usr/share/cmake-3.31/Modules/GNUInstallDirs.cmake
+ /usr/share/cmake-3.31/Modules/InstallRequiredSystemLibraries.cmake
  /usr/share/cmake-3.31/Modules/Internal/CMakeCXXLinkerInformation.cmake
  /usr/share/cmake-3.31/Modules/Internal/CMakeCommonLinkerInformation.cmake
  /usr/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake
@@ -1061,9 +1102,9 @@
  /usr/share/cmake-3.31/Modules/Platform/UnixPaths.cmake
  /usr/share/cmake-3.31/Templates/CPackConfig.cmake.in
 
-CMakeFiles/onu.dir/main.cpp.o
- /home/user/onu/main.cpp
- /home/user/onu/build/onu_autogen/include/main.moc
+CMakeFiles/onu.dir/onu.cpp.o
+ /home/user/onu/onu.cpp
+ /home/user/onu/build/onu_autogen/include/onu.moc
  /usr/include/alloca.h
  /usr/include/asm-generic/bitsperlong.h
  /usr/include/asm-generic/errno-base.h
@@ -1084,7 +1125,9 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/bits/allocated_ptr.h
  /usr/include/c++/14/bits/allocator.h
  /usr/include/c++/14/bits/atomic_base.h
+ /usr/include/c++/14/bits/atomic_futex.h
  /usr/include/c++/14/bits/atomic_lockfree_defines.h
+ /usr/include/c++/14/bits/atomic_timed_wait.h
  /usr/include/c++/14/bits/atomic_wait.h
  /usr/include/c++/14/bits/basic_ios.h
  /usr/include/c++/14/bits/basic_ios.tcc
@@ -1149,6 +1192,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/bits/ranges_util.h
  /usr/include/c++/14/bits/refwrap.h
  /usr/include/c++/14/bits/requires_hosted.h
+ /usr/include/c++/14/bits/semaphore_base.h
  /usr/include/c++/14/bits/shared_ptr.h
  /usr/include/c++/14/bits/shared_ptr_atomic.h
  /usr/include/c++/14/bits/shared_ptr_base.h
@@ -1157,6 +1201,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/bits/std_abs.h
  /usr/include/c++/14/bits/std_function.h
  /usr/include/c++/14/bits/std_mutex.h
+ /usr/include/c++/14/bits/std_thread.h
  /usr/include/c++/14/bits/stl_algo.h
  /usr/include/c++/14/bits/stl_algobase.h
  /usr/include/c++/14/bits/stl_bvector.h
@@ -1182,9 +1227,11 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/bits/streambuf_iterator.h
  /usr/include/c++/14/bits/string_view.tcc
  /usr/include/c++/14/bits/stringfwd.h
+ /usr/include/c++/14/bits/this_thread_sleep.h
  /usr/include/c++/14/bits/unicode-data.h
  /usr/include/c++/14/bits/unicode.h
  /usr/include/c++/14/bits/uniform_int_dist.h
+ /usr/include/c++/14/bits/unique_lock.h
  /usr/include/c++/14/bits/unique_ptr.h
  /usr/include/c++/14/bits/unordered_map.h
  /usr/include/c++/14/bits/uses_allocator.h
@@ -1203,6 +1250,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/codecvt
  /usr/include/c++/14/compare
  /usr/include/c++/14/concepts
+ /usr/include/c++/14/condition_variable
  /usr/include/c++/14/cstddef
  /usr/include/c++/14/cstdint
  /usr/include/c++/14/cstdio
@@ -1224,6 +1272,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/filesystem
  /usr/include/c++/14/format
  /usr/include/c++/14/functional
+ /usr/include/c++/14/future
  /usr/include/c++/14/initializer_list
  /usr/include/c++/14/iomanip
  /usr/include/c++/14/ios
@@ -1235,6 +1284,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/locale
  /usr/include/c++/14/map
  /usr/include/c++/14/memory
+ /usr/include/c++/14/mutex
  /usr/include/c++/14/new
  /usr/include/c++/14/numbers
  /usr/include/c++/14/numeric
@@ -1246,10 +1296,12 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/c++/14/pstl/glue_numeric_defs.h
  /usr/include/c++/14/pstl/pstl_config.h
  /usr/include/c++/14/ratio
+ /usr/include/c++/14/semaphore
  /usr/include/c++/14/span
  /usr/include/c++/14/sstream
  /usr/include/c++/14/stdexcept
  /usr/include/c++/14/stdlib.h
+ /usr/include/c++/14/stop_token
  /usr/include/c++/14/streambuf
  /usr/include/c++/14/string
  /usr/include/c++/14/string_view
@@ -1292,6 +1344,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/math.h
  /usr/include/pthread.h
  /usr/include/sched.h
+ /usr/include/semaphore.h
  /usr/include/stdc-predef.h
  /usr/include/stdint.h
  /usr/include/stdio.h
@@ -1337,6 +1390,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/bits/pthreadtypes.h
  /usr/include/x86_64-linux-gnu/bits/sched.h
  /usr/include/x86_64-linux-gnu/bits/select.h
+ /usr/include/x86_64-linux-gnu/bits/semaphore.h
  /usr/include/x86_64-linux-gnu/bits/setjmp.h
  /usr/include/x86_64-linux-gnu/bits/stdint-intn.h
  /usr/include/x86_64-linux-gnu/bits/stdint-least.h
@@ -1415,6 +1469,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QMetaType
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QMimeData
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QObject
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QProcess
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QRect
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QSettings
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QSharedDataPointer
@@ -1423,6 +1478,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QStandardPaths
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QString
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QStringListModel
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/QThread
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QTimer
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QUrl
  /usr/include/x86_64-linux-gnu/qt6/QtCore/QVariant
@@ -1520,6 +1576,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qoverload.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpair.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qpoint.h
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qprocess.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qprocessordetection.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qrect.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qrefcount.h
@@ -1560,6 +1617,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtdeprecationmarkers.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtenvironmentvariables.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtextstream.h
+ /usr/include/x86_64-linux-gnu/qt6/QtCore/qthread.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimer.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtimezone.h
  /usr/include/x86_64-linux-gnu/qt6/QtCore/qtmetamacros.h
@@ -1638,6 +1696,13 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvector2d.h
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qvectornd.h
  /usr/include/x86_64-linux-gnu/qt6/QtGui/qwindowdefs.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/QAudioOutput
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qaudio.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qaudiooutput.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtaudio.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimedia-config.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimediaexports.h
+ /usr/include/x86_64-linux-gnu/qt6/QtMultimedia/qtmultimediaglobal.h
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkAccessManager
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkReply
  /usr/include/x86_64-linux-gnu/qt6/QtNetwork/QNetworkRequest
@@ -1699,6 +1764,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QCompleter
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialog
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDialogButtonBox
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QDockWidget
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFileDialog
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFontComboBox
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QFormLayout
@@ -1713,7 +1779,9 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenu
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMenuBar
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QMessageBox
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QProgressBar
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QPushButton
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QRadioButton
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QScrollArea
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QSpinBox
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/QStatusBar
@@ -1739,6 +1807,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qcompleter.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialog.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdialogbuttonbox.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qdockwidget.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfiledialog.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qfontcombobox.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qformlayout.h
@@ -1755,7 +1824,9 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenu.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmenubar.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qmessagebox.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qprogressbar.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qpushbutton.h
+ /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qradiobutton.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qrubberband.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qscrollarea.h
  /usr/include/x86_64-linux-gnu/qt6/QtWidgets/qsizepolicy.h
@@ -1779,6 +1850,7 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/include/x86_64-linux-gnu/sys/select.h
  /usr/include/x86_64-linux-gnu/sys/single_threaded.h
  /usr/include/x86_64-linux-gnu/sys/syscall.h
+ /usr/include/x86_64-linux-gnu/sys/time.h
  /usr/include/x86_64-linux-gnu/sys/types.h
  /usr/lib/gcc/x86_64-linux-gnu/14/include/limits.h
  /usr/lib/gcc/x86_64-linux-gnu/14/include/stdarg.h
@@ -1794,20 +1866,22 @@ CMakeFiles/onu.dir/main.cpp.o
  /usr/lib/linux/uapi/x86/asm/unistd.h
  /usr/lib/linux/uapi/x86/asm/unistd_64.h
 
-CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o
- /home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_resources.cpp
+CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o
+ /home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp
  /usr/include/stdc-predef.h
 
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o
  /home/user/onu/build/onu_autogen/mocs_compilation.cpp
  /usr/include/stdc-predef.h
 
-bin/onu
+onu
  /lib/x86_64-linux-gnu/libEGL.so.1
+ /lib/x86_64-linux-gnu/libFLAC.so.14
  /lib/x86_64-linux-gnu/libGLdispatch.so.0
  /lib/x86_64-linux-gnu/libLerc.so.4
  /lib/x86_64-linux-gnu/libQt6DBus.so.6
  /lib/x86_64-linux-gnu/libQt6QuickWidgets.so.6
+ /lib/x86_64-linux-gnu/libX11-xcb.so.1
  /lib/x86_64-linux-gnu/libX11.so.6
  /lib/x86_64-linux-gnu/libXau.so.6
  /lib/x86_64-linux-gnu/libXcomposite.so.1
@@ -1819,6 +1893,7 @@ bin/onu
  /lib/x86_64-linux-gnu/libXrender.so.1
  /lib/x86_64-linux-gnu/libXtst.so.6
  /lib/x86_64-linux-gnu/libasound.so.2
+ /lib/x86_64-linux-gnu/libasyncns.so.0
  /lib/x86_64-linux-gnu/libatomic.so.1
  /lib/x86_64-linux-gnu/libb2.so.1
  /lib/x86_64-linux-gnu/libblkid.so.1
@@ -1871,6 +1946,8 @@ bin/onu
  /lib/x86_64-linux-gnu/libmd4c.so.0
  /lib/x86_64-linux-gnu/libminizip.so.1
  /lib/x86_64-linux-gnu/libmount.so.1
+ /lib/x86_64-linux-gnu/libmp3lame.so.0
+ /lib/x86_64-linux-gnu/libmpg123.so.0
  /lib/x86_64-linux-gnu/libmvec.so.1
  /lib/x86_64-linux-gnu/libnettle.so.8
  /lib/x86_64-linux-gnu/libnghttp2.so.14
@@ -1880,6 +1957,7 @@ bin/onu
  /lib/x86_64-linux-gnu/libnspr4.so
  /lib/x86_64-linux-gnu/libnss3.so
  /lib/x86_64-linux-gnu/libnssutil3.so
+ /lib/x86_64-linux-gnu/libogg.so.0
  /lib/x86_64-linux-gnu/libopenjp2.so.7
  /lib/x86_64-linux-gnu/libopus.so.0
  /lib/x86_64-linux-gnu/libp11-kit.so.0
@@ -1890,6 +1968,7 @@ bin/onu
  /lib/x86_64-linux-gnu/libpng16.so.16
  /lib/x86_64-linux-gnu/libproxy.so.1
  /lib/x86_64-linux-gnu/libpsl.so.5
+ /lib/x86_64-linux-gnu/libpulse.so.0
  /lib/x86_64-linux-gnu/libresolv.so.2
  /lib/x86_64-linux-gnu/librtmp.so.1
  /lib/x86_64-linux-gnu/libsasl2.so.2
@@ -1897,12 +1976,15 @@ bin/onu
  /lib/x86_64-linux-gnu/libsharpyuv.so.0
  /lib/x86_64-linux-gnu/libsmime3.so
  /lib/x86_64-linux-gnu/libsnappy.so.1
+ /lib/x86_64-linux-gnu/libsndfile.so.1
  /lib/x86_64-linux-gnu/libssh2.so.1
  /lib/x86_64-linux-gnu/libssl.so.3
  /lib/x86_64-linux-gnu/libsystemd.so.0
  /lib/x86_64-linux-gnu/libtasn1.so.6
  /lib/x86_64-linux-gnu/libtiff.so.6
  /lib/x86_64-linux-gnu/libunistring.so.5
+ /lib/x86_64-linux-gnu/libvorbis.so.0
+ /lib/x86_64-linux-gnu/libvorbisenc.so.2
  /lib/x86_64-linux-gnu/libwebp.so.7
  /lib/x86_64-linux-gnu/libwebpdemux.so.2
  /lib/x86_64-linux-gnu/libwebpmux.so.3
@@ -1927,6 +2009,7 @@ bin/onu
  /usr/lib/x86_64-linux-gnu/libOpenGL.so
  /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.8.2
  /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.8.2
+ /usr/lib/x86_64-linux-gnu/libQt6Multimedia.so.6.8.2
  /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.8.2
  /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.8.2
  /usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2
@@ -1943,7 +2026,8 @@ bin/onu
  /usr/lib/x86_64-linux-gnu/libc_nonshared.a
  /usr/lib/x86_64-linux-gnu/libproxy.so.1
  /usr/lib/x86_64-linux-gnu/libproxy/libpxbackend-1.0.so
- /home/user/onu/build/CMakeFiles/onu.dir/main.cpp.o
- /home/user/onu/build/CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o
+ /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so
+ /home/user/onu/build/CMakeFiles/onu.dir/onu.cpp.o
+ /home/user/onu/build/CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o
  /home/user/onu/build/CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o
 

@@ -76,6 +76,7 @@ preinstall:
 
 # The main recursive "clean" target.
 clean: CMakeFiles/onu.dir/clean
+clean: CMakeFiles/run.dir/clean
 clean: CMakeFiles/onu_autogen_timestamp_deps.dir/clean
 clean: CMakeFiles/onu_autogen.dir/clean
 .PHONY : clean
@@ -112,6 +113,38 @@ CMakeFiles/onu.dir/codegen: CMakeFiles/onu_autogen_timestamp_deps.dir/all
 CMakeFiles/onu.dir/clean:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/clean
 .PHONY : CMakeFiles/onu.dir/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/run.dir
+
+# All Build rule for target.
+CMakeFiles/run.dir/all: CMakeFiles/onu.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/user/onu/build/CMakeFiles --progress-num= "Built target run"
+.PHONY : CMakeFiles/run.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/run.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/user/onu/build/CMakeFiles 7
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/run.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/user/onu/build/CMakeFiles 0
+.PHONY : CMakeFiles/run.dir/rule
+
+# Convenience name for target.
+run: CMakeFiles/run.dir/rule
+.PHONY : run
+
+# codegen rule for target.
+CMakeFiles/run.dir/codegen: CMakeFiles/onu.dir/all
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/codegen
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/user/onu/build/CMakeFiles --progress-num= "Finished codegen for target run"
+.PHONY : CMakeFiles/run.dir/codegen
+
+# clean rule for target.
+CMakeFiles/run.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/clean
+.PHONY : CMakeFiles/run.dir/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/onu_autogen_timestamp_deps.dir

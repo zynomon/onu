@@ -195,6 +195,19 @@ onu/fast:
 .PHONY : onu/fast
 
 #=============================================================================
+# Target rules for targets named run
+
+# Build rule for target.
+run: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 run
+.PHONY : run
+
+# fast build rule for target.
+run/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/run.dir/build.make CMakeFiles/run.dir/build
+.PHONY : run/fast
+
+#=============================================================================
 # Target rules for targets named onu_autogen_timestamp_deps
 
 # Build rule for target.
@@ -220,53 +233,53 @@ onu_autogen/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu_autogen.dir/build.make CMakeFiles/onu_autogen.dir/build
 .PHONY : onu_autogen/fast
 
-main.o: main.cpp.o
-.PHONY : main.o
+onu.o: onu.cpp.o
+.PHONY : onu.o
 
 # target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/main.cpp.o
-.PHONY : main.cpp.o
+onu.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu.cpp.o
+.PHONY : onu.cpp.o
 
-main.i: main.cpp.i
-.PHONY : main.i
+onu.i: onu.cpp.i
+.PHONY : onu.i
 
 # target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/main.cpp.i
-.PHONY : main.cpp.i
+onu.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu.cpp.i
+.PHONY : onu.cpp.i
 
-main.s: main.cpp.s
-.PHONY : main.s
+onu.s: onu.cpp.s
+.PHONY : onu.s
 
 # target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/main.cpp.s
-.PHONY : main.cpp.s
+onu.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu.cpp.s
+.PHONY : onu.cpp.s
 
-onu_autogen/EWIEGA46WW/qrc_resources.o: onu_autogen/EWIEGA46WW/qrc_resources.cpp.o
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.o
+onu_autogen/EWIEGA46WW/qrc_files.o: onu_autogen/EWIEGA46WW/qrc_files.cpp.o
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.o
 
 # target to build an object file
-onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.cpp.o
+onu_autogen/EWIEGA46WW/qrc_files.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.cpp.o
 
-onu_autogen/EWIEGA46WW/qrc_resources.i: onu_autogen/EWIEGA46WW/qrc_resources.cpp.i
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.i
+onu_autogen/EWIEGA46WW/qrc_files.i: onu_autogen/EWIEGA46WW/qrc_files.cpp.i
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.i
 
 # target to preprocess a source file
-onu_autogen/EWIEGA46WW/qrc_resources.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.i
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.cpp.i
+onu_autogen/EWIEGA46WW/qrc_files.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.i
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.cpp.i
 
-onu_autogen/EWIEGA46WW/qrc_resources.s: onu_autogen/EWIEGA46WW/qrc_resources.cpp.s
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.s
+onu_autogen/EWIEGA46WW/qrc_files.s: onu_autogen/EWIEGA46WW/qrc_files.cpp.s
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.s
 
 # target to generate assembly for a file
-onu_autogen/EWIEGA46WW/qrc_resources.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.s
-.PHONY : onu_autogen/EWIEGA46WW/qrc_resources.cpp.s
+onu_autogen/EWIEGA46WW/qrc_files.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/onu.dir/build.make CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.s
+.PHONY : onu_autogen/EWIEGA46WW/qrc_files.cpp.s
 
 onu_autogen/mocs_compilation.o: onu_autogen/mocs_compilation.cpp.o
 .PHONY : onu_autogen/mocs_compilation.o
@@ -308,13 +321,14 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... onu_autogen"
 	@echo "... onu_autogen_timestamp_deps"
+	@echo "... run"
 	@echo "... onu"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
-	@echo "... onu_autogen/EWIEGA46WW/qrc_resources.o"
-	@echo "... onu_autogen/EWIEGA46WW/qrc_resources.i"
-	@echo "... onu_autogen/EWIEGA46WW/qrc_resources.s"
+	@echo "... onu.o"
+	@echo "... onu.i"
+	@echo "... onu.s"
+	@echo "... onu_autogen/EWIEGA46WW/qrc_files.o"
+	@echo "... onu_autogen/EWIEGA46WW/qrc_files.i"
+	@echo "... onu_autogen/EWIEGA46WW/qrc_files.s"
 	@echo "... onu_autogen/mocs_compilation.o"
 	@echo "... onu_autogen/mocs_compilation.i"
 	@echo "... onu_autogen/mocs_compilation.s"

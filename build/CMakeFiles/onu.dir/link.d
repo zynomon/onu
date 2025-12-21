@@ -1,14 +1,15 @@
-bin/onu: \
+onu: \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/Scrt1.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/../../../x86_64-linux-gnu/crti.o \
   /usr/lib/gcc/x86_64-linux-gnu/14/crtbeginS.o \
   CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o \
-  CMakeFiles/onu.dir/main.cpp.o \
-  CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o \
+  CMakeFiles/onu.dir/onu.cpp.o \
+  CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o \
   /usr/lib/x86_64-linux-gnu/libQt6WebEngineWidgets.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6WebEngineCore.so.6.8.2 \
-  /usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2 \
+  /usr/lib/x86_64-linux-gnu/libQt6Multimedia.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2 \
+  /usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6PrintSupport.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Widgets.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Quick.so.6.8.2 \
@@ -16,10 +17,10 @@ bin/onu: \
   /usr/lib/x86_64-linux-gnu/libQt6QmlWorkerScript.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6QmlModels.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.8.2 \
+  /usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libGLX.so \
   /usr/lib/x86_64-linux-gnu/libOpenGL.so \
-  /usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.8.2 \
   /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.8.2 \
   /usr/lib/gcc/x86_64-linux-gnu/14/libstdc++.so \
@@ -92,9 +93,10 @@ bin/onu: \
   /usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2 \
   /lib/x86_64-linux-gnu/libm.so.6 \
   /lib64/ld-linux-x86-64.so.2 \
+  /lib/x86_64-linux-gnu/libQt6DBus.so.6 \
+  /lib/x86_64-linux-gnu/libpulse.so.0 \
   /lib/x86_64-linux-gnu/libEGL.so.1 \
   /lib/x86_64-linux-gnu/libglib-2.0.so.0 \
-  /lib/x86_64-linux-gnu/libQt6DBus.so.6 \
   /usr/lib/x86_64-linux-gnu/libGLX.so \
   /usr/lib/x86_64-linux-gnu/libOpenGL.so \
   /lib/x86_64-linux-gnu/libmd4c.so.0 \
@@ -127,6 +129,7 @@ bin/onu: \
   /lib/x86_64-linux-gnu/libLerc.so.4 \
   /lib/x86_64-linux-gnu/libjbig.so.0 \
   /lib/x86_64-linux-gnu/libdeflate.so.0 \
+  /usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so \
   /lib/x86_64-linux-gnu/libGLdispatch.so.0 \
   /lib/x86_64-linux-gnu/libatomic.so.1 \
   /lib/x86_64-linux-gnu/libpcre2-8.so.0 \
@@ -141,12 +144,21 @@ bin/onu: \
   /lib/x86_64-linux-gnu/libgomp.so.1 \
   /usr/lib/x86_64-linux-gnu/libQt6QmlWorkerScript.so.6.8.2 \
   /lib/x86_64-linux-gnu/libcap.so.2 \
+  /lib/x86_64-linux-gnu/libsndfile.so.1 \
+  /lib/x86_64-linux-gnu/libX11-xcb.so.1 \
+  /lib/x86_64-linux-gnu/libasyncns.so.0 \
   /lib/x86_64-linux-gnu/libkeyutils.so.1 \
   /lib/x86_64-linux-gnu/libresolv.so.2 \
   /lib/x86_64-linux-gnu/libcurl-gnutls.so.4 \
   /lib/x86_64-linux-gnu/libgio-2.0.so.0 \
   /lib/x86_64-linux-gnu/libduktape.so.207 \
   /lib/x86_64-linux-gnu/libffi.so.8 \
+  /lib/x86_64-linux-gnu/libFLAC.so.14 \
+  /lib/x86_64-linux-gnu/libvorbis.so.0 \
+  /lib/x86_64-linux-gnu/libvorbisenc.so.2 \
+  /lib/x86_64-linux-gnu/libogg.so.0 \
+  /lib/x86_64-linux-gnu/libmpg123.so.0 \
+  /lib/x86_64-linux-gnu/libmp3lame.so.0 \
   /lib/x86_64-linux-gnu/libnghttp3.so.9 \
   /lib/x86_64-linux-gnu/libngtcp2_crypto_gnutls.so.8 \
   /lib/x86_64-linux-gnu/libngtcp2.so.16 \
@@ -180,17 +192,19 @@ bin/onu: \
 
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o:
 
-CMakeFiles/onu.dir/main.cpp.o:
+CMakeFiles/onu.dir/onu.cpp.o:
 
-CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
+CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o:
 
 /usr/lib/x86_64-linux-gnu/libQt6WebEngineWidgets.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libQt6WebEngineCore.so.6.8.2:
 
-/usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2:
+/usr/lib/x86_64-linux-gnu/libQt6Multimedia.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libQt6WebChannel.so.6.8.2:
+
+/usr/lib/x86_64-linux-gnu/libQt6Positioning.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libQt6PrintSupport.so.6.8.2:
 
@@ -206,13 +220,13 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 
 /usr/lib/x86_64-linux-gnu/libQt6OpenGL.so.6.8.2:
 
+/usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2:
+
 /usr/lib/x86_64-linux-gnu/libQt6Gui.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libGLX.so:
 
 /usr/lib/x86_64-linux-gnu/libOpenGL.so:
-
-/usr/lib/x86_64-linux-gnu/libQt6Qml.so.6.8.2:
 
 /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.8.2:
 
@@ -358,11 +372,13 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 
 /lib64/ld-linux-x86-64.so.2:
 
+/lib/x86_64-linux-gnu/libQt6DBus.so.6:
+
+/lib/x86_64-linux-gnu/libpulse.so.0:
+
 /lib/x86_64-linux-gnu/libEGL.so.1:
 
 /lib/x86_64-linux-gnu/libglib-2.0.so.0:
-
-/lib/x86_64-linux-gnu/libQt6DBus.so.6:
 
 /usr/lib/x86_64-linux-gnu/libGLX.so:
 
@@ -428,6 +444,8 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 
 /lib/x86_64-linux-gnu/libdeflate.so.0:
 
+/usr/lib/x86_64-linux-gnu/pulseaudio/libpulsecommon-17.0.so:
+
 /lib/x86_64-linux-gnu/libGLdispatch.so.0:
 
 /lib/x86_64-linux-gnu/libatomic.so.1:
@@ -456,6 +474,12 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 
 /lib/x86_64-linux-gnu/libcap.so.2:
 
+/lib/x86_64-linux-gnu/libsndfile.so.1:
+
+/lib/x86_64-linux-gnu/libX11-xcb.so.1:
+
+/lib/x86_64-linux-gnu/libasyncns.so.0:
+
 /lib/x86_64-linux-gnu/libkeyutils.so.1:
 
 /lib/x86_64-linux-gnu/libresolv.so.2:
@@ -467,6 +491,18 @@ CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_resources.cpp.o:
 /lib/x86_64-linux-gnu/libduktape.so.207:
 
 /lib/x86_64-linux-gnu/libffi.so.8:
+
+/lib/x86_64-linux-gnu/libFLAC.so.14:
+
+/lib/x86_64-linux-gnu/libvorbis.so.0:
+
+/lib/x86_64-linux-gnu/libvorbisenc.so.2:
+
+/lib/x86_64-linux-gnu/libogg.so.0:
+
+/lib/x86_64-linux-gnu/libmpg123.so.0:
+
+/lib/x86_64-linux-gnu/libmp3lame.so.0:
 
 /lib/x86_64-linux-gnu/libnghttp3.so.9:
 

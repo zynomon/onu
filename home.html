@@ -3,525 +3,445 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>home</title>
+  <title>Home</title>
   <style>
+    :root {
+      /* Dynamic Accent - Saved to LocalStorage */
+      --accent-color: #a78bfa;
+      --bg: #09090b;
+      --card-bg: rgba(24, 24, 27, 0.6);
+      --text-main: #fafafa;
+      --text-dim: #a1a1aa;
+      --border: rgba(255, 255, 255, 0.1);
+      --glass: blur(20px);
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* 1. GLOBAL SELECTION PREVENTION */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      outline: none;
+    }
+
+    /* 2. ALLOW SELECTION ONLY IN INPUTS */
+    input, textarea, .search-input, .form-input {
+      -webkit-user-select: text;
+      -ms-user-select: text;
+      user-select: text;
+      cursor: text;
     }
 
     body {
-      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, monospace;
-       background: radial-gradient(circle at center, #0f0f3f, #000000);
-      color: #e4e4e7;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--bg);
+      /* Background glow based on accent color */
+      background-image:
+        radial-gradient(circle at 50% -20%, var(--accent-color)22 0%, transparent 50%),
+        radial-gradient(circle at 0% 100%, #111119 0%, transparent 40%);
+      color: var(--text-main);
       min-height: 100vh;
-      line-height: 1.4;
-      user-select: none;
-    }
-
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 24px;
-      min-height: 100vh;
-    }
-
-    .header {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 48px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #27272a;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background-image 0.5s ease;
     }
 
-    .system-info {
-      font-size: 13px;
-      color: #71717a;
+    /* Hero Clock Section */
+    .hero {
+      text-align: center;
+      margin: 12vh 0 4vh;
+    }
+
+    #timeDisplay {
+      font-size: 6.5rem;
+      font-weight: 800;
+      letter-spacing: -4px;
+      margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+      background: linear-gradient(to bottom, #fff, var(--text-dim));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    #currentDate {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
       font-weight: 500;
     }
 
-    .time-display {
-      font-size: 13px;
-      color: #a1a1aa;
-      font-weight: 400;
+    .container {
+      max-width: 850px;
+      margin: 0 auto;
+      padding: 0 24px 120px;
+      width: 100%;
     }
 
+    /* Search Bar Focus Style */
     .search-section {
-      margin-bottom: 56px;
+      margin-bottom: 60px;
+      position: relative;
+      z-index: 10;
     }
 
     .search-container {
-      position: relative;
-      max-width: 680px;
-      margin: 0 auto;
+      background: var(--card-bg);
+      backdrop-filter: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 8px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      transition: var(--transition);
+    }
+
+    .search-container:focus-within {
+      border-color: var(--accent-color);
+      box-shadow: 0 0 30px var(--accent-color)22;
+      transform: translateY(-2px);
     }
 
     .search-input {
       width: 100%;
-      padding: 16px 20px;
-      font-size: 15px;
-      font-family: inherit;
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 6px;
-      color: #e4e4e7;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    .search-input:focus {
-      border-color: #3f3f46;
-      background: #1c1c1e;
+      padding: 18px 28px;
+      font-size: 1.25rem;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
     }
 
     .search-input::placeholder {
-      color: #71717a;
-      user-select: text;
+      color: var(--text-dim);
+      opacity: 0.5;
+      transition: opacity 0.3s ease;
     }
 
     .search-engines {
       display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      justify-content: center;
+      gap: 6px;
+      padding: 6px;
+      border-top: 1px solid var(--border);
     }
 
     .engine-btn {
-      padding: 6px 12px;
-      font-size: 12px;
-      font-family: inherit;
-      background: transparent;
-      border: 1px solid #27272a;
-      border-radius: 4px;
-      color: #a1a1aa;
+      flex: 1;
+      padding: 10px;
+      font-size: 0.75rem;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid transparent;
+      border-radius: 14px;
+      color: var(--text-dim);
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
 
     .engine-btn:hover {
-      border-color: #3f3f46;
-      color: #e4e4e7;
-      background: #18181b;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border-color: var(--border);
     }
 
-    .sections {
-      display: grid;
-      gap: 48px;
-    }
-
-    .section {
-      margin-bottom: 0;
-    }
-
+    /* Bookmarks Grid */
     .section-header {
-      display: flex;
-      justify-content: between;
-      align-items: center;
-      margin-bottom: 16px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #27272a;
+      margin-bottom: 24px;
+      padding-left: 10px;
     }
 
     .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #e4e4e7;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      letter-spacing: 2.5px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    .section-count {
-      font-size: 12px;
-      color: #71717a;
     }
 
     .bookmarks-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 16px;
     }
 
     .bookmark-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px;
-      background: #18181b;
-      border: 1px solid #27272a;
-      border-radius: 6px;
+      background: var(--card-bg);
+      backdrop-filter: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px 16px;
       text-decoration: none;
-      color: inherit;
-      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      transition: var(--transition);
     }
 
     .bookmark-item:hover {
-      background: #1c1c1e;
-      border-color: #3f3f46;
+      transform: translateY(-8px);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--accent-color);
     }
 
-    .bookmark-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 3px;
-      flex-shrink: 0;
-      background: #27272a;
-    }
-
-    .bookmark-content {
-      flex: 1;
-      min-width: 0;
+    .bookmark-emoji {
+      font-size: 2.5rem;
+      filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
     }
 
     .bookmark-title {
-      font-size: 14px;
+      font-size: 0.9rem;
       font-weight: 500;
-      color: #e4e4e7;
-      margin-bottom: 2px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      color: var(--text-main);
     }
 
-    .bookmark-url {
-      font-size: 12px;
-      color: #71717a;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      user-select: text;
-    }
-
-    .add-bookmark {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      padding: 16px;
-      background: transparent;
-      border: 1px dashed #27272a;
-      border-radius: 6px;
-      color: #71717a;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-    }
-
-    .add-bookmark:hover {
-      border-color: #3f3f46;
-      color: #a1a1aa;
-      background: #18181b;
-    }
-
-    .add-icon {
-      font-size: 16px;
-      font-weight: 300;
-    }
-
+    /* Modals */
     .modal {
       display: none;
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.8);
-      z-index: 1000;
-      backdrop-filter: blur(4px);
-    }
-
-    .modal-container {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+      place-items: center;
       padding: 20px;
     }
 
     .modal-content {
-      background: rgba(24, 24, 27, 0.95);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(39, 39, 42, 0.8);
-      border-radius: 8px;
-      padding: 32px;
+      background: #111114;
       width: 100%;
-      max-width: 480px;
+      max-width: 420px;
+      padding: 40px;
+      border-radius: 32px;
+      border: 1px solid var(--border);
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
     }
 
-    .modal-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: #e4e4e7;
-      margin-bottom: 24px;
-    }
-
-    .form-group {
-      margin-bottom: 20px;
-    }
-
-    .form-label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: #a1a1aa;
-      margin-bottom: 6px;
-    }
+    .form-group { margin-bottom: 24px; }
+    .form-label { display: block; font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px; font-weight: 600; }
 
     .form-input {
       width: 100%;
-      padding: 12px 16px;
-      font-size: 14px;
+      padding: 16px;
+      background: #000;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      color: white;
       font-family: inherit;
-      background: #0a0a0a;
-      border: 1px solid #27272a;
-      border-radius: 4px;
-      color: #e4e4e7;
-      outline: none;
-      transition: border-color 0.15s ease;
+      font-size: 1rem;
+      transition: var(--transition);
     }
 
     .form-input:focus {
-      border-color: #3f3f46;
+      border-color: var(--accent-color);
     }
 
-    .form-input::placeholder {
-      color: #52525b;
-    }
-
-    .modal-actions {
+    /* Accent Picker Customization */
+    .color-picker-wrapper {
       display: flex;
-      gap: 12px;
-      justify-content: flex-end;
-      margin-top: 32px;
+      align-items: center;
+      gap: 20px;
     }
 
-    .btn {
-      padding: 10px 16px;
-      font-size: 13px;
-      font-family: inherit;
-      font-weight: 500;
-      border: 1px solid #27272a;
-      border-radius: 4px;
+    input[type="color"] {
+      -webkit-appearance: none;
+      width: 60px;
+      height: 60px;
+      border: none;
+      border-radius: 50%;
       cursor: pointer;
-      transition: all 0.15s ease;
+      background: none;
     }
 
-    .btn-secondary {
-      background: transparent;
-      color: #a1a1aa;
-    }
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: 3px solid var(--border); border-radius: 50%; }
 
-    .btn-secondary:hover {
-      background: #18181b;
-      border-color: #3f3f46;
-      color: #e4e4e7;
-    }
-
-    .btn-primary {
-      background: #e4e4e7;
-      color: #0a0a0a;
-      border-color: #e4e4e7;
-    }
-
-    .btn-primary:hover {
-      background: #d4d4d8;
-      border-color: #d4d4d8;
-    }
-
+    /* Floating Status Bar */
     .status-bar {
       position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 28px;
-      background: #18181b;
-      border-top: 1px solid #27272a;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card-bg);
+      backdrop-filter: var(--glass);
+      padding: 12px 28px;
+      border-radius: 40px;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 16px;
-      font-size: 11px;
-      color: #71717a;
+      gap: 24px;
+      z-index: 50;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
 
-    .status-left {
-      display: flex;
-      gap: 16px;
-    }
-
-    .status-item {
+    .status-btn {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: var(--transition);
       display: flex;
       align-items: center;
-      gap: 4px;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        padding: 16px;
-      }
+    .status-btn:hover { color: var(--accent-color); transform: scale(1.2); }
 
-      .header {
-        margin-bottom: 32px;
-      }
-
-      .search-section {
-        margin-bottom: 40px;
-      }
-
-      .bookmarks-grid {
-        grid-template-columns: 1fr;
-        gap: 8px;
-      }
-
-      .sections {
-        gap: 32px;
-      }
-
-      .status-bar {
-        display: none;
-      }
-    }
-
-    .shortcuts-hint {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      font-size: 11px;
-      color: #0f0f3f;
-      background: #18181b;
-      padding: 8px 12px;
-      border-radius: 4px;
-      border: 1px solid #27272a;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .shortcuts-hint.show {
-      opacity: 1;
+    @media (max-width: 600px) {
+      #timeDisplay { font-size: 4rem; letter-spacing: -2px; }
+      .bookmarks-grid { grid-template-columns: 1fr 1fr; }
+      .container { padding-bottom: 150px; }
     }
   </style>
 </head>
 <body>
-  <div class="shortcuts-hint" id="shortcutsHint">
-    ⌘K Search • ⌘B Add Bookmark • ESC Close
+
+  <!-- Background / Hero -->
+  <div class="hero">
+    <div id="timeDisplay">00:00</div>
+    <div id="currentDate">LOADING...</div>
   </div>
 
   <div class="container">
-    <header class="header">
-      <div class="system-info">onu-home</div>
-      <div class="time-display" id="timeDisplay">--:--</div>
-    </header>
-
+    <!-- Search -->
     <section class="search-section">
       <div class="search-container">
         <input
           type="text"
           class="search-input"
           id="searchInput"
-          placeholder="Search or enter address"
+          placeholder="Ready?"
           autocomplete="off"
           spellcheck="false"
         />
         <div class="search-engines">
-          <button class="engine-btn" onclick="search('google')">Google</button>
-          <button class="engine-btn" onclick="search('duckduckgo')">DuckDuckGo</button>
-          <button class="engine-btn" onclick="search('github')">GitHub</button>
-          <button class="engine-btn" onclick="search('youtube')">YouTube</button>
+          <button class="engine-btn" onclick="search('google')">🌐 Google</button>
+          <button class="engine-btn" onclick="search('ecosia')">🌱 Ecosia</button>
+          <button class="engine-btn" onclick="search('github')">🐙 GitHub</button>
+          <button class="engine-btn" onclick="search('youtube')">📺 YouTube</button>
+          <button class="engine-btn" onclick="search('duckduckgo')">🦆 DuckDuck</button>
         </div>
       </div>
     </section>
 
+    <!-- Bookmarks -->
     <div class="sections">
-      <section class="section">
-        <div class="section-header">
-          <div class="section-title">Quick Access  .</div>
-          <div class="section-count" id="bookmarkCount">0 items</div>
-        </div>
-        <div class="bookmarks-grid" id="bookmarksGrid">
-          <!-- Bookmarks will be populated here -->
-        </div>
-      </section>
+      <div class="section-header">
+        <div class="section-title">Quick Access</div>
+      </div>
+      <div class="bookmarks-grid" id="bookmarksGrid">
+        <!-- JS Managed -->
+      </div>
     </div>
   </div>
 
+  <!-- Bookmark Add Modal -->
   <div class="modal" id="addBookmarkModal">
-    <div class="modal-container">
-      <div class="modal-content">
-        <div class="modal-title">Add Bookmark</div>
-        <div class="form-group">
-          <label class="form-label" for="bookmarkTitle">Title</label>
-          <input
-            type="text"
-            class="form-input"
-            id="bookmarkTitle"
-            placeholder="Enter title"
-            autocomplete="off"
-          />
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="bookmarkUrl">URL</label>
-          <input
-            type="text"
-            class="form-input"
-            id="bookmarkUrl"
-            placeholder="https://example.com"
-            autocomplete="off"
-          />
-        </div>
-        <div class="modal-actions">
-          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-          <button class="btn btn-primary" onclick="saveBookmark()">Add</button>
+    <div class="modal-content">
+      <h2 style="margin-bottom: 24px; font-weight: 800;">✨ Add Shortcut</h2>
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" id="bmTitle" class="form-input" placeholder="e.g. GitHub">
+      </div>
+      <div class="form-group">
+        <label class="form-label">URL</label>
+        <input type="text" id="bmUrl" class="form-input" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Emoji Icon</label>
+        <input type="text" id="bmEmoji" class="form-input" placeholder="🐙">
+      </div>
+      <div style="display: flex; gap: 12px">
+        <button class="engine-btn" onclick="closeModals()" style="flex:1">Cancel</button>
+        <button class="engine-btn" onclick="saveBookmark()" style="flex:2; background: var(--accent-color); color: black; font-weight: bold; border: none;">Save Bookmark</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accent Color Modal -->
+  <div class="modal" id="accentModal">
+    <div class="modal-content">
+      <h2 style="margin-bottom: 24px; font-weight: 800;">🎨 Theme Settings</h2>
+      <div class="form-group">
+        <label class="form-label">Pick your Accent Color</label>
+        <div class="color-picker-wrapper">
+          <input type="color" id="accentPicker">
+          <span id="colorHex" style="font-family: monospace; font-size: 1.2rem; color: var(--accent-color);">#a78bfa</span>
         </div>
       </div>
+      <p style="font-size: 0.75rem; color: var(--text-dim); line-height: 1.5;">This color will be used for glows, borders, and highlights across your dashboard.</p>
+      <button class="engine-btn" onclick="closeModals()" style="width: 100%; margin-top: 30px; padding: 15px;">Done</button>
     </div>
   </div>
 
   <div class="status-bar">
-    <div class="status-left">
-      <div class="status-item">
-        <span id="bookmarkTotal">0</span>
-        <span>bookmarks</span>
-      </div>
-      <div class="status-item">
-        <span>Ready</span>
-      </div>
-    </div>
-    <div class="status-right">
-      <span id="currentDate">Loading...</span>
-    </div>
+    <span id="bookmarkCount" style="font-weight: 600;">0 Bookmarks</span>
+    <span style="opacity: 0.3">|</span>
+    <button class="status-btn" onclick="openAccentModal()" title="Customize Theme">🎨</button>
+    <button class="status-btn" onclick="openBookmarkModal()" title="New Bookmark">➕</button>
   </div>
 
   <script>
-    // System bookmarks - clean, focused selection
     const defaultBookmarks = [
-      { title: 'Gmail', url: 'https://mail.google.com', icon: 'https://ssl.gstatic.com/ui/v1/icons/mail/rfr/gmail.ico' },
-      { title: 'GitHub', url: 'https://github.com', icon: 'https://366icons.com/media/01/github-website-marketing-icon-477.svg' },
-      { title: 'Discord', url: 'https://discord.com/app', icon: 'https://366icons.com/media/02/discord-social-network-communication-icon-19939.svg' },
-      { title: 'YouTube', url: 'https://youtube.com', icon: 'https://youtube.com/favicon.ico' },
-      { title: 'Reddit', url: 'https://reddit.com', icon: 'https://www.redditstatic.com/desktop2x/img/favicon/favicon-32x32.png' },
-      { title: 'Twitter', url: 'https://twitter.com', icon: 'https://abs.twimg.com/favicons/twitter.2.ico' }
+      { title: 'GitHub', url: 'https://github.com', emoji: '🐙' },
+      { title: 'YouTube', url: 'https://youtube.com', emoji: '📺' },
+      { title: 'Email', url: 'https://mail.proton.com', emoji: '✉️' },
+      { title: 'Reddit', url: 'https://reddit.com', emoji: '🧡' },
     ];
 
-    let bookmarks = JSON.parse(localStorage.getItem('systemBookmarks')) || defaultBookmarks;
+    let bookmarks = JSON.parse(localStorage.getItem('focus-bookmarks')) || defaultBookmarks;
+    let accent = localStorage.getItem('focus-accent-color') || '#a78bfa';
+
+    // --- Dynamic Placeholder Function ---
+    function updateGreeting() {
+      const hour = new Date().getHours();
+      const searchInput = document.getElementById('searchInput');
+
+      // Time-based greetings
+      let greeting;
+      if (hour >= 0 && hour < 5) {
+        greeting = "I'm curious about what are you gonna type in at this late night?";
+      } else if (hour >= 5 && hour < 8) {
+        greeting = "Early bird searching? ";
+      } else if (hour >= 8 && hour < 12) {
+        greeting = "Good morning! Have you grabbed your coffee?";
+      } else if (hour >= 12 && hour < 14) {
+        greeting = "Have you eaten anything yet?";
+      } else if (hour >= 14 && hour < 17) {
+        greeting = "Type to search..";
+      } else if (hour >= 17 && hour < 20) {
+        greeting = "You should get fresh! the day was maybe overwhelming..";
+      } else {
+        greeting = "What's up night owl? what's your command?";
+      }
+
+      searchInput.placeholder = greeting;
+    }
+
+    // --- Core UI Functions ---
+    function updateTheme(color) {
+      accent = color;
+      document.documentElement.style.setProperty('--accent-color', color);
+      document.getElementById('colorHex').textContent = color.toUpperCase();
+      document.getElementById('accentPicker').value = color;
+      localStorage.setItem('focus-accent-color', color);
+    }
 
     function updateTime() {
       const now = new Date();
-      const timeString = now.toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
+      document.getElementById('timeDisplay').textContent = now.toLocaleTimeString('en-US', {
+        hour: '2-digit', minute: '2-digit', hour12: false
       });
-      const dateString = now.toLocaleDateString('en-US', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
+      document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', {
+        weekday: 'long', month: 'short', day: 'numeric'
       });
-
-      document.getElementById('timeDisplay').textContent = timeString;
-      document.getElementById('currentDate').textContent = dateString;
     }
 
     function search(engine = 'google') {
@@ -529,193 +449,101 @@
       if (!query) return;
 
       const urls = {
-        google: `https://www.google.com/search?q=${encodeURIComponent(query)}`,
-        duckduckgo: `https://duckduckgo.com/?q=${encodeURIComponent(query)}`,
-        github: `https://github.com/search?q=${encodeURIComponent(query)}`,
-        youtube: `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`
+        google: `https://google.com/search?q=`,
+        ecosia: `https://ecosia.org/search?q=`,
+        github: `https://github.com/search?q=`,
+        youtube: `https://youtube.com/results?search_query=`,
+        duckduckgo: `https://duckduckgo.com/?q=`
       };
 
-      // Check if it's a URL
       if (query.includes('.') && !query.includes(' ')) {
-        let url = query;
-        if (!url.startsWith('http://') && !url.startsWith('https://')) {
-          url = 'https://' + url;
-        }
-        window.open(url, '_blank');
+        window.location.href = query.startsWith('http') ? query : 'https://' + query;
       } else {
-        window.open(urls[engine] || urls.google, '_blank');
+        window.location.href = urls[engine] + encodeURIComponent(query);
       }
     }
 
     function renderBookmarks() {
       const grid = document.getElementById('bookmarksGrid');
-      const count = document.getElementById('bookmarkCount');
-      const total = document.getElementById('bookmarkTotal');
-
       grid.innerHTML = '';
-
-      bookmarks.forEach(bookmark => {
+      bookmarks.forEach((bm) => {
         const item = document.createElement('a');
         item.className = 'bookmark-item';
-        item.href = bookmark.url;
-        item.target = '_blank';
-
+        item.href = bm.url;
         item.innerHTML = `
-          <img class="bookmark-icon" src="${bookmark.icon}" alt="" on
-          error="this.style.display='none'">
-          <div class="bookmark-content">
-            <div class="bookmark-title">${bookmark.title}</div>
-            <div class="bookmark-url">${new URL(bookmark.url).hostname}</div>
-          </div>
+          <span class="bookmark-emoji">${bm.emoji || '🔗'}</span>
+          <span class="bookmark-title">${bm.title}</span>
         `;
-
         grid.appendChild(item);
       });
-
-      // Add bookmark button
-      const addBtn = document.createElement('div');
-      addBtn.className = 'add-bookmark';
-      addBtn.onclick = openModal;
-      addBtn.innerHTML = `
-        <span class="add-icon">+</span>
-        <span>Add bookmark</span>
-      `;
-      grid.appendChild(addBtn);
-
-      count.textContent = `${bookmarks.length} items`;
-      total.textContent = bookmarks.length;
+      document.getElementById('bookmarkCount').textContent = `${bookmarks.length} Bookmarks`;
     }
 
-    function openModal() {
-      document.getElementById('addBookmarkModal').style.display = 'block';
-      setTimeout(() => document.getElementById('bookmarkTitle').focus(), 100);
-    }
-
-    function closeModal() {
-      document.getElementById('addBookmarkModal').style.display = 'none';
-      document.getElementById('bookmarkTitle').value = '';
-      document.getElementById('bookmarkUrl').value = '';
+    // --- Modal Management ---
+    function openBookmarkModal() { document.getElementById('addBookmarkModal').style.display = 'grid'; }
+    function openAccentModal() { document.getElementById('accentModal').style.display = 'grid'; }
+    function closeModals() {
+      document.querySelectorAll('.modal').forEach(m => m.style.display = 'none');
     }
 
     function saveBookmark() {
-      const title = document.getElementById('bookmarkTitle').value.trim();
-      const url = document.getElementById('bookmarkUrl').value.trim();
-
-      if (!title || !url) return;
-
-      let finalUrl = url;
-      if (!url.startsWith('http://') && !url.startsWith('https://')) {
-        finalUrl = 'https://' + url;
+      const title = document.getElementById('bmTitle').value;
+      const url = document.getElementById('bmUrl').value;
+      const emoji = document.getElementById('bmEmoji').value;
+      if (title && url) {
+        bookmarks.push({ title, url, emoji });
+        localStorage.setItem('focus-bookmarks', JSON.stringify(bookmarks));
+        renderBookmarks();
+        closeModals();
+        // Clear fields
+        document.getElementById('bmTitle').value = '';
+        document.getElementById('bmUrl').value = '';
+        document.getElementById('bmEmoji').value = '';
       }
-
-      bookmarks.push({
-        title,
-        url: finalUrl,
-        icon: `https://www.google.com/s2/favicons?domain=${finalUrl}&sz=32`
-      });
-
-      localStorage.setItem('systemBookmarks', JSON.stringify(bookmarks));
-      renderBookmarks();
-      closeModal();
     }
 
-    // Event listeners
-    document.getElementById('searchInput').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') search();
-    });
+    // --- Typing & Keyboard Logic ---
+    document.addEventListener('keydown', (e) => {
+      const searchBox = document.getElementById('searchInput');
 
-    // Global typing to search functionality
-    let typingBuffer = '';
-    let typingTimeout;
-
-    document.addEventListener('keydown', function(e) {
-      const searchInput = document.getElementById('searchInput');
-      const modal = document.getElementById('addBookmarkModal');
-
-      // Skip if modal is open or if typing in form fields
-      if (modal.style.display === 'block' ||
-          e.target.tagName === 'INPUT' ||
-          e.target.tagName === 'TEXTAREA') {
+      // 1. If a modal is open, ignore global typing (allow typing in modal inputs)
+      const isModalOpen = Array.from(document.querySelectorAll('.modal')).some(m => m.style.display === 'grid');
+      if (isModalOpen) {
+        if (e.key === 'Escape') closeModals();
         return;
       }
 
-      // Handle shortcuts
-      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
-        e.preventDefault();
-        searchInput.focus();
+      // 2. If already in an input, don't intercept (just handle Enter)
+      if (e.target.tagName === 'INPUT') {
+        if (e.key === 'Enter') search();
+        if (e.key === 'Escape') searchBox.blur();
         return;
       }
 
-      if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
-        e.preventDefault();
-        openModal();
-        return;
-      }
-
-      if (e.key === 'Escape') {
-        closeModal();
-        searchInput.blur();
-        return;
-      }
-
-      // Handle typing for search
+      // 3. Global Intercept: If user types a single character, focus search
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        e.preventDefault();
-
-        // Clear previous timeout
-        clearTimeout(typingTimeout);
-
-        // Add character to buffer
-        typingBuffer += e.key;
-
-        // Update search input
-        searchInput.value = typingBuffer;
-        searchInput.focus();
-
-        // Clear buffer after 2 seconds of no typing
-        typingTimeout = setTimeout(() => {
-          typingBuffer = '';
-        }, 2000);
-      }
-
-      // Handle backspace when typing
-      if (e.key === 'Backspace' && typingBuffer && document.activeElement !== searchInput) {
-        e.preventDefault();
-        typingBuffer = typingBuffer.slice(0, -1);
-        searchInput.value = typingBuffer;
-        searchInput.focus();
-
-        clearTimeout(typingTimeout);
-        typingTimeout = setTimeout(() => {
-          typingBuffer = '';
-        }, 2000);
-      }
-
-      // Show shortcuts hint
-      if (e.ctrlKey || e.metaKey) {
-        document.getElementById('shortcutsHint').classList.add('show');
+        searchBox.focus();
+        // The character will be added automatically because focus happens before keyup
       }
     });
 
-    // Sync typing buffer with search input
-    document.getElementById('searchInput').addEventListener('input', function(e) {
-      typingBuffer = e.target.value;
-    });
+    // --- Listeners ---
+    document.getElementById('accentPicker').addEventListener('input', (e) => updateTheme(e.target.value));
 
-    document.addEventListener('keyup', function(e) {
-      if (!e.ctrlKey && !e.metaKey) {
-        document.getElementById('shortcutsHint').classList.remove('show');
-      }
-    });
+    // Close modal when clicking on the background backdrop
+    window.onclick = (e) => {
+      if (e.target.classList.contains('modal')) closeModals();
+    };
 
-    // Modal click outside
-    document.getElementById('addBookmarkModal').addEventListener('click', function(e) {
-      if (e.target === this) closeModal();
-    });
-
-    // Initialize
-    updateTime();
+    // --- Initialization ---
+    updateTheme(accent);
     setInterval(updateTime, 1000);
+    updateTime();
+    updateGreeting(); // Set initial greeting
     renderBookmarks();
+
+    // Update greeting every minute to catch time transitions
+    setInterval(updateGreeting, 60000);
   </script>
 </body>
+</html>
