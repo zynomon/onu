@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/onu
+CMAKE_SOURCE_DIR = /media/Documents/GitHub/onu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/onu/build
+CMAKE_BINARY_DIR = /media/Documents/GitHub/onu/build
 
 # Include any dependencies generated for this target.
 include CMakeFiles/onu.dir/depend.make
@@ -72,18 +72,18 @@ include CMakeFiles/onu.dir/flags.make
 onu_autogen/timestamp: /usr/lib/qt6/libexec/moc
 onu_autogen/timestamp: /usr/lib/qt6/libexec/uic
 onu_autogen/timestamp: CMakeFiles/onu.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target onu"
-	/usr/bin/cmake -E cmake_autogen /home/user/onu/build/CMakeFiles/onu_autogen.dir/AutogenInfo.json ""
-	/usr/bin/cmake -E touch /home/user/onu/build/onu_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target onu"
+	/usr/bin/cmake -E cmake_autogen /media/Documents/GitHub/onu/build/CMakeFiles/onu_autogen.dir/AutogenInfo.json ""
+	/usr/bin/cmake -E touch /media/Documents/GitHub/onu/build/onu_autogen/timestamp
 
-onu_autogen/EWIEGA46WW/qrc_files.cpp: /home/user/onu/files.qrc
+onu_autogen/EWIEGA46WW/qrc_files.cpp: /media/Documents/GitHub/onu/files.qrc
 onu_autogen/EWIEGA46WW/qrc_files.cpp: CMakeFiles/onu_autogen.dir/AutoRcc_files_EWIEGA46WW_Info.json
-onu_autogen/EWIEGA46WW/qrc_files.cpp: /home/user/onu/game.html
-onu_autogen/EWIEGA46WW/qrc_files.cpp: /home/user/onu/home.html
+onu_autogen/EWIEGA46WW/qrc_files.cpp: /media/Documents/GitHub/onu/game.html
+onu_autogen/EWIEGA46WW/qrc_files.cpp: /media/Documents/GitHub/onu/home.html
 onu_autogen/EWIEGA46WW/qrc_files.cpp: /usr/lib/qt6/libexec/rcc
 onu_autogen/EWIEGA46WW/qrc_files.cpp: /usr/lib/qt6/libexec/rcc
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for files.qrc"
-	/usr/bin/cmake -E cmake_autorcc /home/user/onu/build/CMakeFiles/onu_autogen.dir/AutoRcc_files_EWIEGA46WW_Info.json 
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Automatic RCC for files.qrc"
+	/usr/bin/cmake -E cmake_autorcc /media/Documents/GitHub/onu/build/CMakeFiles/onu_autogen.dir/AutoRcc_files_EWIEGA46WW_Info.json 
 
 CMakeFiles/onu.dir/codegen:
 .PHONY : CMakeFiles/onu.dir/codegen
@@ -91,44 +91,44 @@ CMakeFiles/onu.dir/codegen:
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o: CMakeFiles/onu.dir/flags.make
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o: onu_autogen/mocs_compilation.cpp
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o: CMakeFiles/onu.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o -MF CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o -c /home/user/onu/build/onu_autogen/mocs_compilation.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o -MF CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.o -c /media/Documents/GitHub/onu/build/onu_autogen/mocs_compilation.cpp
 
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/onu/build/onu_autogen/mocs_compilation.cpp > CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/Documents/GitHub/onu/build/onu_autogen/mocs_compilation.cpp > CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.i
 
 CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/onu/build/onu_autogen/mocs_compilation.cpp -o CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/Documents/GitHub/onu/build/onu_autogen/mocs_compilation.cpp -o CMakeFiles/onu.dir/onu_autogen/mocs_compilation.cpp.s
 
 CMakeFiles/onu.dir/onu.cpp.o: CMakeFiles/onu.dir/flags.make
-CMakeFiles/onu.dir/onu.cpp.o: /home/user/onu/onu.cpp
+CMakeFiles/onu.dir/onu.cpp.o: /media/Documents/GitHub/onu/onu.cpp
 CMakeFiles/onu.dir/onu.cpp.o: CMakeFiles/onu.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/onu.dir/onu.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu.cpp.o -MF CMakeFiles/onu.dir/onu.cpp.o.d -o CMakeFiles/onu.dir/onu.cpp.o -c /home/user/onu/onu.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/onu.dir/onu.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu.cpp.o -MF CMakeFiles/onu.dir/onu.cpp.o.d -o CMakeFiles/onu.dir/onu.cpp.o -c /media/Documents/GitHub/onu/onu.cpp
 
 CMakeFiles/onu.dir/onu.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/onu.dir/onu.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/onu/onu.cpp > CMakeFiles/onu.dir/onu.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/Documents/GitHub/onu/onu.cpp > CMakeFiles/onu.dir/onu.cpp.i
 
 CMakeFiles/onu.dir/onu.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/onu.dir/onu.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/onu/onu.cpp -o CMakeFiles/onu.dir/onu.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/Documents/GitHub/onu/onu.cpp -o CMakeFiles/onu.dir/onu.cpp.s
 
 CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o: CMakeFiles/onu.dir/flags.make
 CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o: onu_autogen/EWIEGA46WW/qrc_files.cpp
 CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o: CMakeFiles/onu.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o -MF CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o.d -o CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o -c /home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o -MF CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o.d -o CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.o -c /media/Documents/GitHub/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp
 
 CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.i: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.i"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp > CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.i
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /media/Documents/GitHub/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp > CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.i
 
 CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.s"
-	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/user/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp -o CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.s
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /media/Documents/GitHub/onu/build/onu_autogen/EWIEGA46WW/qrc_files.cpp -o CMakeFiles/onu.dir/onu_autogen/EWIEGA46WW/qrc_files.cpp.s
 
 # Object files for target onu
 onu_OBJECTS = \
@@ -163,7 +163,7 @@ onu: /usr/lib/x86_64-linux-gnu/libOpenGL.so
 onu: /usr/lib/x86_64-linux-gnu/libQt6Network.so.6.8.2
 onu: /usr/lib/x86_64-linux-gnu/libQt6Core.so.6.8.2
 onu: CMakeFiles/onu.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/user/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable onu"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/media/Documents/GitHub/onu/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable onu"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/onu.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
@@ -176,6 +176,6 @@ CMakeFiles/onu.dir/clean:
 
 CMakeFiles/onu.dir/depend: onu_autogen/EWIEGA46WW/qrc_files.cpp
 CMakeFiles/onu.dir/depend: onu_autogen/timestamp
-	cd /home/user/onu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/onu /home/user/onu /home/user/onu/build /home/user/onu/build /home/user/onu/build/CMakeFiles/onu.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /media/Documents/GitHub/onu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/Documents/GitHub/onu /media/Documents/GitHub/onu /media/Documents/GitHub/onu/build /media/Documents/GitHub/onu/build /media/Documents/GitHub/onu/build/CMakeFiles/onu.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/onu.dir/depend
 

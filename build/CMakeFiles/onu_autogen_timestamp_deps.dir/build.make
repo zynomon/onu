@@ -53,10 +53,10 @@ RM = /usr/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/user/onu
+CMAKE_SOURCE_DIR = /media/Documents/GitHub/onu
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/user/onu/build
+CMAKE_BINARY_DIR = /media/Documents/GitHub/onu/build
 
 # Utility rule file for onu_autogen_timestamp_deps.
 
@@ -81,6 +81,6 @@ CMakeFiles/onu_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/onu_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/onu_autogen_timestamp_deps.dir/depend:
-	cd /home/user/onu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /home/user/onu /home/user/onu /home/user/onu/build /home/user/onu/build /home/user/onu/build/CMakeFiles/onu_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /media/Documents/GitHub/onu/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /media/Documents/GitHub/onu /media/Documents/GitHub/onu /media/Documents/GitHub/onu/build /media/Documents/GitHub/onu/build /media/Documents/GitHub/onu/build/CMakeFiles/onu_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/onu_autogen_timestamp_deps.dir/depend
 

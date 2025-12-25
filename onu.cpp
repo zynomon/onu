@@ -1024,6 +1024,7 @@ private:
 class Browser_WManager : public QMainWindow { // W = window
     Q_OBJECT
 public:
+    void openUrls(const QList<QUrl> &urls);
     Browser_WManager() {
         setWindowTitle("Onu Browser");
         resize(1300, 768);
@@ -2191,6 +2192,15 @@ const QString Browser_WManager::BuiltInDarkSS = R"(
     QStatusBar { background: #2d2d2d; color: #88cc88; }
 )";
 
+void Browser_WManager::openUrls(const QList<QUrl> &urls) {
+    if (urls.isEmpty()) {
+        addNewTab();
+        return;
+    }
+    for (const QUrl &url : urls) {
+        addNewTab(url);
+    }
+}
 #include "onu.moc"
 
 int main(int argc, char *argv[]) {
@@ -2206,10 +2216,28 @@ int main(int argc, char *argv[]) {
     app.setApplicationName("onu");
     app.setOrganizationName("Onu.");
     app.setApplicationVersion("0.4");
+    QCommandLineParser parser;
+    parser.setApplicationDescription("Onu Browser");
+    parser.addHelpOption();
+    parser.addVersionOption();
+    parser.addPositionalArgument("urls", "URLs or local files to open.");
+
+    parser.process(app);
+
+    QList<QUrl> startupUrls;
+    for (const QString &arg : parser.positionalArguments()) {
+        QUrl url = QUrl::fromUserInput(arg);
+        if (url.isLocalFile()) {
+            QFileInfo fi(arg);
+            if (fi.exists()) {
+                url = QUrl::fromLocalFile(fi.absoluteFilePath());
+            }
+        }
+        startupUrls << url;
+    }
 
     QString flagsStr = Settings_Man::value("flags/chromium_flags",
-                                           "--disable-gpu --disable-webrtc --max_renderer_process_memory=512")
-                           .toString();
+                                           "--disable-gpu --disable-webrtc --max_renderer_process_memory=512").toString();
     qputenv("QTWEBENGINE_CHROMIUM_FLAGS", flagsStr.toUtf8());
 
     OnuSchemeHandler *handler = new OnuSchemeHandler(&app);
@@ -2217,6 +2245,15 @@ int main(int argc, char *argv[]) {
 
     Browser_WManager window;
     window.show();
+
+
+    if (!startupUrls.isEmpty()) {
+        for (const QUrl &url : startupUrls) {
+            window.addNewTab(url);
+        }
+    } else {
+        window.addNewTab();
+    }
 
     return app.exec();
 }
