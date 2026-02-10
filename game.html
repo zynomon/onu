@@ -5,28 +5,219 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Game</title>
 <style>
-:root{--neon:#00fdfd;--accent:#0f0;--bg:#000}
-html,body{height:100%;margin:0;background:var(--bg);font-family:monospace;color:#fff;overflow:hidden}
-*{user-select:none;-webkit-user-select:none;-moz-user-select:none}
-canvas{display:block;width:100%;height:100%;background:#000}
-#hud{position:fixed;top:12px;left:50%;transform:translateX(-50%);padding:10px 14px;border-radius:10px;background:rgba(0,0,0,0.55);border:1px solid rgba(0,255,255,0.06);box-shadow:0 8px 24px rgba(0,255,255,0.06);display:flex;gap:14px;align-items:center;z-index:60;font-weight:700;font-size:15px}
-.hud-item{display:inline-flex;align-items:center;gap:8px}
-.hud-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 8px;border-radius:8px;color:var(--neon);cursor:pointer}
-.hud-btn:hover{box-shadow:0 0 10px rgba(0,255,255,0.12)}
-.overlay{position:fixed;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;background:rgba(0,0,0,0.86);z-index:70;text-align:center;padding:18px}
-.hidden{display:none}
-.title { font-size: 5rem; margin: 0 0 12px 0; color: #9ff; }
-.subtitle{color:#bbb;margin:6px 0}
-.btn{background:linear-gradient(145deg,var(--neon),#099);color:#000;border:none;padding:10px 18px;border-radius:10px;cursor:pointer;font-weight:800;font-family:monospace;margin:8px}
-.btn:hover{transform:scale(1.03);box-shadow:0 0 12px rgba(0,255,255,0.12)}
-#optionsBox{width:460px;max-width:96%;padding:14px;border-radius:12px;background:rgba(0,0,0,0.96);border:2px solid var(--accent);box-shadow:0 0 22px rgba(0,255,0,0.08)}
-.option-row{display:flex;justify-content:space-between;align-items:center;margin:10px 0}
-.option-row label{color:#cfc;font-size:0.95rem}
-.toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:6px 10px;border-radius:8px;color:var(--neon);cursor:pointer}
-.small{font-size:0.85rem;color:#aaa;margin-top:10px}
-#netPopup{position:fixed;top:18px;right:18px;padding:8px 12px;border-radius:8px;background:rgba(0,0,0,0.9);border:2px solid var(--accent);color:var(--accent);box-shadow:0 0 18px rgba(0,255,0,0.08);z-index:80}
-#netPopup button{margin-left:8px;padding:4px 8px;border-radius:6px;border:none;background:var(--accent);cursor:pointer;color:#000}
-.boost-meter{font-family:monospace;background:rgba(255,255,255,0.03);padding:4px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.03);min-width:88px;text-align:center}
+:root {
+  --neon: #00fdfd;
+  --accent: #0f0;
+  --bg: #000;
+  /* Base font size using calc for scaling */
+  --base-font-size: calc(12px + 0.3vw);
+  --title-size: calc(2.5rem + 3vw);
+  --hud-font-size: calc(12px + 0.2vw);
+  --hud-padding: calc(8px + 0.3vw);
+  --btn-padding: calc(8px + 0.5vw);
+  --options-width: min(460px, calc(90vw - 20px));
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  background: var(--bg);
+  font-family: monospace;
+  color: #fff;
+  overflow: hidden;
+  font-size: var(--base-font-size);
+}
+
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #000;
+}
+
+#hud {
+  position: fixed;
+  top: calc(12px + 0.5vh);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: var(--hud-padding) calc(var(--hud-padding) * 1.4);
+  border-radius: calc(var(--hud-padding) * 0.8);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid rgba(0,255,255,0.06);
+  box-shadow: 0 8px 24px rgba(0,255,255,0.06);
+  display: flex;
+  gap: calc(var(--hud-padding) * 1.2);
+  align-items: center;
+  z-index: 60;
+  font-weight: 700;
+  font-size: var(--hud-font-size);
+  white-space: nowrap;
+}
+
+.hud-item {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--hud-padding) * 0.8);
+}
+
+.hud-btn {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: calc(var(--hud-padding) * 0.6) calc(var(--hud-padding) * 0.8);
+  border-radius: calc(var(--hud-padding) * 0.6);
+  color: var(--neon);
+  cursor: pointer;
+  font-size: var(--hud-font-size);
+}
+
+.hud-btn:hover {
+  box-shadow: 0 0 10px rgba(0,255,255,0.12);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0,0,0,0.86);
+  z-index: 70;
+  text-align: center;
+  padding: calc(18px + 1vh);
+}
+
+.hidden {
+  display: none !important;
+}
+
+.title {
+  font-size: var(--title-size);
+  margin: 0 0 calc(12px + 0.5vh) 0;
+  color: #9ff;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.subtitle {
+  color: #bbb;
+  margin: calc(6px + 0.2vh) 0;
+  font-size: calc(var(--base-font-size) * 1.1);
+  max-width: min(800px, 90vw);
+}
+
+.btn {
+  background: linear-gradient(145deg, var(--neon), #099);
+  color: #000;
+  border: none;
+  padding: var(--btn-padding) calc(var(--btn-padding) * 1.8);
+  border-radius: calc(var(--btn-padding) * 0.8);
+  cursor: pointer;
+  font-weight: 800;
+  font-family: monospace;
+  margin: calc(var(--btn-padding) * 0.8);
+  font-size: calc(var(--base-font-size) * 1.1);
+}
+
+.btn:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 12px rgba(0,255,255,0.12);
+}
+
+#optionsBox {
+  width: var(--options-width);
+  padding: calc(14px + 0.5vw);
+  border-radius: calc(12px + 0.3vw);
+  background: rgba(0,0,0,0.96);
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 22px rgba(0,255,0,0.08);
+}
+
+.option-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: calc(10px + 0.3vh) 0;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.option-row label {
+  color: #cfc;
+  font-size: calc(var(--base-font-size) * 0.95);
+}
+
+.toggle {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: calc(var(--hud-padding) * 0.6) calc(var(--hud-padding) * 0.8);
+  border-radius: calc(var(--hud-padding) * 0.6);
+  color: var(--neon);
+  cursor: pointer;
+  font-size: calc(var(--base-font-size) * 0.9);
+}
+
+.small {
+  font-size: calc(var(--base-font-size) * 0.85);
+  color: #aaa;
+  margin-top: calc(10px + 0.3vh);
+}
+
+#netPopup {
+  position: fixed;
+  top: calc(18px + 0.5vh);
+  right: calc(18px + 0.5vw);
+  padding: calc(8px + 0.3vw) calc(12px + 0.5vw);
+  border-radius: calc(8px + 0.2vw);
+  background: rgba(0,0,0,0.9);
+  border: 2px solid var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 18px rgba(0,255,0,0.08);
+  z-index: 80;
+  font-size: calc(var(--base-font-size) * 0.95);
+}
+
+#netPopup button {
+  margin-left: calc(8px + 0.2vw);
+  padding: calc(4px + 0.2vw) calc(8px + 0.3vw);
+  border-radius: calc(6px + 0.1vw);
+  border: none;
+  background: var(--accent);
+  cursor: pointer;
+  color: #000;
+  font-size: calc(var(--base-font-size) * 0.9);
+}
+
+.boost-meter {
+  font-family: monospace;
+  background: rgba(255,255,255,0.03);
+  padding: calc(4px + 0.1vw) calc(8px + 0.2vw);
+  border-radius: calc(6px + 0.1vw);
+  border: 1px solid rgba(255,255,255,0.03);
+  min-width: calc(88px + 1vw);
+  text-align: center;
+  font-size: var(--hud-font-size);
+}
+
+/* Responsive adjustments without media queries */
+ul {
+  margin-left: calc(20px + 1vw);
+  padding-left: 0;
+}
+
+input[type="range"] {
+  width: min(150px, calc(20vw + 50px));
+}
+
+#optionsSeg {
+  cursor: pointer;
+}
 </style>
 </head>
 <body>
@@ -39,34 +230,34 @@ canvas{display:block;width:100%;height:100%;background:#000}
   <div class="hud-item">gfx: <button id="gfxToggle" class="hud-btn">off</button></div>
 </div>
 <div id="startScreen" class="overlay">
-  <div class="title">⚠️ You are offline</div>
-  <div class="subtitle">oh no why this happened? you can, play a game while it comes back</div>
-  <div style="max-width:720px;text-align:left;color:#ddd;margin:12px 0">
-    <strong>you can...</strong>
-    <ul style="margin-left:20px">
+  <div class="title" id="startTitle">⚠️ Internet Status</div>
+  <div class="subtitle" id="connectionStatus">Checking connection...</div>
+  <div style="max-width:min(720px, 90vw);text-align:left;color:#ddd;margin:calc(12px + 0.5vh) 0;font-size:calc(var(--base-font-size) * 1.05)">
+    <strong>If you're offline, you can...</strong>
+    <ul style="margin-left:calc(20px + 1vw)">
       <li>check cable / wifi</li>
       <li>restart router or modem</li>
       <li>toggle airplane mode or reconnect</li>
       <li>buy a new router</li>
     </ul>
   </div>
-  <div style="color:#9ff;margin:8px 0">controls: wasd or arrows · left click / space = jump · right click = pause/options</div>
+  <div style="color:#9ff;margin:calc(8px + 0.3vh) 0;font-size:calc(var(--base-font-size) * 1.05)">controls: wasd or arrows · left click / space = jump · right click = pause/options</div>
   <div><button id="startBtn" class="btn">play (space or click)</button></div>
 </div>
 <div id="optionsMenu" class="overlay hidden" aria-hidden="true">
   <div id="optionsBox">
-    <div style="background:transparent;padding:6px;border-radius:8px;color:var(--neon);font-weight:900;font-size:1.1rem">paused</div>
-    <div class="option-row"><label>volume</label><div style="display:flex;gap:8px;align-items:center"><input id="volumeRange" type="range" min="0" max="100" value="80" /><button id="muteBtn" class="toggle">mute</button></div></div>
+    <div style="background:transparent;padding:calc(6px + 0.2vw);border-radius:calc(8px + 0.2vw);color:var(--neon);font-weight:900;font-size:calc(var(--base-font-size) * 1.2)">paused</div>
+    <div class="option-row"><label>volume</label><div style="display:flex;gap:calc(8px + 0.2vw);align-items:center"><input id="volumeRange" type="range" min="0" max="100" value="80" /><button id="muteBtn" class="toggle">mute</button></div></div>
     <div class="option-row"><label>gfx mode</label><div><button id="gfxOn" class="toggle">on</button><button id="gfxOff" class="toggle">off</button></div></div>
     <div class="option-row"><label>trail</label><div><button id="trailOn" class="toggle">on</button><button id="trailOff" class="toggle">off</button></div></div>
-    <div class="option-row"><label>controls</label><div style="text-align:right;color:#cfc">wasd / arrows • left click jump • right click pause • space start/pause</div></div>
-    <div style="margin-top:12px;text-align:center"><button id="resumeBtn" class="btn">resume</button><button id="restartBtn" class="btn">restart</button><button id="quitBtn" class="btn">quit</button></div>
+    <div class="option-row"><label>controls</label><div style="text-align:right;color:#cfc;font-size:calc(var(--base-font-size) * 0.9)">wasd / arrows • left click jump • right click pause • space start/pause</div></div>
+    <div style="margin-top:calc(12px + 0.5vh);text-align:center"><button id="resumeBtn" class="btn">resume</button><button id="restartBtn" class="btn">restart</button><button id="quitBtn" class="btn">quit</button></div>
     <div class="small">options persist across sessions. options menu will not open on game over.</div>
   </div>
 </div>
 <div id="gameOver" class="overlay hidden" aria-hidden="true">
   <div class="title" style="color:#f55">game over</div>
-  <div style="color:#ddd;margin:8px 0">your score: <strong id="finalScore">0</strong></div>
+  <div style="color:#ddd;margin:calc(8px + 0.3vh) 0;font-size:calc(var(--base-font-size) * 1.1)">your score: <strong id="finalScore">0</strong></div>
   <div><button id="restartGameOver" class="btn">restart</button><button id="quitGameOver" class="btn">quit</button></div>
 </div>
 <div id="netPopup" class="hidden">internet is back <button id="netOk">ok</button></div>
@@ -77,12 +268,15 @@ const ctx = canvas.getContext('2d');
 function resize(){ W = innerWidth; H = innerHeight; canvas.width = W; canvas.height = H; }
 addEventListener('resize', resize);
 resize();
+
 const scoreEl = document.getElementById('score');
 const highEl = document.getElementById('highscore');
 const optionsSeg = document.getElementById('optionsSeg');
 const gfxToggle = document.getElementById('gfxToggle');
 const startScreen = document.getElementById('startScreen');
 const startBtn = document.getElementById('startBtn');
+const startTitle = document.getElementById('startTitle');
+const connectionStatus = document.getElementById('connectionStatus');
 const optionsMenu = document.getElementById('optionsMenu');
 const resumeBtn = document.getElementById('resumeBtn');
 const restartBtn = document.getElementById('restartBtn');
@@ -100,20 +294,73 @@ const quitGameOver = document.getElementById('quitGameOver');
 const netPopup = document.getElementById('netPopup');
 const netOk = document.getElementById('netOk');
 const boostMeterEl = document.getElementById('boostMeter');
+
 let running = false;
 let paused = false;
 let inGameOver = false;
 let gfxOn = false;
 let trailOn = true;
 let soundOn = true;
+let isOnline = navigator.onLine;
+
+// Real internet connection monitoring
+function updateConnectionStatus() {
+  isOnline = navigator.onLine;
+  if (isOnline) {
+    startTitle.textContent = "✅ You are Online";
+    connectionStatus.textContent = "Connection established. Ready to play!";
+    startTitle.style.color = "#0f0";
+  } else {
+    startTitle.textContent = "⚠️ You are Offline";
+    connectionStatus.textContent = "No internet connection. You can still play offline!";
+    startTitle.style.color = "#f55";
+  }
+}
+
+// Check connection initially and set up listeners
+updateConnectionStatus();
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
+
+// Real network status popup
+function showNetworkPopup(message, isGoodNews = false) {
+  netPopup.textContent = message;
+  netPopup.style.borderColor = isGoodNews ? '#0f0' : '#f55';
+  netPopup.style.color = isGoodNews ? '#0f0' : '#f55';
+  netPopup.classList.remove('hidden');
+
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    if (!netPopup.classList.contains('hidden')) {
+      netPopup.classList.add('hidden');
+    }
+  }, 5000);
+}
+
+// Monitor network changes
+let lastOnlineStatus = isOnline;
+setInterval(() => {
+  const currentOnlineStatus = navigator.onLine;
+  if (currentOnlineStatus !== lastOnlineStatus) {
+    if (currentOnlineStatus) {
+      showNetworkPopup('✅ Internet connection restored!', true);
+    } else {
+      showNetworkPopup('⚠️ Internet connection lost', false);
+    }
+    lastOnlineStatus = currentOnlineStatus;
+  }
+}, 1000);
+
 const LOCAL_KEYS = {gfx:'atom_gfx', trail:'atom_trail', vol:'atom_vol', muted:'atom_muted'};
 function loadSettings(){ const g = localStorage.getItem(LOCAL_KEYS.gfx); const t = localStorage.getItem(LOCAL_KEYS.trail); const v = localStorage.getItem(LOCAL_KEYS.vol); const m = localStorage.getItem(LOCAL_KEYS.muted); if(g !== null) gfxOn = g === '1'; if(t !== null) trailOn = t === '1'; if(v !== null) volumeRange.value = parseInt(v,10); if(m !== null) muteBtn.dataset.muted = m; }
 function saveSettings(){ localStorage.setItem(LOCAL_KEYS.gfx, gfxOn ? '1' : '0'); localStorage.setItem(LOCAL_KEYS.trail, trailOn ? '1' : '0'); localStorage.setItem(LOCAL_KEYS.vol, volumeRange.value); localStorage.setItem(LOCAL_KEYS.muted, muteBtn.dataset.muted || 'false'); }
 loadSettings();
 gfxToggle.textContent = gfxOn ? 'on' : 'off';
+
 let score = 0;
 let highscore = parseInt(localStorage.getItem('atomDashHigh')||'0',10) || 0;
 highEl.textContent = highscore;
+
 let player = null;
 let obstacles = [];
 let greens = [];
@@ -131,11 +378,13 @@ let boostActive = false;
 let immune = false;
 let lastTime = performance.now();
 let difficultyMultiplier = 1;
+
 const AudioCtx = window.AudioContext || window.webkitAudioContext;
 const audioCtx = new AudioCtx();
 const masterGain = audioCtx.createGain();
 masterGain.connect(audioCtx.destination);
 masterGain.gain.value = (volumeRange.value||80)/100;
+
 let audioUnlocked = false;
 function ensureAudio(){ if(audioUnlocked) return; try{ const b = audioCtx.createBuffer(1,1,22050); const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(audioCtx.destination); s.start(0); audioUnlocked = true; }catch(e){} }
 function playTone(freq,d=0.12,t='sine',v=0.12){ if(!soundOn) return; try{ const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type = t; o.frequency.value = freq; g.gain.value = v; o.connect(g); g.connect(masterGain); o.start(); o.stop(audioCtx.currentTime + d); }catch(e){} }
@@ -143,23 +392,64 @@ function sndJump(){ playTone(420,0.08,'sine',0.06) }
 function sndCollect(){ playTone(880,0.12,'triangle',0.12) }
 function sndBoost(){ playTone(220,0.16,'square',0.14); playTone(660,0.25,'sawtooth',0.08) }
 function sndGameOver(){ playTone(130,0.32,'sine',0.18) }
+
 function seedStars(){ stars = []; if(!gfxOn) return; const c = Math.max(40, Math.min(140, Math.floor((W*H)/80000))); for(let i=0;i<c;i++) stars.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*1.4 + 0.4 }); }
+
 function initPlayer(){ player = { x: 120, y: H/2, r: 18, dy: 0 }; trail = []; }
+
 function updateDifficulty(){ const level = Math.max(0, Math.floor(score / 10000)); difficultyMultiplier = Math.pow(2, level); }
-function startGame(){ ensureAudio(); startScreen.classList.add('hidden'); gameOver.classList.add('hidden'); optionsMenu.style.display = 'none'; optionsMenu.setAttribute('aria-hidden','true'); running = true; paused = false; inGameOver = false; seedStars(); initPlayer(); obstacles = []; greens = []; powerups = []; reds = []; score = 0; speed = baseSpeed; boostTimer = 0; boostActive = false; immune = false; lastTime = performance.now(); hud.style.display = ''; requestAnimationFrame(loop); }
+
+function startGame(){
+  ensureAudio();
+  startScreen.classList.add('hidden');
+  gameOver.classList.add('hidden');
+  optionsMenu.style.display = 'none';
+  optionsMenu.setAttribute('aria-hidden','true');
+  running = true;
+  paused = false;
+  inGameOver = false;
+  seedStars();
+  initPlayer();
+  obstacles = [];
+  greens = [];
+  powerups = [];
+  reds = [];
+  score = 0;
+  speed = baseSpeed;
+  boostTimer = 0;
+  boostActive = false;
+  immune = false;
+  lastTime = performance.now();
+  document.getElementById('hud').style.display = '';
+  requestAnimationFrame(loop);
+}
+
 function restartGame(){ optionsMenu.style.display = 'none'; optionsMenu.setAttribute('aria-hidden','true'); gameOver.classList.add('hidden'); startGame(); }
-function quitToStart(){ running = false; paused = false; inGameOver = false; startScreen.classList.remove('hidden'); optionsMenu.style.display = 'none'; gameOver.classList.add('hidden'); hud.style.display = ''; saveSettings(); }
+
+function quitToStart(){ running = false; paused = false; inGameOver = false; startScreen.classList.remove('hidden'); optionsMenu.style.display = 'none'; gameOver.classList.add('hidden'); document.getElementById('hud').style.display = ''; saveSettings(); }
+
 function spawnTick(){ updateDifficulty(); if(Math.random() < 0.03 * difficultyMultiplier) { const h = 30 + Math.random()*90; const y = Math.random()*(H - h); obstacles.push({ x: W + 40, y: y, w: 20 + Math.random()*30, h: h }); } if(Math.random() < 0.012 * difficultyMultiplier) { greens.push({ x: W + 20, y: 30 + Math.random()*(H-60), r: 9 }); } if(Math.random() < 0.006 * difficultyMultiplier) { powerups.push({ x: W + 20, y: 30 + Math.random()*(H-60), r: 12 }); } if(Math.random() < 0.002 * difficultyMultiplier) { const r = 16 + Math.random()*28; const y = 30 + Math.random()*(H - 60); reds.push({ x: W + 60, y: y, r: r, blastRadius: Math.max(80, r * 5) }); } }
+
 function circleCollide(a,b){ const dx = a.x - b.x; const dy = a.y - b.y; const r = (a.r||0) + (b.r||0); return dx*dx + dy*dy <= r*r; }
+
 function circleRectCollide(circle, rect){ const cx = Math.max(rect.x, Math.min(circle.x, rect.x + rect.w)); const cy = Math.max(rect.y, Math.min(circle.y, rect.y + rect.h)); const dx = circle.x - cx; const dy = circle.y - cy; return (dx*dx + dy*dy) <= (circle.r * circle.r); }
+
 function pushTrail(){ if(!gfxOn || !trailOn) return; const last = trail[0]; const dy = last ? (player.y - last.y) : 0; trail.unshift({ x: player.x, y: player.y, dy: dy, age: 0 }); if(trail.length > TRAIL_MAX) trail.length = TRAIL_MAX; }
+
 function drawBackground(){ if(!gfxOn){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H); return; } ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H); ctx.fillStyle = '#fff'; for(let s of stars){ ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); s.x -= 0.45; if(s.x < -3){ s.x = W + 3; s.y = Math.random()*H; } } }
+
 function drawTrail(){ if(!gfxOn || !trailOn || trail.length === 0) return; ctx.save(); ctx.globalCompositeOperation = 'lighter'; for(let i = 0; i < trail.length; i++){ const seg = trail[i]; const ageFactor = Math.max(0, 1 - (seg.age / 20)); const alpha = 0.1 + 0.6 * ageFactor; const verticalFactor = Math.min(1, Math.abs(seg.dy) / 12); const stretch = 8 + (1 - ageFactor) * 20 + verticalFactor * 12; const radiusY = 3 + ageFactor * 3; const offsetX = i * Math.max(0.4, speed * 0.18); ctx.fillStyle = `rgba(0,255,255,${alpha * 1.4})`; ctx.beginPath(); ctx.ellipse(seg.x - offsetX, seg.y, stretch, radiusY, 0, 0, Math.PI*2); ctx.fill(); seg.age++; } ctx.restore(); }
+
 function drawPlayer(){ ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, Math.PI*2); ctx.fillStyle = boostActive ? '#fff' : '#00ffff'; if(gfxOn){ ctx.shadowColor = boostActive ? '#fff' : '#00ffff'; ctx.shadowBlur = boostActive ? 36 : 12; } else ctx.shadowBlur = 0; ctx.fill(); ctx.shadowBlur = 0; }
+
 function drawObstacles(){ for(let o of obstacles){ if(gfxOn){ ctx.save(); ctx.fillStyle = '#888'; ctx.shadowColor = '#888'; ctx.shadowBlur = 8; ctx.fillRect(o.x, o.y, o.w, o.h); ctx.restore(); } else { ctx.fillStyle = '#888'; ctx.fillRect(o.x, o.y, o.w, o.h); } } }
+
 function drawGreens(){ for(let g of greens){ if(gfxOn){ ctx.save(); ctx.fillStyle = '#0f0'; ctx.shadowColor = '#0f0'; ctx.shadowBlur = 10; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI*2); ctx.fill(); ctx.restore(); } else { ctx.fillStyle = '#0f0'; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, Math.PI*2); ctx.fill(); } } }
+
 function drawPowerups(){ for(let p of powerups){ if(gfxOn){ ctx.save(); ctx.fillStyle = '#fff'; ctx.shadowColor = '#fff'; ctx.shadowBlur = 20; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); ctx.restore(); } else { ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2); ctx.fill(); } } }
+
 function drawReds(){ for(let r of reds){ if(gfxOn){ ctx.save(); ctx.fillStyle = 'rgba(255,60,60,0.08)'; ctx.beginPath(); ctx.arc(r.x, r.y, r.blastRadius, 0, Math.PI*2); ctx.fill(); ctx.restore(); ctx.save(); ctx.strokeStyle = 'rgba(255,50,50,0.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(r.x, r.y, r.blastRadius, 0, Math.PI*2); ctx.stroke(); ctx.restore(); ctx.save(); ctx.fillStyle = '#f00'; ctx.shadowColor = '#f00'; ctx.shadowBlur = 24; ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2); ctx.fill(); ctx.restore(); } else { ctx.fillStyle = '#f00'; ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI*2); ctx.fill(); } } }
+
 function update(delta){
   player.y += player.dy;
   player.dy *= 0.96;
@@ -167,57 +457,87 @@ function update(delta){
   if(player.y + player.r > H){ player.y = H - player.r; player.dy = 0; }
   if(player.x - player.r < 0) player.x = player.r;
   if(player.x + player.r > W) player.x = W - player.r;
+
   spawnTick();
+
   for(let o of obstacles) o.x -= speed * difficultyMultiplier;
   for(let g of greens) g.x -= speed * difficultyMultiplier;
   for(let p of powerups) p.x -= speed * difficultyMultiplier;
   for(let r of reds) r.x -= speed * difficultyMultiplier;
+
   obstacles = obstacles.filter(o => o.x + o.w > -40);
   greens = greens.filter(g => g.x + g.r > -40);
   powerups = powerups.filter(p => p.x + p.r > -40);
   reds = reds.filter(r => r.x + (r.r||0) > -40);
+
   for(let o of obstacles){ if(circleRectCollide(player,o)){ if(!immune){ triggerGameOver(); return; } } }
+
   for(let r of reds){ const dx = player.x - r.x; const dy = player.y - r.y; const dist = Math.hypot(dx,dy); if(dist < r.blastRadius){ triggerGameOver(); return; } }
+
   for(let i = greens.length - 1; i >= 0; i--){ if(circleCollide(player, greens[i])){ greens.splice(i,1); score += 100; sndCollect(); } }
+
   for(let i = powerups.length - 1; i >= 0; i--){ if(circleCollide(player, powerups[i])){ powerups.splice(i,1); addBoost(); } }
+
   if(boostActive){ boostTimer -= delta; if(boostTimer <= 0){ boostActive = false; immune = false; speed = baseSpeed; } }
+
   score += Math.floor(delta * 0.02);
   if(!boostActive && score % 300 === 0) speed += 0.5;
   if(!boostActive && score % 10000 < 20) { /* difficulty multiplier auto-updates via updateDifficulty on spawnTick */ }
+
   scoreEl.textContent = score;
   if(score > highscore){ highscore = score; localStorage.setItem('atomDashHigh', String(highscore)); highEl.textContent = highscore; }
+
   pushTrail();
 }
+
 function render(){ drawBackground(); drawTrail(); drawPlayer(); drawObstacles(); drawGreens(); drawPowerups(); drawReds(); updateBoostMeter(); }
+
 function loop(now){ if(!running || paused) return; const delta = now - lastTime; lastTime = now; update(delta); render(); requestAnimationFrame(loop); }
+
 function addBoost(){ sndBoost(); boostTimer = Math.min(BOOST_MAX, boostTimer + BOOST_ADD); boostActive = true; immune = true; speed = Math.min(baseSpeed * 50, 1000); }
+
 function triggerGameOver(){ running = false; inGameOver = true; gameOver.classList.remove('hidden'); finalScore.textContent = score; sndGameOver(); optionsMenu.style.display = 'none'; optionsMenu.setAttribute('aria-hidden','true'); saveSettings(); }
+
 function updateBoostMeter(){ const cap = BOOST_MAX; const val = Math.max(0, Math.min(cap, boostTimer)); const segments = 8; const filled = Math.round((val / cap) * segments); let s = '['; for(let i=0;i<segments;i++) s += i < filled ? '█' : '-'; s += ']'; boostMeterEl.textContent = s; }
+
 setInterval(()=>{ if(boostActive){ document.getElementById('score').textContent = score; } }, 80);
+
 const keys = {};
 addEventListener('keydown', (e)=>{ ensureAudio(); if(e.repeat) return; keys[e.code] = true; if(e.code === 'Space'){ if(!running && startScreen.classList.contains('hidden') === false){ startGame(); return; } if(inGameOver){ restartGame(); return; } if(running) togglePause(); } if(['KeyW','ArrowUp'].includes(e.code)){ if(running && !paused) player.y -= 6; } if(['KeyS','ArrowDown'].includes(e.code)){ if(running && !paused) player.y += 6; } if(['KeyA','ArrowLeft'].includes(e.code)){ if(running && !paused) player.x -= 8; } if(['KeyD','ArrowRight'].includes(e.code)){ if(running && !paused) player.x += 8; } });
+
 addEventListener('keyup', (e)=>{ keys[e.code] = false; });
+
 canvas.addEventListener('mousedown', (e)=>{ ensureAudio(); if(e.button === 0){ if(!running && startScreen.classList.contains('hidden') === false){ startGame(); return; } if(inGameOver) return; if(paused) return; player.dy -= 9; sndJump(); } else if(e.button === 2){ if(inGameOver) return; togglePause(); } });
+
 canvas.addEventListener('contextmenu', (e)=> e.preventDefault());
+
 setInterval(()=>{ if(!running || paused) return; if(keys['KeyW'] || keys['ArrowUp']) player.y -= 3; if(keys['KeyS'] || keys['ArrowDown']) player.y += 3; if(keys['KeyA'] || keys['ArrowLeft']) player.x -= 4; if(keys['KeyD'] || keys['ArrowRight']) player.x += 4; }, 40);
+
 function togglePause(){ if(!running) return; paused = !paused; if(paused){ optionsMenu.style.display = 'block'; optionsMenu.setAttribute('aria-hidden','false'); optionsSeg.setAttribute('aria-pressed','true'); } else { optionsMenu.style.display = 'none'; optionsMenu.setAttribute('aria-hidden','true'); optionsSeg.setAttribute('aria-pressed','false'); lastTime = performance.now(); requestAnimationFrame(loop); } }
+
 resumeBtn.addEventListener('click', togglePause);
 restartBtn.addEventListener('click', restartGame);
 quitBtn.addEventListener('click', quitToStart);
+
 gfxToggle.addEventListener('click', ()=>{ gfxOn = !gfxOn; gfxToggle.textContent = gfxOn ? 'on' : 'off'; saveSettings(); if(!gfxOn){ stars.length = 0; trail.length = 0; } else seedStars(); });
 gfxOnBtn.addEventListener('click', ()=>{ gfxOn = true; gfxToggle.textContent = 'on'; seedStars(); saveSettings(); });
 gfxOffBtn.addEventListener('click', ()=>{ gfxOn = false; gfxToggle.textContent = 'off'; stars.length=0; trail.length=0; saveSettings(); });
+
 trailOnBtn.addEventListener('click', ()=>{ trailOn = true; saveSettings(); });
 trailOffBtn.addEventListener('click', ()=>{ trailOn = false; trail.length = 0; saveSettings(); });
+
 volumeRange.addEventListener('input', ()=>{ masterGain.gain.value = (muteBtn.dataset.muted === 'true') ? 0 : (volumeRange.value/100); saveSettings(); });
+
 muteBtn.addEventListener('click', ()=>{ muteBtn.dataset.muted = (muteBtn.dataset.muted === 'true') ? 'false' : 'true'; muteBtn.textContent = (muteBtn.dataset.muted === 'true') ? 'unmute' : 'mute'; masterGain.gain.value = (muteBtn.dataset.muted === 'true') ? 0 : (volumeRange.value/100); saveSettings(); });
+
 muteBtn.dataset.muted = localStorage.getItem(LOCAL_KEYS.muted) || 'false';
+
 startBtn.addEventListener('click', startGame);
 restartGameOver.addEventListener('click', restartGame);
 quitGameOver.addEventListener('click', quitToStart);
-netOk.addEventListener('click', ()=>{ netPopup.classList.add('hidden'); netPopup.dataset.dismissed = 'true'; saveSettings(); });
-netPopup.dataset.dismissed = 'false';
-setInterval(()=>{ if(Math.random() < 0.03) { if(netPopup.dataset.dismissed !== 'true') netPopup.classList.remove('hidden'); setTimeout(()=>{ if(netPopup.dataset.dismissed !== 'true') netPopup.classList.add('hidden'); },10000); } }, 7000);
+
+netOk.addEventListener('click', ()=>{ netPopup.classList.add('hidden'); });
+
 (function initialDraw(){ ctx.fillStyle = '#000'; ctx.fillRect(0,0,W,H); ctx.fillStyle = '#111'; ctx.fillRect(0,H-4,W,4); })();
 </script>
 </body>
