@@ -1,2 +1,2 @@
 *.html linguist-documentation=true
-/build/* linguist-documentation=false
+/build/* linguist-documentation=true
