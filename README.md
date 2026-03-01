@@ -1,5 +1,7 @@
 <img width="1035" height="501" alt="image" src="https://github.com/user-attachments/assets/5d93c464-f1ff-4e71-9b5a-2e2fd5510a9e" />
 
+---
+
 <p align="center">
   <img width="1440" height="900" alt="Onu."  src="https://github.com/user-attachments/assets/843ab11f-3471-4288-924d-4601a64d81b3">
   <img src="https://img.shields.io/badge/Status-Beta-orange?style=flat-square">
