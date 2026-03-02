@@ -1,3 +1,0 @@
-/usr/bin/onu
-/usr/share/applications/onu.desktop
-/usr/share/icons/hicolor/scalable/apps/onu.svg
