@@ -1,6 +1,0 @@
-<RCC>
-    <qresource prefix="/">
-        <file>home.html</file>
-        <file>game.html</file>
-    </qresource>
-</RCC>

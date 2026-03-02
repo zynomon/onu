@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>browser raw capacity scan</title>
+</head>
+<body>
+<h2>test</h2>
+<pre id="out" style="background:#000;color:#0f0;padding:1rem;font-family:monospace;overflow:auto;">collecting diagnostics...</pre>
+<script>
+(function(){
+    const out = document.getElementById('out');
+    if(!out) return;
+    const log = [];
+    function raw(label, value) {
+        let str;
+        try {
+            if(value === null) str = 'null';
+            else if(value === undefined) str = 'undefined';
+            else if(typeof value === 'function') str = 'function';
+            else if(typeof value === 'object') {
+                if(value instanceof Error) str = value.name;
+                else if(value instanceof PermissionStatus) str = 'state:' + value.state;
+                else {
+                    try { str = JSON.stringify(value); }
+                    catch { str = Object.prototype.toString.call(value); }
+                }
+            } else str = String(value);
+        } catch { str = 'unreadable'; }
+        log.push(label + ' -> ' + str);
+    }
+    function err(label, e) {
+        log.push(label + ' !! ' + (e.message || String(e)));
+    }
+
+    raw('userAgent', navigator.userAgent);
+    raw('cookieEnabled', navigator.cookieEnabled);
+    raw('hardwareConcurrency', navigator.hardwareConcurrency);
+    raw('maxTouchPoints', navigator.maxTouchPoints);
+    raw('language', navigator.language);
+    raw('languages', navigator.languages);
+    raw('onLine', navigator.onLine);
+    raw('pdfViewerEnabled', navigator.pdfViewerEnabled);
+    raw('deviceMemory (GB)', navigator.deviceMemory);
+    raw('doNotTrack', navigator.doNotTrack);
+    raw('webdriver', navigator.webdriver);
+
+    if(navigator.permissions && navigator.permissions.query) {
+        ['geolocation','notifications','camera','microphone','clipboard-read','clipboard-write','persistent-storage','background-sync'].forEach(p => {
+            navigator.permissions.query({name: p}).then(s => {
+                raw('perm.' + p, s.state);
+            }).catch(e => err('perm.' + p, e));
+        });
+    } else raw('permissions', 'absent');
+
+    if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        navigator.mediaDevices.enumerateDevices().then(devs => {
+            raw('media devices', devs.map(d => d.kind + ':' + (d.label||'?')).join('; '));
+        }).catch(e => err('enumerateDevices', e));
+    } else raw('mediaDevices', 'no');
+
+    raw('bluetooth', !!navigator.bluetooth);
+    raw('usb', !!navigator.usb);
+    raw('hid', !!navigator.hid);
+    raw('serial', !!navigator.serial);
+    raw('webauthn', typeof PublicKeyCredential != 'undefined');
+
+    if(navigator.storage && navigator.storage.estimate) {
+        navigator.storage.estimate().then(e => {
+            raw('storage estimate', 'usage:' + (e.usage||'?') + ' quota:' + (e.quota||'?'));
+        }).catch(e => err('storage.estimate', e));
+    } else raw('storage.estimate', 'no');
+
+    if(navigator.storage && navigator.storage.persisted) {
+        navigator.storage.persisted().then(p => raw('storage.persisted', p)).catch(e => err('persisted', e));
+    }
+
+    raw('indexedDB', typeof indexedDB != 'undefined');
+    raw('caches', typeof caches != 'undefined');
+
+    if('caches' in window) {
+        caches.open('browser-temp-check').then(cache => {
+            let req = new Request('/browser-dummy.txt');
+            let res = new Response('ok');
+            cache.put(req, res.clone()).then(() => cache.match(req)).then(m => {
+                if(m) m.text().then(t => raw('cache put/match', t)).catch(()=>raw('cache match','failed'));
+                else raw('cache match','none');
+                caches.delete('browser-temp-check');
+            }).catch(e => err('cache ops', e));
+        }).catch(e => err('caches.open', e));
+    }
+
+    raw('serviceWorker.controller', navigator.serviceWorker?.controller?.scriptURL || 'none');
+
+    if(navigator.connection) {
+        let c = navigator.connection;
+        raw('connection', 'type:'+c.type+', effective:'+c.effectiveType+', rtt:'+c.rtt+', down:'+c.downlink);
+    } else raw('network info', 'no');
+
+    let canvas = document.createElement('canvas');
+    let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if(gl) {
+        let ext = gl.getExtension('WEBGL_debug_renderer_info');
+        if(ext) raw('webgl renderer', gl.getParameter(ext.UNMASKED_RENDERER_WEBGL));
+        else raw('webgl renderer', 'hidden');
+    } else raw('webgl', 'unsupported');
+
+    let ctx = canvas.getContext('2d');
+    if(ctx) {
+        canvas.width = 150; canvas.height = 40;
+        ctx.fillStyle = '#aaa'; ctx.fillRect(0,0,150,40);
+        ctx.fillStyle = '#000'; ctx.font = '12px mono'; ctx.fillText('test',5,20);
+        raw('canvas fingerprint', canvas.toDataURL().slice(0,80) + '...');
+    }
+
+    try {
+        let aCtx = new (window.AudioContext || window.webkitAudioContext)();
+        raw('audio sampleRate', aCtx.sampleRate);
+        raw('audio state', aCtx.state);
+        setTimeout(() => aCtx.close(), 50);
+    } catch(e) { err('AudioContext', e); }
+
+    raw('DeviceOrientationEvent', typeof DeviceOrientationEvent);
+    if(window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) {
+        raw('orientation request', typeof DeviceOrientationEvent.requestPermission);
+    }
+
+    raw('geolocation', 'geolocation' in navigator);
+
+    if('getBattery' in navigator) {
+        navigator.getBattery().then(b => {
+            raw('battery', 'charging:'+b.charging+' level:'+b.level);
+        }).catch(e => err('battery', e));
+    } else raw('battery', 'no');
+
+    raw('vibrate', typeof navigator.vibrate == 'function');
+
+    if(navigator.getGamepads) {
+        let pads = navigator.getGamepads();
+        let count = 0;
+        for(let i=0;i<pads.length;i++) if(pads[i]) count++;
+        raw('gamepads connected', count);
+    } else raw('gamepads', 'no');
+
+    raw('payment', typeof PaymentRequest != 'undefined');
+    raw('share', typeof navigator.share == 'function');
+    raw('credentials', !!navigator.credentials);
+
+    try {
+        let blob = new Blob([`onmessage=e=>postMessage('echo:'+e.data)`], {type:'text/javascript'});
+        let url = URL.createObjectURL(blob);
+        let w = new Worker(url);
+        w.onmessage = e => raw('worker echo', e.data);
+        w.postMessage('ping');
+        setTimeout(() => { w.terminate(); URL.revokeObjectURL(url); }, 100);
+    } catch(e) { err('worker', e); }
+
+    raw('WebSocket', typeof WebSocket != 'undefined');
+
+    try {
+        localStorage.setItem('browsertest','x');
+        let ls = localStorage.getItem('browsertest');
+        localStorage.removeItem('browsertest');
+        raw('localStorage', ls);
+    } catch(e) { err('localStorage', e); }
+
+    try {
+        sessionStorage.setItem('browsertest','y');
+        let ss = sessionStorage.getItem('browsertest');
+        sessionStorage.removeItem('browsertest');
+        raw('sessionStorage', ss);
+    } catch(e) { err('sessionStorage', e); }
+
+    raw('cookie raw', document.cookie || '(empty)');
+
+    if(performance && performance.getEntriesByType) {
+        let res = performance.getEntriesByType('resource');
+        raw('resources count', res.length);
+    }
+
+    raw('timeOrigin', performance?.timeOrigin ? new Date(performance.timeOrigin).toISOString() : '?');
+
+    raw('plugins length', navigator.plugins.length);
+    raw('mimeTypes length', navigator.mimeTypes.length);
+
+    if(Intl) {
+        raw('Intl locale', Intl.DateTimeFormat().resolvedOptions().locale);
+    }
+
+    raw('WebAssembly', typeof WebAssembly == 'object');
+    raw('BigInt', typeof BigInt != 'undefined');
+    raw('SharedArrayBuffer', typeof SharedArrayBuffer != 'undefined');
+    raw('Atomics', typeof Atomics != 'undefined');
+
+    setTimeout(() => {
+        out.innerText = log.join('\n');
+    }, 800);
+})();
+</script>
+</body>
+</html>
