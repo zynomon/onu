@@ -12,7 +12,7 @@ public:
         QString base = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QString lastFolder = QFileInfo(base).fileName();
         if (lastFolder.compare("Onu", Qt::CaseInsensitive) == 0) {
-            return base;
+            return base;                 // Bruh sometimes the Onu path gets nested eg. Onu/Onu so this check ensures no nesting happen
         } else {
             return base + "/Onu";
         }
@@ -28,7 +28,8 @@ public:
     QString publicConfFile() const { return confPath() + "/onu.conf"; }
     QString privateConfFile() const { return dataPath() + "/encrypted.conf"; }
     QString blockedHostsFile() const { return confPath() + "/blocked_hosts.txt"; }
-        void initializePaths() {
+
+    void initializePaths() {
         QDir().mkpath(confPath());
         QDir().mkpath(dataPath());
         QDir().mkpath(themesPath());
@@ -153,7 +154,6 @@ public:
     }
 
     QString loadThemeQSS(const QString &themeName) const {
-
         if (themeName == "System") {
             return QString();
         }
@@ -165,7 +165,6 @@ public:
         } else if (themeName == "Onu-Light") {
             resourcePath = ":/light.qss";
         } else {
-
             QString themeFile = themesPath() + "/" + themeName + ".qss";
             if (!QFile::exists(themeFile)) {
                 qWarning() << "Custom theme file not found:" << themeFile;
@@ -341,6 +340,44 @@ public:
     bool restoreSessions() const { return publicValue("privacy/restoreSessions", true).toBool(); }
     bool confirmClose() const { return publicValue("privacy/confirmClose", false).toBool(); }
 
+    bool useCustomEncryption() const {
+        return m_private->value("encryption/method", "default").toString() == "custom";
+    }
+
+    void setEncryptionMethod(const QString &method) {
+        m_private->setValue("encryption/method", method);                 // this aint that much sensitive to use some advanced tech here,
+        m_private->sync();                                                 // but this is sensitive enough to save in different file than where your config lives
+    }
+
+    void setSessionKey(const QByteArray &key) {
+        m_secretKey = key;
+    }
+
+    void setEncryptionVerificationValue() {
+        if (!useCustomEncryption()) return;
+
+        QByteArray data = "encryption";
+        for (int i = 0; i < data.size(); ++i)
+            data[i] = data[i] ^ m_secretKey[i % m_secretKey.size()];
+        m_private->setValue("encryption/verify", data.toBase64());
+        m_private->sync();
+    }
+
+    bool verifyEncryptionKey() {
+        if (!useCustomEncryption()) return true;
+
+        QString base64Str = m_private->value("encryption/verify").toString();
+        if (base64Str.isEmpty()) {
+            setEncryptionVerificationValue();
+            return true;
+        }
+
+        QByteArray data = QByteArray::fromBase64(base64Str.toUtf8());
+        for (int i = 0; i < data.size(); ++i)
+            data[i] = data[i] ^ m_secretKey[i % m_secretKey.size()];
+        return data == "encryption";
+    }
+
     QString downloadPath() const {
         return m_private->value("path/downloads", QStandardPaths::writableLocation(QStandardPaths::DownloadLocation)).toString();
     }
@@ -354,19 +391,54 @@ public:
     bool allowDuplicates() const { return publicValue("downloads/allowDuplicates", false).toBool(); }
     bool smartPath() const { return publicValue("downloads/smartPath", false).toBool(); }
     bool openWhenComplete() const { return publicValue("downloads/openComplete", false).toBool(); }
+
     QString userScript() const { return publicValue("extensions/userScript", "").toString(); }
     void setUserScript(const QString &script) { setPublicValue("extensions/userScript", script); }
 
-    void saveHistory(const QVariantList &list) { m_private->setValue("user/history", encrypt(list)); m_private->sync(); }
-    QVariantList loadHistory() { return decrypt(m_private->value("user/history").toString()); }
-    void saveFavorites(const QVariantList &list) { m_private->setValue("user/favorites", encrypt(list)); m_private->sync(); }
-    QVariantList loadFavorites() { return decrypt(m_private->value("user/favorites").toString()); }
-    void saveSession(const QVariantList &urls) { m_private->setValue("user/session", encrypt(urls)); m_private->sync(); }
-    QVariantList loadSession() { return decrypt(m_private->value("user/session").toString()); }
-    void saveToolbarState(const QByteArray &state) { m_private->setValue("ui/toolbarState", state.toBase64());  m_private->sync();  }
-    QByteArray loadToolbarState() { return QByteArray::fromBase64(m_private->value("ui/toolbarState").toByteArray());  }
-    void clearHistory() { m_private->setValue("user/history", ""); m_private->sync(); }
-    void openConfigFolder() { QDesktopServices::openUrl(QUrl::fromLocalFile(confPath())); }
+    void saveHistory(const QVariantList &list) {
+        m_private->setValue("user/history", encrypt(list));
+        m_private->sync();
+    }
+
+    QVariantList loadHistory() {
+        return decrypt(m_private->value("user/history").toString());
+    }
+
+    void saveFavorites(const QVariantList &list) {
+        m_private->setValue("user/favorites", encrypt(list));
+        m_private->sync();
+    }
+
+    QVariantList loadFavorites() {
+        return decrypt(m_private->value("user/favorites").toString());
+    }
+
+    void saveSession(const QVariantList &urls) {
+        m_private->setValue("user/session", encrypt(urls));
+        m_private->sync();
+    }
+
+    QVariantList loadSession() {
+        return decrypt(m_private->value("user/session").toString());
+    }
+
+    void saveToolbarState(const QByteArray &state) {
+        m_private->setValue("ui/toolbarState", state.toBase64());
+        m_private->sync();
+    }
+
+    QByteArray loadToolbarState() {
+        return QByteArray::fromBase64(m_private->value("ui/toolbarState").toByteArray());
+    }
+
+    void clearHistory() {
+        m_private->setValue("user/history", "");
+        m_private->sync();
+    }
+
+    void openConfigFolder() {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(confPath()));
+    }
 
     void clearIconCache() {
         QDir(themeIconCache()).removeRecursively();
@@ -447,7 +519,6 @@ private:
         initializePaths();
         m_public = std::make_unique<QSettings>(publicConfFile(), QSettings::IniFormat);
         m_private = std::make_unique<QSettings>(privateConfFile(), QSettings::IniFormat);
-
         struct utsname b;
         QByteArray key;
         if (uname(&b) == 0) {

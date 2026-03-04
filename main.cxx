@@ -582,16 +582,23 @@ private slots:
         if (m_applyCallback) m_applyCallback();
         accept();
     }
+
     void onCancelClicked() { reject(); }
-    void onOpenConfigFolder() { Settings_Backend::instance().openConfigFolder(); }
+
+    void onOpenConfigFolder() {
+        Settings_Backend::instance().openConfigFolder();
+    }
+
     void onClearIconCache() {
         QMessageBox::StandardButton reply = QMessageBox::question(this, "Clear Icon Cache",
-            "This will delete all cached icons and regenerate them. Continue?", QMessageBox::Yes | QMessageBox::No);
+            "This will delete all cached icons and regenerate them. Continue?",
+            QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
             Settings_Backend::instance().clearIconCache();
             QMessageBox::information(this, "Success", "Icon cache cleared successfully.");
         }
     }
+
     void onResetData() {
         QMessageBox::StandardButton reply = QMessageBox::warning(this, "Reset All Data",
             "This will delete ALL browser data including history, favorites, settings, and cache. This action cannot be undone! Continue?",
@@ -602,6 +609,7 @@ private slots:
             COS::Tri_reset();
         }
     }
+
     void onAddSearchEngine() {
         QDialog dialog(this);
         dialog.setWindowTitle("Add Search Engine");
@@ -630,6 +638,7 @@ private slots:
             }
         }
     }
+
     void onThemeChanged(int index) {
         QString selectedTheme = m_themeCombo->currentText();
         QString qss = Settings_Backend::instance().loadThemeQSS(selectedTheme);
@@ -638,15 +647,17 @@ private slots:
         Settings_Backend::instance().setCurrentTheme(selectedTheme);
         if (m_themeStackedWidget) m_themeStackedWidget->setCurrentIndex(1);
     }
+
     void onCreateTheme() {
         QString themeName = QInputDialog::getText(this, "Create Theme", "Enter theme name:");
         if (themeName.isEmpty() || themeName == "System") {
             QMessageBox::warning(this, "Invalid Name", "Please choose a different theme name.");
             return;
         }
-        Settings_Backend::instance().saveThemeQSS(themeName, "/* New theme, see github.com/Ktiseos-Nyx/qss_themes/ for refrence */");
+        Settings_Backend::instance().saveThemeQSS(themeName, "/* New theme, see github.com/Ktiseos-Nyx/qss_themes/ for reference */");
         refreshThemeLists(themeName);
     }
+
     void onDeleteTheme() {
         QString currentTheme = m_themeCombo->currentText();
         if (currentTheme == "System") {
@@ -661,6 +672,7 @@ private slots:
             refreshThemeLists("System");
         }
     }
+
     void onSaveCurrentTheme() {
         QString currentTheme = m_themeCombo->currentText();
         if (currentTheme == "System") {
@@ -672,6 +684,7 @@ private slots:
         qApp->setStyleSheet(qss);
         QMessageBox::information(this, "Saved", "Theme saved successfully.");
     }
+
     void refreshThemeLists(const QString &selectTheme = QString()) {
         m_themeCombo->clear();
         m_themeCombo->addItems(Settings_Backend::instance().availableThemes());
@@ -681,6 +694,7 @@ private slots:
             m_themeListWidget->addItem(theme);
         }
     }
+
     void onEditSearchEngine() {
         int index = m_searchEngineList->currentRow();
         if (index < 0) return;
@@ -710,6 +724,7 @@ private slots:
             updateSearchEngineList();
         }
     }
+
     void onRemoveSearchEngine() {
         int index = m_searchEngineList->currentRow();
         if (index < 0) return;
@@ -720,6 +735,7 @@ private slots:
             updateSearchEngineList();
         }
     }
+
     void onSetDefaultSearchEngine() {
         int index = m_searchEngineList->currentRow();
         if (index >= 0) {
@@ -727,13 +743,111 @@ private slots:
             updateSearchEngineList();
         }
     }
+
     void onOpenAdBlockList() {
         QString blockedHostsFile = Settings_Backend::instance().blockedHostsFile();
         QDesktopServices::openUrl(QUrl::fromLocalFile(blockedHostsFile));
     }
+
     void onBrowseDownloadPath() {
         QString dir = QFileDialog::getExistingDirectory(this, "Select Download Directory", m_downloadPathEdit->text());
         if (!dir.isEmpty()) m_downloadPathEdit->setText(dir);
+    }
+
+    void onSetEncryptionPassword() {
+        QDialog dialog(this);
+        dialog.setWindowTitle("Set Encryption Password");
+        dialog.setModal(true);
+        dialog.resize(450, 280);
+
+        QVBoxLayout *mainLayout = new QVBoxLayout(&dialog);
+        mainLayout->setSpacing(15);
+        mainLayout->setContentsMargins(20, 20, 20, 20);
+
+        QLabel *titleLabel = new QLabel("Set Custom Encryption Password");
+        QFont titleFont = titleLabel->font();
+        titleFont.setPointSize(12);
+        titleFont.setBold(true);
+        titleLabel->setFont(titleFont);
+        mainLayout->addWidget(titleLabel);
+
+        QLabel *infoLabel = new QLabel(
+            "Enter a strong password to encrypt your browsing data.\n"
+            "You will need to enter this password every time you start Onu."
+        );
+        infoLabel->setWordWrap(true);
+        infoLabel->setStyleSheet("color: gray;");
+        mainLayout->addWidget(infoLabel);
+
+        QLabel *pass1Label = new QLabel("Enter password:");
+        QLineEdit *pass1Edit = new QLineEdit();
+        pass1Edit->setEchoMode(QLineEdit::Password);
+        pass1Edit->setPlaceholderText("Password...");
+        pass1Edit->setMinimumHeight(32);
+        mainLayout->addWidget(pass1Label);
+        mainLayout->addWidget(pass1Edit);
+
+        QLabel *pass2Label = new QLabel("Re-enter password:");
+        QLineEdit *pass2Edit = new QLineEdit();
+        pass2Edit->setEchoMode(QLineEdit::Password);
+        pass2Edit->setPlaceholderText("Password...");
+        pass2Edit->setMinimumHeight(32);
+        mainLayout->addWidget(pass2Label);
+        mainLayout->addWidget(pass2Edit);
+
+        QLabel *warningLabel = new QLabel(
+            "⚠ Warning: If you forget this password, you will lose access to all encrypted data!"
+        );
+        warningLabel->setWordWrap(true);
+        warningLabel->setStyleSheet("color: #ff5555; font-weight: bold; padding: 5px;");
+        mainLayout->addWidget(warningLabel);
+
+        mainLayout->addStretch();
+
+        QDialogButtonBox *buttonBox = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel
+        );
+        buttonBox->button(QDialogButtonBox::Ok)->setText("Set Password");
+        mainLayout->addWidget(buttonBox);
+
+        connect(buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
+        connect(buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        connect(pass2Edit, &QLineEdit::returnPressed, &dialog, &QDialog::accept);
+
+        if (dialog.exec() == QDialog::Accepted) {
+            QString pass1 = pass1Edit->text();
+            QString pass2 = pass2Edit->text();
+
+            if (pass1.isEmpty()) {
+                QMessageBox::warning(this, "Empty Password",
+                    "Password cannot be empty. Please try again.");
+                return;
+            }
+
+            if (pass1 != pass2) {
+                QMessageBox::warning(this, "Password Mismatch",
+                    "Passwords do not match. Please try again.");
+                return;
+            }
+
+            if (pass1.length() < 4) {
+                QMessageBox::warning(this, "Weak Password",
+                    "Password should be at least 4 characters long.");
+                return;
+            }
+
+            QByteArray key = QCryptographicHash::hash(
+                pass1.toUtf8(),
+                QCryptographicHash::Sha256
+            );
+
+            Settings_Backend::instance().setSessionKey(key);
+            Settings_Backend::instance().setEncryptionMethod("custom");
+
+            QMessageBox::information(this, "Success",
+                "Encryption password set successfully.\n\n"
+                "You will need to enter this password every time you start Onu.");
+        }
     }
 
 private:
@@ -791,9 +905,12 @@ private:
     QCheckBox *m_smartPathCheck = nullptr;
     QCheckBox *m_openWhenCompleteCheck = nullptr;
     QPlainTextEdit *m_userScriptEditor = nullptr;
+    QComboBox *m_encryptionMethodCombo = nullptr;
+    QPushButton *m_setPasswordBtn = nullptr;
 
     void setupUI() {
         QVBoxLayout *mainLayout = new QVBoxLayout(this);
+
         QHBoxLayout *searchLayout = new QHBoxLayout();
         m_searchEdit = new QLineEdit();
         m_searchEdit->setPlaceholderText("Search settings...");
@@ -801,51 +918,94 @@ private:
         searchLayout->addWidget(new QLabel("Search:"));
         searchLayout->addWidget(m_searchEdit);
         mainLayout->addLayout(searchLayout);
+
         connect(m_searchEdit, &QLineEdit::textChanged, this, &SettingsDialog::filterSettings);
+
         m_tabWidget = new QTabWidget();
         m_tabWidget->setTabPosition(QTabWidget::West);
         m_tabWidget->setIconSize(QSize(32, 32));
         m_tabWidget->setDocumentMode(true);
+
         m_tabWidget->addTab(createGeneralTab(), QIcon::fromTheme("preferences-system"), QString("General"));
         m_tabWidget->setTabToolTip(0, "General Settings");
+
         m_tabWidget->addTab(createToolbarsTab(), QIcon::fromTheme("view-list-icons"), QString("Toolbars"));
         m_tabWidget->setTabToolTip(1, "Toolbars & Search");
+
         m_tabWidget->addTab(createAppearanceTab(), QIcon::fromTheme("preferences-desktop-theme"), QString("Appearance"));
         m_tabWidget->setTabToolTip(2, "Appearance");
+
         m_tabWidget->addTab(createPrivacyTab(), QIcon::fromTheme("security-high"), QString("Privacy"));
         m_tabWidget->setTabToolTip(3, "Privacy & Downloads");
+
         m_tabWidget->addTab(createExtensionsTab(), QIcon::fromTheme("application-x-addon"), QString("Scripts"));
         m_tabWidget->setTabToolTip(4, "Extensions");
+
         mainLayout->addWidget(m_tabWidget);
+
         QDialogButtonBox *buttonBox = new QDialogButtonBox(QDialogButtonBox::Save | QDialogButtonBox::Cancel);
         connect(buttonBox, &QDialogButtonBox::accepted, this, &SettingsDialog::onSaveClicked);
         connect(buttonBox, &QDialogButtonBox::rejected, this, &SettingsDialog::onCancelClicked);
         mainLayout->addWidget(buttonBox);
     }
 
+    QWidget* createScrollableTab(QWidget *content) {
+        QScrollArea *scrollArea = new QScrollArea();
+        scrollArea->setWidget(content);
+        scrollArea->setWidgetResizable(true);
+        scrollArea->setFrameShape(QFrame::NoFrame);
+        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        return scrollArea;
+    }
+
     QWidget* createGeneralTab() {
         QWidget *widget = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(15, 15, 15, 15);
+        layout->setSpacing(10);
+
         QLabel *headerLabel = new QLabel("General Settings");
         QFont headerFont = headerLabel->font();
         headerFont.setPointSize(14);
         headerFont.setBold(true);
         headerLabel->setFont(headerFont);
         layout->addWidget(headerLabel);
-        QHBoxLayout *homeLayout = new QHBoxLayout();
-        homeLayout->addWidget(new QLabel("Home URL:"));
-        m_homepageEdit = new QLineEdit();
-        homeLayout->addWidget(m_homepageEdit);
-        layout->addLayout(homeLayout);
+
         layout->addSpacing(10);
-        m_confirmCloseCheck = new QCheckBox("Ask for confirmation when closing the browser");
-        layout->addWidget(m_confirmCloseCheck);
+
+        QGroupBox *homeGroup = new QGroupBox("Startup");
+        QVBoxLayout *homeLayout = new QVBoxLayout(homeGroup);
+
+        QHBoxLayout *homeUrlLayout = new QHBoxLayout();
+        homeUrlLayout->addWidget(new QLabel("Home URL:"));
+        m_homepageEdit = new QLineEdit();
+        m_homepageEdit->setPlaceholderText("onu://home");
+        homeUrlLayout->addWidget(m_homepageEdit);
+        homeLayout->addLayout(homeUrlLayout);
+
         m_restoreSessionsCheck = new QCheckBox("Restore webpage sessions on startup");
-        layout->addWidget(m_restoreSessionsCheck);
+        homeLayout->addWidget(m_restoreSessionsCheck);
+
+        layout->addWidget(homeGroup);
+
+        QGroupBox *behaviorGroup = new QGroupBox("Browser Behavior");
+        QVBoxLayout *behaviorLayout = new QVBoxLayout(behaviorGroup);
+
+        m_confirmCloseCheck = new QCheckBox("Ask for confirmation when closing the browser");
+        behaviorLayout->addWidget(m_confirmCloseCheck);
+
         m_devModeCheck = new QCheckBox("Enable Developer Mode (Inspect Element)");
-        layout->addWidget(m_devModeCheck);
+        behaviorLayout->addWidget(m_devModeCheck);
+
+        layout->addWidget(behaviorGroup);
+
+        QGroupBox *blockingGroup = new QGroupBox("Content Blocking");
+        QVBoxLayout *blockingLayout = new QVBoxLayout(blockingGroup);
+
         m_adblockCheck = new QCheckBox("Enable AdBlock");
-        layout->addWidget(m_adblockCheck);
+        blockingLayout->addWidget(m_adblockCheck);
+
         QHBoxLayout *adblockBtnLayout = new QHBoxLayout();
         QPushButton *editAdBlockBtn = new QPushButton("Edit blocked_hosts.txt");
         editAdBlockBtn->setIcon(QIcon::fromTheme("document-edit"));
@@ -853,8 +1013,12 @@ private:
         connect(editAdBlockBtn, &QPushButton::clicked, this, &SettingsDialog::onOpenAdBlockList);
         adblockBtnLayout->addWidget(editAdBlockBtn);
         adblockBtnLayout->addStretch();
-        layout->addLayout(adblockBtnLayout);
+        blockingLayout->addLayout(adblockBtnLayout);
+
+        layout->addWidget(blockingGroup);
+
         layout->addSpacing(20);
+
         QLabel *actionsLabel = new QLabel("Actions");
         actionsLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
         layout->addWidget(actionsLabel);
@@ -868,38 +1032,51 @@ private:
         openConfigBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::DocumentOpen));
         connect(openConfigBtn, &QPushButton::clicked, this, &SettingsDialog::onOpenConfigFolder);
         layout->addWidget(openConfigBtn);
+
         QPushButton *clearCacheBtn = new QPushButton("Clear Icon Cache");
         clearCacheBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::EditClear));
         connect(clearCacheBtn, &QPushButton::clicked, this, &SettingsDialog::onClearIconCache);
         layout->addWidget(clearCacheBtn);
+
         QPushButton *resetBtn = new QPushButton("Remove All Data (Reset)");
         resetBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::EditDelete));
+        resetBtn->setStyleSheet("QPushButton { color: #ff5555; }");
         connect(resetBtn, &QPushButton::clicked, this, &SettingsDialog::onResetData);
         layout->addWidget(resetBtn);
+
         layout->addStretch();
-        return widget;
+
+        return createScrollableTab(widget);
     }
 
     QWidget* createToolbarsTab() {
         QWidget *widget = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(0, 0, 0, 0);
+
         QTabWidget *toolbarTabs = new QTabWidget();
+
         QWidget *generalTab = new QWidget();
         QVBoxLayout *generalLayout = new QVBoxLayout(generalTab);
+        generalLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *headerLabel = new QLabel("Toolbar Visibility & Locking");
         headerLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
         generalLayout->addWidget(headerLabel);
         generalLayout->addSpacing(10);
+
         QWidget *tableContainer = new QWidget();
         QGridLayout *overviewGrid = new QGridLayout(tableContainer);
         overviewGrid->setHorizontalSpacing(30);
         overviewGrid->setVerticalSpacing(10);
+
         QStringList headers = {"Toolbar", "Visible", "Lock Dragging", "Lock Floating"};
         for (int i = 0; i < headers.size(); ++i) {
             QLabel *header = new QLabel(headers[i]);
             header->setStyleSheet("font-weight: bold;");
             overviewGrid->addWidget(header, 0, i);
         }
+
         struct ToolbarItem {
             QString name;
             QString displayName;
@@ -908,6 +1085,7 @@ private:
             QCheckBox** lockDrag;
             QCheckBox** lockFloat;
         };
+
         QList<ToolbarItem> toolbars = {
             {"Navigation", "Navigation", "go-previous", &m_navToolbarVisible, &m_navToolbarLockDrag, &m_navToolbarLockFloat},
             {"Search", "Search", "edit-find", &m_urlToolbarVisible, &m_urlToolbarLockDrag, &m_urlToolbarLockFloat},
@@ -915,6 +1093,7 @@ private:
             {"Recent", "Recent", "document-open-recent", &m_recToolbarVisible, &m_recToolbarLockDrag, &m_recToolbarLockFloat},
             {"Tab", "Tab", "tab-new", &m_tabToolbarVisible, &m_tabToolbarLockDrag, &m_tabToolbarLockFloat}
         };
+
         int row = 1;
         for (const auto &tb : toolbars) {
             QWidget *nameWidget = new QWidget();
@@ -927,21 +1106,27 @@ private:
             nameLayout->addWidget(nameLabel);
             nameLayout->addStretch();
             overviewGrid->addWidget(nameWidget, row, 0);
+
             QCheckBox *visibleCheck = new QCheckBox();
             *tb.visible = visibleCheck;
             visibleCheck->setToolTip("Show/hide this toolbar");
             overviewGrid->addWidget(visibleCheck, row, 1, Qt::AlignCenter);
+
             QCheckBox *lockDragCheck = new QCheckBox();
             *tb.lockDrag = lockDragCheck;
             lockDragCheck->setToolTip("Prevent toolbar from being dragged");
             overviewGrid->addWidget(lockDragCheck, row, 2, Qt::AlignCenter);
+
             QCheckBox *lockFloatCheck = new QCheckBox();
             *tb.lockFloat = lockFloatCheck;
             lockFloatCheck->setToolTip("Prevent toolbar from floating");
             overviewGrid->addWidget(lockFloatCheck, row, 3, Qt::AlignCenter);
+
             row++;
         }
+
         generalLayout->addWidget(tableContainer);
+
         QPushButton *applyToAllBtn = new QPushButton("Apply Current Settings to All Toolbars");
         applyToAllBtn->setIcon(QIcon::fromTheme("dialog-ok-apply"));
         connect(applyToAllBtn, &QPushButton::clicked, [this]() {
@@ -965,24 +1150,35 @@ private:
         });
         generalLayout->addWidget(applyToAllBtn);
         generalLayout->addStretch();
-        toolbarTabs->addTab(generalTab, "General");
+
+        toolbarTabs->addTab(createScrollableTab(generalTab), "General");
+
         QWidget *navTab = new QWidget();
         QVBoxLayout *navLayout = new QVBoxLayout(navTab);
+        navLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *navHeader = new QLabel("Navigation Toolbar");
         navHeader->setStyleSheet("font-weight: bold; font-size: 12px;");
         navLayout->addWidget(navHeader);
         navLayout->addSpacing(10);
+
         QGroupBox *buttonGroup = new QGroupBox("Button Visibility");
         QVBoxLayout *buttonLayout = new QVBoxLayout(buttonGroup);
+
         m_showVolumeSlider = new QCheckBox("Show Volume Slider");
         buttonLayout->addWidget(m_showVolumeSlider);
+
         m_showReload = new QCheckBox("Show Reload Button");
         buttonLayout->addWidget(m_showReload);
+
         m_showForward = new QCheckBox("Show Forward Button");
         buttonLayout->addWidget(m_showForward);
+
         m_showMenu = new QCheckBox("Show Menu Button");
         buttonLayout->addWidget(m_showMenu);
+
         navLayout->addWidget(buttonGroup);
+
         QGroupBox *iconGroup = new QGroupBox("Icon Size");
         QHBoxLayout *iconLayout = new QHBoxLayout(iconGroup);
         iconLayout->addWidget(new QLabel("Navigation icons:"));
@@ -992,24 +1188,32 @@ private:
         iconLayout->addWidget(m_navIconSizeSpinBox);
         iconLayout->addStretch();
         navLayout->addWidget(iconGroup);
+
         navLayout->addStretch();
-        toolbarTabs->addTab(navTab, "Navigation");
+
+        toolbarTabs->addTab(createScrollableTab(navTab), "Navigation");
+
         QWidget *searchTab = new QWidget();
         QVBoxLayout *searchLayout = new QVBoxLayout(searchTab);
+        searchLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *searchHeader = new QLabel("Search Toolbar");
         searchHeader->setStyleSheet("font-weight: bold; font-size: 12px;");
         searchLayout->addWidget(searchHeader);
         searchLayout->addSpacing(10);
+
         QGroupBox *pickerGroup = new QGroupBox("Search Engine Picker");
         QVBoxLayout *pickerLayout = new QVBoxLayout(pickerGroup);
         m_showEngineNamesCheck = new QCheckBox("Show search engine picker");
         pickerLayout->addWidget(m_showEngineNamesCheck);
         searchLayout->addWidget(pickerGroup);
+
         QGroupBox *engineGroup = new QGroupBox("Search Engines");
         QVBoxLayout *engineLayout = new QVBoxLayout(engineGroup);
         m_searchEngineList = new QListWidget();
         m_searchEngineList->setMaximumHeight(150);
         engineLayout->addWidget(m_searchEngineList);
+
         QHBoxLayout *btnLayout = new QHBoxLayout();
         QPushButton *addEngineBtn = new QPushButton("Add");
         addEngineBtn->setIcon(QIcon::fromTheme("list-add"));
@@ -1025,45 +1229,61 @@ private:
         btnLayout->addWidget(setDefaultBtn);
         btnLayout->addStretch();
         engineLayout->addLayout(btnLayout);
+
         connect(addEngineBtn, &QPushButton::clicked, this, &SettingsDialog::onAddSearchEngine);
         connect(editEngineBtn, &QPushButton::clicked, this, &SettingsDialog::onEditSearchEngine);
         connect(removeEngineBtn, &QPushButton::clicked, this, &SettingsDialog::onRemoveSearchEngine);
         connect(setDefaultBtn, &QPushButton::clicked, this, &SettingsDialog::onSetDefaultSearchEngine);
+
         searchLayout->addWidget(engineGroup);
+
         QGroupBox *suggestGroup = new QGroupBox("Suggestion Sources");
         QVBoxLayout *suggestLayout = new QVBoxLayout(suggestGroup);
+
         m_suggestHistoryCheck = new QCheckBox("Suggest from History");
         suggestLayout->addWidget(m_suggestHistoryCheck);
+
         m_suggestFavoritesCheck = new QCheckBox("Suggest from Favorites");
         suggestLayout->addWidget(m_suggestFavoritesCheck);
+
         m_suggestRemoteCheck = new QCheckBox("Suggest from Remote API");
         suggestLayout->addWidget(m_suggestRemoteCheck);
+
         QWidget *apiWidget = new QWidget();
         QVBoxLayout *apiLayout = new QVBoxLayout(apiWidget);
         apiLayout->setContentsMargins(20, 5, 5, 5);
+
         QHBoxLayout *urlLayout = new QHBoxLayout();
         urlLayout->addWidget(new QLabel("API URL:"));
         m_apiUrlEdit = new QLineEdit();
         m_apiUrlEdit->setPlaceholderText("https://api.example.com/suggest?q=%1");
         urlLayout->addWidget(m_apiUrlEdit);
         apiLayout->addLayout(urlLayout);
+
         QLabel *parserLabel = new QLabel("Parser Script:");
         m_parserScriptEdit = new QPlainTextEdit();
         m_parserScriptEdit->setFont(QFont("Monospace", 9));
         m_parserScriptEdit->setMaximumHeight(120);
         apiLayout->addWidget(parserLabel);
         apiLayout->addWidget(m_parserScriptEdit);
+
         connect(m_suggestRemoteCheck, &QCheckBox::toggled, apiWidget, &QWidget::setEnabled);
+
         suggestLayout->addWidget(apiWidget);
         searchLayout->addWidget(suggestGroup);
         searchLayout->addStretch();
-        toolbarTabs->addTab(searchTab, "Search");
+
+        toolbarTabs->addTab(createScrollableTab(searchTab), "Search");
+
         QWidget *favTab = new QWidget();
         QVBoxLayout *favLayout = new QVBoxLayout(favTab);
+        favLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *favHeader = new QLabel("Favorites Toolbar");
         favHeader->setStyleSheet("font-weight: bold; font-size: 12px;");
         favLayout->addWidget(favHeader);
         favLayout->addSpacing(10);
+
         QGroupBox *favLimitGroup = new QGroupBox("Items Limit");
         QVBoxLayout *favLimitLayout = new QVBoxLayout(favLimitGroup);
         QLabel *favLimitLabel = new QLabel("Number of favorites to show:");
@@ -1077,19 +1297,27 @@ private:
         });
         favLimitLayout->addWidget(favLimitCombo);
         favLayout->addWidget(favLimitGroup);
+
         favLayout->addSpacing(10);
+
         QPushButton *manageFavBtn = new QPushButton("Open Favorites Manager");
         manageFavBtn->setIcon(QIcon::fromTheme("bookmarks-organize"));
         manageFavBtn->setObjectName("btnFavorites");
         favLayout->addWidget(manageFavBtn);
+
         favLayout->addStretch();
-        toolbarTabs->addTab(favTab, "Favorites");
+
+        toolbarTabs->addTab(createScrollableTab(favTab), "Favorites");
+
         QWidget *recTab = new QWidget();
         QVBoxLayout *recLayout = new QVBoxLayout(recTab);
+        recLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *recHeader = new QLabel("Recent Toolbar");
         recHeader->setStyleSheet("font-weight: bold; font-size: 12px;");
         recLayout->addWidget(recHeader);
         recLayout->addSpacing(10);
+
         QGroupBox *recLimitGroup = new QGroupBox("Items Limit");
         QVBoxLayout *recLimitLayout = new QVBoxLayout(recLimitGroup);
         QLabel *recLimitLabel = new QLabel("Number of recent items to show:");
@@ -1103,7 +1331,9 @@ private:
         });
         recLimitLayout->addWidget(recLimitCombo);
         recLayout->addWidget(recLimitGroup);
+
         recLayout->addSpacing(10);
+
         QPushButton *clearHistoryBtn = new QPushButton("Clear Recent Items");
         clearHistoryBtn->setIcon(QIcon::fromTheme("edit-clear"));
         connect(clearHistoryBtn, &QPushButton::clicked, [this]() {
@@ -1111,67 +1341,100 @@ private:
             QMessageBox::information(this, "History Cleared", "Recent history has been cleared.");
         });
         recLayout->addWidget(clearHistoryBtn);
+
         recLayout->addSpacing(10);
+
         QPushButton *openHistoryBtn = new QPushButton("Open History Manager");
         openHistoryBtn->setIcon(QIcon::fromTheme("view-history"));
         openHistoryBtn->setObjectName("btnHistory");
         recLayout->addWidget(openHistoryBtn);
+
         recLayout->addStretch();
-        toolbarTabs->addTab(recTab, "Recent");
+
+        toolbarTabs->addTab(createScrollableTab(recTab), "Recent");
+
         QWidget *tabBarTab = new QWidget();
         QVBoxLayout *tabBarLayout = new QVBoxLayout(tabBarTab);
+        tabBarLayout->setContentsMargins(15, 15, 15, 15);
+
         QLabel *tabBarHeader = new QLabel("Tab Bar");
         tabBarHeader->setStyleSheet("font-weight: bold; font-size: 12px;");
         tabBarLayout->addWidget(tabBarHeader);
         tabBarLayout->addSpacing(10);
+
         QLabel *infoLabel = new QLabel("Tab bar settings managed in General subtab above.");
         infoLabel->setWordWrap(true);
         infoLabel->setStyleSheet("color: gray;");
         tabBarLayout->addWidget(infoLabel);
+
         tabBarLayout->addStretch();
-        toolbarTabs->addTab(tabBarTab, "Tab Bar");
+
+        toolbarTabs->addTab(createScrollableTab(tabBarTab), "Tab Bar");
+
         layout->addWidget(toolbarTabs);
+
         return widget;
     }
 
     QWidget* createAppearanceTab() {
         QWidget *widget = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(15, 15, 15, 15);
+        layout->setSpacing(15);
+
         QLabel *headerLabel = new QLabel("Appearance");
         QFont headerFont = headerLabel->font();
         headerFont.setPointSize(14);
         headerFont.setBold(true);
         headerLabel->setFont(headerFont);
         layout->addWidget(headerLabel);
+
+        QGroupBox *fontGroup = new QGroupBox("Fonts");
+        QVBoxLayout *fontGroupLayout = new QVBoxLayout(fontGroup);
+
         QHBoxLayout *fontLayout = new QHBoxLayout();
-        fontLayout->addWidget(new QLabel("Font:"));
+        fontLayout->addWidget(new QLabel("Font Family:"));
         m_fontCombo = new QFontComboBox();
         fontLayout->addWidget(m_fontCombo);
-        layout->addLayout(fontLayout);
+        fontGroupLayout->addLayout(fontLayout);
+
         QHBoxLayout *fontSizeLayout = new QHBoxLayout();
         fontSizeLayout->addWidget(new QLabel("Font Size:"));
         m_fontSizeSpinBox = new QSpinBox();
         m_fontSizeSpinBox->setRange(8, 24);
         m_fontSizeSpinBox->setValue(10);
+        m_fontSizeSpinBox->setSuffix(" pt");
         fontSizeLayout->addWidget(m_fontSizeSpinBox);
         fontSizeLayout->addStretch();
-        layout->addLayout(fontSizeLayout);
+        fontGroupLayout->addLayout(fontSizeLayout);
+
+        layout->addWidget(fontGroup);
+
+        QGroupBox *styleGroup = new QGroupBox("Icons and Style");
+        QVBoxLayout *styleGroupLayout = new QVBoxLayout(styleGroup);
+
         QHBoxLayout *iconThemeLayout = new QHBoxLayout();
         iconThemeLayout->addWidget(new QLabel("Icon Theme:"));
         m_iconThemeCombo = new QComboBox();
         m_iconThemeCombo->addItems(Settings_Backend::instance().availableIconThemes());
         iconThemeLayout->addWidget(m_iconThemeCombo);
-        layout->addLayout(iconThemeLayout);
+        styleGroupLayout->addLayout(iconThemeLayout);
+
         QHBoxLayout *qtStyleLayout = new QHBoxLayout();
         qtStyleLayout->addWidget(new QLabel("Qt Style:"));
         m_qtStyleCombo = new QComboBox();
         m_qtStyleCombo->addItems(QStyleFactory::keys());
         qtStyleLayout->addWidget(m_qtStyleCombo);
-        layout->addLayout(qtStyleLayout);
+        styleGroupLayout->addLayout(qtStyleLayout);
+
+        layout->addWidget(styleGroup);
+
         layout->addSpacing(10);
+
         QLabel *themeLabel = new QLabel("Theme Editor");
         themeLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
         layout->addWidget(themeLabel);
+
         QHBoxLayout *themeLayout = new QHBoxLayout();
         themeLayout->addWidget(new QLabel("Current Theme:"));
         m_themeCombo = new QComboBox();
@@ -1179,9 +1442,12 @@ private:
         connect(m_themeCombo, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &SettingsDialog::onThemeChanged);
         themeLayout->addWidget(m_themeCombo);
         layout->addLayout(themeLayout);
+
         m_themeStackedWidget = new QStackedWidget();
+
         QWidget *themeListPage = new QWidget();
         QHBoxLayout *themeListLayout = new QHBoxLayout(themeListPage);
+
         QVBoxLayout *themeListLeftLayout = new QVBoxLayout();
         QPushButton *deleteThemeBtn = new QPushButton();
         deleteThemeBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::EditDelete));
@@ -1189,6 +1455,7 @@ private:
         deleteThemeBtn->setToolTip("Delete Theme");
         connect(deleteThemeBtn, &QPushButton::clicked, this, &SettingsDialog::onDeleteTheme);
         themeListLeftLayout->addWidget(deleteThemeBtn);
+
         QPushButton *addThemeBtn = new QPushButton();
         addThemeBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::ListAdd));
         addThemeBtn->setMaximumWidth(30);
@@ -1196,19 +1463,24 @@ private:
         connect(addThemeBtn, &QPushButton::clicked, this, &SettingsDialog::onCreateTheme);
         themeListLeftLayout->addWidget(addThemeBtn);
         themeListLeftLayout->addStretch();
+
         m_themeListWidget = new QListWidget();
         for (const QString &theme : Settings_Backend::instance().availableThemes()) {
             m_themeListWidget->addItem(theme);
         }
+
         themeListLayout->addLayout(themeListLeftLayout);
         themeListLayout->addWidget(m_themeListWidget);
         m_themeStackedWidget->addWidget(themeListPage);
+
         QWidget *qssEditorPage = new QWidget();
         QVBoxLayout *qssEditorLayout = new QVBoxLayout(qssEditorPage);
+
         m_qssEditor = new QPlainTextEdit();
         m_qssEditor->setFont(QFont("Monospace", 10));
         m_qssEditor->setPlaceholderText("Enter your QSS stylesheet here...");
         qssEditorLayout->addWidget(m_qssEditor);
+
         QHBoxLayout *qssButtonLayout = new QHBoxLayout();
         QPushButton *backToListBtn = new QPushButton("Back to List");
         backToListBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::GoPrevious));
@@ -1217,47 +1489,97 @@ private:
         });
         qssButtonLayout->addWidget(backToListBtn);
         qssButtonLayout->addStretch();
+
         QPushButton *saveThemeBtn = new QPushButton("Save Theme");
         saveThemeBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::DocumentSave));
         connect(saveThemeBtn, &QPushButton::clicked, this, &SettingsDialog::onSaveCurrentTheme);
         qssButtonLayout->addWidget(saveThemeBtn);
         qssEditorLayout->addLayout(qssButtonLayout);
+
         m_themeStackedWidget->addWidget(qssEditorPage);
         layout->addWidget(m_themeStackedWidget);
-        return widget;
+
+        return createScrollableTab(widget);
     }
 
     QWidget* createPrivacyTab() {
         QWidget *widget = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(15, 15, 15, 15);
+        layout->setSpacing(15);
+
         QLabel *headerLabel = new QLabel("Privacy & Downloads");
         QFont headerFont = headerLabel->font();
         headerFont.setPointSize(14);
         headerFont.setBold(true);
         headerLabel->setFont(headerFont);
         layout->addWidget(headerLabel);
-        QLabel *webpageLabel = new QLabel("Webpage Settings");
-        webpageLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-        layout->addWidget(webpageLabel);
+
+        QGroupBox *webpageGroup = new QGroupBox("Webpage Settings");
+        QVBoxLayout *webpageLayout = new QVBoxLayout(webpageGroup);
+
         m_javascriptCheck = new QCheckBox("Enable JavaScript Execution");
-        layout->addWidget(m_javascriptCheck);
+        webpageLayout->addWidget(m_javascriptCheck);
+
         m_imagesCheck = new QCheckBox("Load Images");
-        layout->addWidget(m_imagesCheck);
+        webpageLayout->addWidget(m_imagesCheck);
+
         m_deleteCookiesCheck = new QCheckBox("Delete Cookies in Every Session");
-        layout->addWidget(m_deleteCookiesCheck);
+        webpageLayout->addWidget(m_deleteCookiesCheck);
+
         m_doNotTrackCheck = new QCheckBox("Send Do Not Track Headers to All Websites");
-        layout->addWidget(m_doNotTrackCheck);
-        layout->addSpacing(10);
+        webpageLayout->addWidget(m_doNotTrackCheck);
+
+        layout->addWidget(webpageGroup);
+
+        QGroupBox *advancedGroup = new QGroupBox("Advanced");
+        QVBoxLayout *advancedLayout = new QVBoxLayout(advancedGroup);
+
         QHBoxLayout *flagsLayout = new QHBoxLayout();
         flagsLayout->addWidget(new QLabel("Chromium Flags:"));
         m_chromiumFlagsEdit = new QLineEdit();
         m_chromiumFlagsEdit->setPlaceholderText("--flag1 --flag2");
         flagsLayout->addWidget(m_chromiumFlagsEdit);
-        layout->addLayout(flagsLayout);
-        layout->addSpacing(20);
-        QLabel *downloadsLabel = new QLabel("Downloads");
-        downloadsLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-        layout->addWidget(downloadsLabel);
+        advancedLayout->addLayout(flagsLayout);
+
+        layout->addWidget(advancedGroup);
+
+        QGroupBox *encryptionGroup = new QGroupBox("Encryption");
+        QVBoxLayout *encryptionLayout = new QVBoxLayout(encryptionGroup);
+
+        QHBoxLayout *methodLayout = new QHBoxLayout();
+        methodLayout->addWidget(new QLabel("Encryption Method:"));
+        m_encryptionMethodCombo = new QComboBox();
+        m_encryptionMethodCombo->addItem("Default (System-based)", "default");
+        m_encryptionMethodCombo->addItem("Custom Password", "custom");
+        methodLayout->addWidget(m_encryptionMethodCombo);
+        encryptionLayout->addLayout(methodLayout);
+
+        QLabel *encWarning = new QLabel(
+            "⚠ Custom encryption requires entering your password every session.\n"
+            "Forgetting your password after 10 failed attempts requires deleting encrypted.conf\n"
+            "which will permanently erase all encrypted data (history, favorites, sessions)."
+        );
+        encWarning->setWordWrap(true);
+        encWarning->setStyleSheet("color: #ff9800; padding: 8px; font-size: 11px;");
+        encryptionLayout->addWidget(encWarning);
+
+        m_setPasswordBtn = new QPushButton("Set/Change Encryption Password");
+        m_setPasswordBtn->setIcon(QIcon::fromTheme("dialog-password"));
+        m_setPasswordBtn->setEnabled(false);
+        encryptionLayout->addWidget(m_setPasswordBtn);
+
+        connect(m_encryptionMethodCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, &SettingsDialog::handleEncryptionMethodChange);
+
+
+        connect(m_setPasswordBtn, &QPushButton::clicked, this, &SettingsDialog::onSetEncryptionPassword);
+
+        layout->addWidget(encryptionGroup);
+
+        QGroupBox *downloadsGroup = new QGroupBox("Downloads");
+        QVBoxLayout *downloadsLayout = new QVBoxLayout(downloadsGroup);
+
         QHBoxLayout *downloadPathLayout = new QHBoxLayout();
         downloadPathLayout->addWidget(new QLabel("Download Path:"));
         m_downloadPathEdit = new QLineEdit();
@@ -1265,46 +1587,59 @@ private:
         QPushButton *browseBtn = new QPushButton("Browse");
         connect(browseBtn, &QPushButton::clicked, this, &SettingsDialog::onBrowseDownloadPath);
         downloadPathLayout->addWidget(browseBtn);
-        layout->addLayout(downloadPathLayout);
+        downloadsLayout->addLayout(downloadPathLayout);
+
         m_askDownloadCheck = new QCheckBox("Ask for Approval When Download Requested");
-        layout->addWidget(m_askDownloadCheck);
+        downloadsLayout->addWidget(m_askDownloadCheck);
+
         m_allowDuplicatesCheck = new QCheckBox("Allow Duplicate Downloads");
-        layout->addWidget(m_allowDuplicatesCheck);
+        downloadsLayout->addWidget(m_allowDuplicatesCheck);
+
         m_smartPathCheck = new QCheckBox("Smart Path (organize downloads by file type)");
-        layout->addWidget(m_smartPathCheck);
+        downloadsLayout->addWidget(m_smartPathCheck);
+
         m_openWhenCompleteCheck = new QCheckBox("Open Folder When Download Completes");
-        layout->addWidget(m_openWhenCompleteCheck);
-        layout->addSpacing(10);
+        downloadsLayout->addWidget(m_openWhenCompleteCheck);
+
         QPushButton *openDownloadsBtn = new QPushButton("Open Downloads Manager");
         openDownloadsBtn->setIcon(QIcon::fromTheme("folder-download"));
         openDownloadsBtn->setToolTip("Use Ctrl+J");
-        layout->addWidget(openDownloadsBtn);
+        downloadsLayout->addWidget(openDownloadsBtn);
+
+        layout->addWidget(downloadsGroup);
+
         layout->addStretch();
-        return widget;
+
+        return createScrollableTab(widget);
     }
 
     QWidget* createExtensionsTab() {
         QWidget *widget = new QWidget();
         QVBoxLayout *layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(15, 15, 15, 15);
+        layout->setSpacing(15);
+
         QLabel *headerLabel = new QLabel("Extensions and User Scripts");
         QFont headerFont = headerLabel->font();
         headerFont.setPointSize(14);
         headerFont.setBold(true);
         headerLabel->setFont(headerFont);
         layout->addWidget(headerLabel);
-        layout->addSpacing(10);
-        QLabel *extLabel = new QLabel("Browser Extensions");
-        extLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-        layout->addWidget(extLabel);
+
+        QGroupBox *extGroup = new QGroupBox("Browser Extensions");
+        QVBoxLayout *extLayout = new QVBoxLayout(extGroup);
+
         QLabel *extInfoLabel = new QLabel("Extensions are .so or .dll files in: " + Settings_Backend::instance().extensionsPath());
         extInfoLabel->setWordWrap(true);
         extInfoLabel->setStyleSheet("color: gray;");
-        layout->addWidget(extInfoLabel);
+        extLayout->addWidget(extInfoLabel);
+
         QHBoxLayout *extBtnLayout = new QHBoxLayout();
         QPushButton *openExtManagerBtn = new QPushButton("Open Extension Manager");
         openExtManagerBtn->setIcon(QIcon::fromTheme("application-x-addon"));
         openExtManagerBtn->setObjectName("btnExtensions");
         extBtnLayout->addWidget(openExtManagerBtn);
+
         QPushButton *openExtFolderBtn = new QPushButton("Open Extensions Folder");
         openExtFolderBtn->setIcon(QIcon::fromTheme("folder-open"));
         connect(openExtFolderBtn, &QPushButton::clicked, [this]() {
@@ -1312,15 +1647,18 @@ private:
         });
         extBtnLayout->addWidget(openExtFolderBtn);
         extBtnLayout->addStretch();
-        layout->addLayout(extBtnLayout);
-        layout->addSpacing(20);
-        QLabel *scriptLabel = new QLabel("User Script (JavaScript)");
-        scriptLabel->setStyleSheet("font-weight: bold; font-size: 12px;");
-        layout->addWidget(scriptLabel);
+        extLayout->addLayout(extBtnLayout);
+
+        layout->addWidget(extGroup);
+
+        QGroupBox *scriptGroup = new QGroupBox("User Script (JavaScript)");
+        QVBoxLayout *scriptLayout = new QVBoxLayout(scriptGroup);
+
         QLabel *scriptInfoLabel = new QLabel("User scripts execute on every page. Use with caution.");
         scriptInfoLabel->setWordWrap(true);
         scriptInfoLabel->setStyleSheet("color: #ff9800;");
-        layout->addWidget(scriptInfoLabel);
+        scriptLayout->addWidget(scriptInfoLabel);
+
         QHBoxLayout *scriptButtonLayout = new QHBoxLayout();
         QPushButton *newScriptBtn = new QPushButton();
         newScriptBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::DocumentNew));
@@ -1328,6 +1666,7 @@ private:
         newScriptBtn->setToolTip("New Script");
         connect(newScriptBtn, &QPushButton::clicked, [this]() { m_userScriptEditor->clear(); });
         scriptButtonLayout->addWidget(newScriptBtn);
+
         QPushButton *clearScriptBtn = new QPushButton();
         clearScriptBtn->setIcon(QIcon::fromTheme(QIcon::ThemeIcon::EditClear));
         clearScriptBtn->setMaximumWidth(30);
@@ -1335,12 +1674,19 @@ private:
         connect(clearScriptBtn, &QPushButton::clicked, [this]() { m_userScriptEditor->clear(); });
         scriptButtonLayout->addWidget(clearScriptBtn);
         scriptButtonLayout->addStretch();
-        layout->addLayout(scriptButtonLayout);
+        scriptLayout->addLayout(scriptButtonLayout);
+
         m_userScriptEditor = new QPlainTextEdit();
         m_userScriptEditor->setFont(QFont("Monospace", 10));
         m_userScriptEditor->setPlaceholderText("// Your JavaScript code here...");
-        layout->addWidget(m_userScriptEditor);
-        return widget;
+        m_userScriptEditor->setMinimumHeight(200);
+        scriptLayout->addWidget(m_userScriptEditor);
+
+        layout->addWidget(scriptGroup);
+
+        layout->addStretch();
+
+        return createScrollableTab(widget);
     }
 
     void updateSearchEngineList() {
@@ -1420,8 +1766,77 @@ private:
         m_smartPathCheck->setChecked(s.smartPath());
         m_openWhenCompleteCheck->setChecked(s.openWhenComplete());
         m_userScriptEditor->setPlainText(s.userScript());
-    }
 
+        QString encMethod = s.useCustomEncryption() ? "custom" : "default";
+        m_encryptionMethodCombo->setCurrentIndex(encMethod == "custom" ? 1 : 0);
+        m_setPasswordBtn->setEnabled(encMethod == "custom");
+    }
+    void handleEncryptionMethodChange(int index) {
+    m_setPasswordBtn->setEnabled(index == 1);
+
+        auto &backend = Settings_Backend::instance();
+
+     if (index == 0 && backend.useCustomEncryption()) {
+            QMessageBox::StandardButton reply = QMessageBox::question(
+                this,
+                "Switch to Default Encryption",
+                "You are currently using a custom encryption key.\n\n"
+                "Switching to Default will require your current password to decrypt data "
+                "and then re-encrypt it with the system key.\n\n"
+                "Do you want to continue?",
+                QMessageBox::Yes | QMessageBox::No
+            );
+
+            if (reply == QMessageBox::Yes) {
+                bool verified = false;
+                QString pass = QInputDialog::getText(
+                    this,
+                    "Verify Encryption Password",
+                    "Enter your current encryption password:",
+                    QLineEdit::Password
+                );
+
+                if (!pass.isEmpty()) {
+                    QByteArray key = QCryptographicHash::hash(pass.toUtf8(), QCryptographicHash::Sha256);
+                    backend.setSessionKey(key);
+                    verified = backend.verifyEncryptionKey();
+                }
+
+                if (!verified) {
+                    QMessageBox::warning(this, "Failed",
+                        "Could not verify your current encryption key. Data remains encrypted.");
+                    m_encryptionMethodCombo->setCurrentIndex(1);
+                    return;
+                }
+
+                QVariantList history   = backend.loadHistory();
+                QVariantList favorites = backend.loadFavorites();
+                QVariantList session   = backend.loadSession();
+                QList<Settings_Backend::ExtState> extensions = backend.loadExtensionStates();
+
+                backend.setEncryptionMethod("default");
+
+                struct utsname b;
+                QByteArray sysKey;
+                if (uname(&b) == 0) {
+                    sysKey.append(b.sysname);
+                    sysKey.append(b.machine);
+                }
+                QByteArray defaultKey = QCryptographicHash::hash(sysKey, QCryptographicHash::Sha256);
+                backend.setSessionKey(defaultKey);
+
+                backend.saveHistory(history);
+                backend.saveFavorites(favorites);
+                backend.saveSession(session);
+                backend.saveExtensionStates(extensions);
+
+                QMessageBox::information(this, "Encryption Reset",
+                    "Data has been successfully re-encrypted using the default system key.");
+            } else {
+                m_encryptionMethodCombo->setCurrentIndex(1);
+            }
+        }
+    }
     void saveSettings() {
         auto &s = Settings_Backend::instance();
         s.setPublicValue("homepage", m_homepageEdit->text());
@@ -1471,6 +1886,9 @@ private:
         s.setPublicValue("downloads/smartPath", m_smartPathCheck->isChecked());
         s.setPublicValue("downloads/openComplete", m_openWhenCompleteCheck->isChecked());
         s.setUserScript(m_userScriptEditor->toPlainText());
+
+        QString selectedMethod = m_encryptionMethodCombo->currentData().toString();
+        s.setEncryptionMethod(selectedMethod);
     }
 
     void filterSettings(const QString &query) {
@@ -1480,11 +1898,11 @@ private:
         }
         QString lowerQuery = query.toLower();
         QMap<int, QStringList> tabKeywords = {
-            {0, {"general", "home", "close", "adblock", "developer", "config", "cache", "reset"}},
+            {0, {"general", "home", "close", "adblock", "developer", "config", "cache", "reset", "startup", "behavior"}},
             {1, {"toolbar", "search", "engine", "suggest", "navigation", "volume", "reload", "forward", "favorites", "recent", "history"}},
-            {2, {"appearance", "theme", "font", "icon", "style", "qss"}},
-            {3, {"privacy", "download", "javascript", "cookie", "track", "flag", "chromium"}},
-            {4, {"extension", "plugin", "script", "user"}}
+            {2, {"appearance", "theme", "font", "icon", "style", "qss", "color"}},
+            {3, {"privacy", "download", "javascript", "cookie", "track", "flag", "chromium", "encryption", "password", "secure"}},
+            {4, {"extension", "plugin", "script", "user", "addon"}}
         };
         for (int i = 0; i < m_tabWidget->count(); ++i) {
             bool matches = false;
@@ -2880,6 +3298,112 @@ public:
 
         if (refreshCallback) refreshCallback();
     }
+    static bool requestEncryptionKey(QWidget *parent, int &attemptCount) {
+        constexpr int maxAttempts = 10;
+
+        auto remainingText = [&](int count) {
+            int remaining = std::clamp(maxAttempts - count, 0, maxAttempts);
+            return QString("Attempts remaining: %1 / %2")
+                   .arg(remaining)
+                   .arg(maxAttempts);
+        };
+
+        if (attemptCount >= maxAttempts) {
+            QMessageBox msgBox(parent);
+            msgBox.setWindowTitle("Maximum Attempts Exceeded");
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.setText("Too many failed login attempts.");
+            msgBox.setInformativeText(
+                "To reset and regain access:\n\n"
+                "1. Close Onu completely\n"
+                "2. Navigate to: " + Settings_Backend::instance().dataPath() + "\n"
+                "3. Delete the file: encrypted.conf\n"
+                "4. Restart Onu\n\n"
+                "Warning: This will permanently delete all encrypted data "
+                "(history, favorites, sessions)."
+            );
+            msgBox.setStandardButtons(QMessageBox::Ok);
+            msgBox.exec();
+            return false;
+        }
+
+        QDialog dialog(parent);
+        dialog.setWindowTitle("Onu - Encryption Key Required");
+        dialog.setWindowIcon(QIcon::fromTheme("dialog-password"));
+        dialog.setModal(true);
+        dialog.resize(450, 200);
+
+        QVBoxLayout *layout = new QVBoxLayout(&dialog);
+
+        QLabel *title = new QLabel("Enter Encryption Password");
+        QFont tf = title->font(); tf.setPointSize(12); tf.setBold(true);
+        title->setFont(tf);
+        layout->addWidget(title);
+
+        QLabel *info = new QLabel(
+            "Your data is encrypted with a custom key.\n"
+            "Please enter your password to continue:"
+        );
+        info->setWordWrap(true);
+        layout->addWidget(info);
+
+        QLineEdit *passwordEdit = new QLineEdit();
+        passwordEdit->setEchoMode(QLineEdit::Password);
+        passwordEdit->setPlaceholderText("Enter password...");
+        layout->addWidget(passwordEdit);
+
+        QLabel *feedback = new QLabel(remainingText(attemptCount));
+        feedback->setStyleSheet("color:#ff5555; font-weight:bold;");
+        feedback->setWordWrap(true);
+        layout->addWidget(feedback);
+
+        QDialogButtonBox *buttons = new QDialogButtonBox(
+            QDialogButtonBox::Ok | QDialogButtonBox::Cancel
+        );
+        QPushButton *okBtn = buttons->button(QDialogButtonBox::Ok);
+        okBtn->setText("Unlock");
+        okBtn->setEnabled(false);
+        layout->addWidget(buttons);
+
+        QObject::connect(passwordEdit, &QLineEdit::textChanged, [&](const QString &txt) {
+            okBtn->setEnabled(!txt.isEmpty());
+            feedback->setText(remainingText(attemptCount));
+        });
+
+        QObject::connect(buttons, &QDialogButtonBox::accepted, [&]() {
+            QByteArray key = QCryptographicHash::hash(passwordEdit->text().toUtf8(),
+                                                      QCryptographicHash::Sha256);
+            Settings_Backend::instance().setSessionKey(key);
+
+            if (!Settings_Backend::instance().verifyEncryptionKey()) {
+                attemptCount++;
+                feedback->setPixmap(QIcon::fromTheme("dialog-error").pixmap(16,16));
+                feedback->setText("Incorrect password.\n" + remainingText(attemptCount));
+                passwordEdit->clear();
+                passwordEdit->setFocus();
+
+                if (attemptCount >= maxAttempts) {
+                    dialog.reject();
+                }
+                return;
+            }
+
+            feedback->setPixmap(QIcon::fromTheme("dialog-ok").pixmap(16,16));
+            feedback->setText("Password correct! Unlocking...");
+            QApplication::processEvents();
+            QThread::msleep(500);
+            dialog.accept();
+        });
+
+        QObject::connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        QObject::connect(passwordEdit, &QLineEdit::returnPressed, [&]() {
+            if (!passwordEdit->text().isEmpty())
+                okBtn->click();
+        });
+
+        return dialog.exec() == QDialog::Accepted;
+    }
+
 
 private:
     static void showFavoriteDialog(QWidget *parent, QVariantList &favorites,
@@ -4324,6 +4848,9 @@ private:
         return QObject::eventFilter(obj, event);
     }
 };
+
+
+
 class Content_Protector : public QWebEngineUrlRequestInterceptor {
     Q_OBJECT
 public:
@@ -4423,9 +4950,26 @@ private:
         return false;
     }
 };
+
+
 class Onu_window : public QMainWindow {
     Q_OBJECT
 public:
+    static bool initializeEncryption(QWidget *parent = nullptr) {
+        auto &settings = Settings_Backend::instance();
+
+        if (!settings.useCustomEncryption()) {
+           return true;
+        }
+
+      int attemptCount = 0;
+
+        if (Dialogs::requestEncryptionKey(parent, attemptCount)) {
+          return true;
+        }
+      return false;
+    }
+
     Onu_window() {
         setWindowTitle("Onu.");
         setWindowIcon(QIcon::fromTheme("onu"));
@@ -4453,7 +4997,6 @@ public:
         connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
                 this, &Onu_window::handleDownload);
     }
-
     ~Onu_window() {
         qDeleteAll(m_shortcuts);
         m_shortcuts.clear();
@@ -5560,7 +6103,9 @@ int main(int argc, char *argv[]) {
 
     app.setApplicationVersion("0.5");
 
-
+    if (!Onu_window::initializeEncryption()) {
+        return 0;
+    }
     Onu_window window;
 
     QWebEngineProfile *profile = QWebEngineProfile::defaultProfile();

@@ -69,5 +69,5 @@ endif()
 #
 #                 Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
 #                                                     project : Onu 0.5
-#
+#                                                 visit dists folder for deployment
 #                                                            -----------------------*/

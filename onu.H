@@ -28,6 +28,7 @@
 #include <QBuffer>
 #include <QFile>
 #include <QFileDialog>
+#include <QScrollArea>
 #include <QFileIconProvider>
 #include <QVBoxLayout>
 #include <QHBoxLayout>

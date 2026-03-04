@@ -54,13 +54,11 @@
                 height: 100vh;
                 display: flex;
                 flex-direction: column;
-                gap: var(--pad); /* A, nimation */
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-                background-color: #000;
+                    background-color: #000;
+
                 overflow: hidden;
                 background-size: cover;
+                gap: var(--pad);
                 background-position: center;
                 background-repeat: no-repeat;
                 background-image: radial-gradient(
@@ -70,10 +68,7 @@
                 );
             }
 
-            body.loaded {
-                opacity: 1;
-                pointer-events: all;
-            }
+
             header {
                 display: flex;
                 gap: var(--pad);
@@ -446,6 +441,16 @@
                 font-size: 0.9rem;
                 margin-top: 10px;
             }
+/* Animations */
+@keyframes appear {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 1; }
+}
+
+body {
+    animation: appear 0.9s ease;
+}
         </style>
     </head>
     <body class="empty-state">
@@ -1203,8 +1208,23 @@ document.getElementById("search").onkeypress = (e) => {
 
 setInterval(tick, 1000);
 loadLocalFonts();
-
 function startApp() {
+
+    document.body.style.opacity = '0';
+
+    document.querySelectorAll('.engine-tray button img').forEach(img => {
+        img.style.opacity = '0';
+    });
+
+    const elements = [
+        ...document.querySelectorAll('header > *'),
+        ...document.querySelectorAll('.tile'),
+        document.getElementById('help-btn')
+    ].filter(el => el);
+
+    elements.forEach(el => {
+        el.style.opacity = '0';
+    });
 
     if (typeof initializeIconsFromCppData === 'function') {
         initializeIconsFromCppData();
@@ -1213,12 +1233,34 @@ function startApp() {
 
     setTimeout(() => {
 
+        document.body.style.transition = 'opacity 0.15s ease';
+        document.body.style.opacity = '1';
         document.body.classList.add("loaded");
-    }, 1000);
+
+        document.querySelectorAll('.engine-tray button img').forEach(img => {
+            img.style.transition = 'opacity 0.1s ease';
+            img.style.opacity = '1';
+        });
+
+        elements.forEach(el => {
+            el.style.transition = 'opacity 0.12s ease';
+            el.style.opacity = '1';
+        });
+
+        setTimeout(() => {
+            document.body.style.transition = '';
+            document.querySelectorAll('[style*="transition"]').forEach(el => {
+                el.style.transition = '';
+            });
+        }, 200);
+    }, 20);
+
 }
 
-startApp();
-        </script>
-    </body>
-</html>
+setInterval(tick, 1000);
+loadLocalFonts();
 
+startApp();
+</script>
+</body>
+</html>

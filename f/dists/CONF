@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+
+PKG_NAME="onu"
+PKG_VERSION="0.5.9" # Next version config
+PKG_RELEASE="LTS" # Next version
+PKG_MAINTAINER="Zynomon Aelius <zynomon@proton.me>"
+PKG_VENDOR="Zynomon Aelius"
+PKG_SUMMARY="A faster web browser built with Qt"
+PKG_LICENSE="Apache 2.0"
+PKG_URL="https://github.com/zynomon/onu"
+
+DEB_DEPENDS="libc6, libqt6core6, libqt6gui6, libqt6widgets6, libqt6webenginewidgets6, libqt6network6, libqt6multimedia6"
+RPM_DEPENDS="qt6-qtbase, qt6-qtwebengine, qt6-qtmultimedia, glibc"
+ARCH_DEPENDS="qt6-base qt6-webengine qt6-multimedia"
+MAC_FRAMEWORKS="Qt6Core Qt6Gui Qt6Widgets Qt6WebEngineWidgets Qt6WebEngineCore Qt6Network Qt6Multimedia"
+
+CONF_DIR="$(cd "$(dirname "$0")" && pwd)"
+PROJECT_ROOT="$(dirname "$CONF_DIR")"
+
+BUILD_DIR="${BUILD_DIR:-${PROJECT_ROOT}/build}"
+STAGE_DIR="${BUILD_DIR}/stage"
+PKG_OUT="${CONF_DIR}/Packages"
+
+DBS_DIR="${CONF_DIR}/DBS"
+PKG_BUILD_BASE="${DBS_DIR}/build"
+
+CMAKE_CMD="${CMAKE_CMD:-cmake}"
+MAKE_CMD="${MAKE_CMD:-make}"

@@ -1,0 +1,91 @@
+<html>
+<body align="center" bgcolor="f2f4f4">
+    <img
+        src="https://raw.githubusercontent.com/zynomon/onu/release/Notices/onu.svg"
+        width="343"
+        height="140"
+        onerror="this.src='%1'; this.width=this.height=140;"
+    />
+    <div align="left">
+        <h1> %2 <sub>v%3</sub></h1>
+        <hr style="color: aliceblue" />
+        <b>Maintainer:</b> Zynomon Aelius <zynomon@proton.me><br>
+        <b>Qt:</b> %4<br>
+        <b>Flags:</b> %5<br>
+        <b>Config:</b> %6/onu.conf<br>
+        <b>Themes:</b> %7<br>
+    </div>
+
+    <div class="license-view" style="display:none;"></div>
+
+<script type="module">
+(async () => {
+    const licenseViewDiv = document.querySelector('.license-view');
+    let htmlContent = '';
+    let anyContentLoaded = false;
+
+    if (!navigator.onLine) return;
+    try {
+        const noticeResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/release/Notices/0.5-NOTICE');
+        if (noticeResponse.ok) {
+            const text = await noticeResponse.text();
+            htmlContent += '<h1>Updates about your version</h1><hr>';
+            htmlContent += '<code class="license-text-container">' + text + '</code><br>';
+            anyContentLoaded = true;
+        }
+    } catch (err) {
+        console.warn("Notice fetch failed:", err);
+    }
+
+    try {
+        const onuResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/main/docs/LICENSE');
+        if (onuResponse.ok) {
+            const text = await onuResponse.text();
+            htmlContent += '<h1>Onu License</h1><hr>';
+            htmlContent += '<code class="license-text-container">' + text + '</code><br>';
+            anyContentLoaded = true;
+        }
+    } catch (err) {
+        console.warn("Onu fetch failed:", err);
+    }
+
+
+
+    try {
+        const gplResponse = await fetch('https://raw.githubusercontent.com/qt/qtwebengine/dev/LICENSES/GPL-3.0-only.txt');
+        const exceptionResponse = await fetch('https://raw.githubusercontent.com/qt/qtwebengine/dev/LICENSES/Qt-GPL-exception-1.0.txt');
+        if (gplResponse.ok && exceptionResponse.ok) {
+            const gplText = await gplResponse.text();
+            const exceptionText = await exceptionResponse.text();
+            htmlContent += '<h1>Qt GPLv3 License</h1><hr>';
+            htmlContent += '<code class="license-text-container">' + gplText + '</code><br>';
+            htmlContent += '<h1>Qt GPL Exception 1.0</h1><hr>';
+            htmlContent += '<code class="license-text-container">' + exceptionText + '</code><br>';
+            anyContentLoaded = true;
+        }
+    } catch (err) {
+        console.warn("GPL/Exception fetch failed:", err);
+    }
+
+    if (anyContentLoaded) {
+        licenseViewDiv.innerHTML = htmlContent;
+        licenseViewDiv.style.display = 'block';
+        const style = document.createElement('style');
+        style.textContent = `
+            .license-text-container {
+                display: block;
+                white-space: pre-wrap;
+                font-family: monospace;
+                background: #f9f9f9;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        `;
+        document.head.appendChild(style);
+    }
+})();
+</script>
+</body>
+</html>
