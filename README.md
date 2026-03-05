@@ -20,9 +20,6 @@ if your desktop environment is KDE ( linux ) Most packages are under 1MB . If yo
 # Before starting;
 Onu browser version 0.5.9 was ended too soon next version is coming in few months, so we had made an issue that is not embedding the libtrigonometry inside the packages 
 
-
-> wait few hours until DOWNLOAD the file gets uploaded into release branch 
-
 ## Trigonometry Library
 
 Version 0.5 onward uses a library called Trigonometry for crash handling. It's available in the error.os repository, but since most people don't know what that is:
@@ -94,10 +91,49 @@ make -j$(nproc) && make install
 ```
 
 If you face any issues while compiling, feel free to open an issue.
-And as for forking check this [#Forking]()
+And as for forking check this [#Forking](#creating-a-fork-very-easily)
 
 ---
+<h1> <img width="727" height="243" alt="image" src="https://github.com/user-attachments/assets/5c30347d-cf96-4a54-ab4f-51ce0ae482e9" /> Toolbars </h1>
 
+Toolbars are Qt widgets for desktop OS(es) that can be dragged, docked, or left floating freely without recompiling the browser. If you don't like toolbars dragging or floating, left click on the drag handle to customize how you want.
+
+If you hid all toolbars, don't worry - just press `Ctrl+Shift+,` and customize them from here:
+
+<img width="895" height="413" alt="image" src="https://github.com/user-attachments/assets/aa5f5088-48d4-441b-beb3-06448d5f4b50" />
+
+Here's an introduction to each bar:
+
+## URL bar
+URL bar (also called "Search bar") contains the search function. You can change the search engine or add your own - it's easy once you try it.
+
+<img width="549" height="96" alt="image" src="https://github.com/user-attachments/assets/ca75428e-3e23-437d-b107-109f9c1fb3ed" />
+
+It supports basic autocomplete from history and favorites.
+
+<img width="848" height="641" alt="image" src="https://github.com/user-attachments/assets/d9ed38b6-ca09-46ed-b810-60da837b1238" />
+
+(API parser issues are being worked on.)
+
+## Fav bar
+Favorites bar shows your favorite sites as shortcuts. Dragging links into it will save them as new favorites. Customize your favorites in the Favorites Manager.
+
+## Nav bar
+<img width="492" height="311" alt="image" src="https://github.com/user-attachments/assets/f4c9d03c-f749-4263-8ec4-89b0e3727bd1" />
+
+Navigation bar has back/forward buttons and other options you'll use regularly.
+
+<sub>The QR icon is from an extension: https://github.com/zynomon/onu/blob/assets/extensions/QrCode</sub>
+
+## Tab bar
+<img width="403" height="50" alt="image" src="https://github.com/user-attachments/assets/7f5ef9c7-b339-410f-ac79-4622009da136" />
+
+Tab bar is just a toolbar with tabs. Drag and dock it horizontally and it looks like this.
+
+## Rec bar
+Recents bar shows recently opened websites - great for quick recaps. As always, you can hide it, lock dragging, or do whatever you want with it.
+
+---
 <h1> <img src="https://github.com/zynomon/onu/raw/release/Notices/icons/home.svg" height="48" width="48"> Home</h1>
 
 <img src="https://github.com/user-attachments/assets/224cdd3f-835a-4155-8680-e15d31ec247e" width="600">
