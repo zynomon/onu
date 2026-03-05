@@ -40,7 +40,7 @@ sudo mv libcrash.so /usr/share/trigonometry/
 
 
 **Latest releases:**
-- 🔗 **[Download Onu 0.5.9 AppImage](https://github.com/zynomon/onu/blob/release/Appimages/onu_0.5.9.Appimage)** (96MB due to embedded libraries)
+- 🔗 **[Download Onu 0.5.9 AppImage](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.Appimage)** (96MB due to embedded libraries, also you dont need libtrigonometry in this version along with Qt libraries)
 - 🔗 **[Download Onu 0.5.9 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.deb)**
 - 🔗 **[Download Onu 0.5.9 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.rpm)**
 - 🔗 **[Download Onu 0.5 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.deb)**
