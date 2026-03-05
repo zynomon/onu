@@ -29,10 +29,10 @@ wget https://github.com/zynomon/libtrigonometry/raw/main/Release%20files/libcras
 sudo mv libcrash.so /usr/share/trigonometry/
 ```
 
-If you're on Debian and want the easy route:
+If you're on Debian and want the easy route ( Few commands to install it real quick):
 ```bash
-wget https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.deb
-sudo dpkg -i onu_0.5.9.deb
+wget https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.deb
+sudo dpkg -i onu-0.5.9.deb
 sudo apt install -f
 wget https://github.com/zynomon/libtrigonometry/raw/main/Release%20files/libcrash.so
 sudo mv libcrash.so /usr/share/trigonometry/
