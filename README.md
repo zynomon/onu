@@ -20,6 +20,9 @@ if your desktop environment is KDE ( linux ) Most packages are under 1MB . If yo
 # Before starting;
 Onu browser version 0.5.9 was ended too soon next version is coming in few months, so we had made an issue that is not embedding the libtrigonometry inside the packages 
 
+
+> wait few hours until DOWNLOAD the file gets uploaded into release branch 
+
 ## Trigonometry Library
 
 Version 0.5 onward uses a library called Trigonometry for crash handling. It's available in the error.os repository, but since most people don't know what that is:
