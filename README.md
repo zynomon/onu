@@ -334,31 +334,6 @@ cd dists/build
 ./build --clean            # Remove build directories
 ```
 
-**Build profiles (1-4):**
-1. Debug - With debug symbols
-2. Release - Optimized (recommended)
-3. RelWithDebInfo - Optimized with debug symbols
-4. MinSizeRel - Optimized for size
-
-**Target numbers (1-8):**
-1. deb - Debian/Ubuntu
-2. rpm - Fedora/RHEL
-3. arch - Arch Linux (experimental)
-4. mac - macOS (experimental)
-5. freebsd - FreeBSD (experimental)
-6. tgz - tar.gz archive
-7. appimage - AppImage
-8. all - Everything
-
-**Output:**
-```
-dists/Packages/
-├── onu_0.5.9-LTS_amd64.deb
-├── onu-0.5.9-LTS.x86_64.rpm
-├── onu-0.5.9-.tar.zst
-└── onu-0.5.9-x86_64.AppImage
-```
-
 ---
 
 ### Troubleshooting
@@ -394,10 +369,10 @@ sudo apt install zstd        # Debian/Ubuntu
 1. Fork the repository on GitHub/Codeberg
 2. Clone your fork:
    ```bash
-   git clone https://github.com/yourusername/onu
+   git clone https://github.com/zynomon/onu
    cd onu
    ```
-3. Update project metadata in `dists/build/CONF`:
+3. Update project metadata in `dists/build/CONF` and add these:
    ```bash
    PKG_NAME="your-browser-name"
    PKG_MAINTAINER="Your Name <your.email@example.com>"
@@ -489,45 +464,14 @@ public:
 ```
 
 Compile as a shared library and place in `~/.local/share/Onu/Conf/extensions/`
+AS for refrence check the assets branch
 
 ---
 
 ## Creating Theme
 
 Themes are QSS files placed in `~/.local/share/Onu/Conf/themes/`
-
-Basic theme structure:
-```css
-/* Onu-Dark.qss example */
-QMainWindow {
-    background-color: #1e1e1e;
-}
-
-QToolBar {
-    background-color: #2d2d2d;
-    border: none;
-    spacing: 3px;
-}
-
-QTabBar::tab {
-    background-color: #3d3d3d;
-    color: #ffffff;
-    padding: 5px 10px;
-}
-
-QTabBar::tab:selected {
-    background-color: #0041ff;
-}
-
-QLineEdit#addressBar {
-    background-color: #3d3d3d;
-    color: #ffffff;
-    border: 1px solid #0041ff;
-    border-radius: 4px;
-    padding: 4px 8px;
-}
-```
-
+Check assets branch for refrence
 Create your theme in Settings → Appearance → Create New Theme, or manually add `.qss` files to the themes folder.
 
 ---
@@ -544,6 +488,7 @@ Create your theme in Settings → Appearance → Create New Theme, or manually a
 - Icons, themes, documentation, promotional materials
 - Place assets in appropriate directories
 - Include attribution if not original
+- Add readme file
 - Open a pull request against the `assets` branch
 
 **Guidelines:**
