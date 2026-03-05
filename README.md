@@ -97,6 +97,7 @@ And as for forking check this [#Forking](#creating-a-fork-very-easily)
 <h1> <img width="727" height="243" alt="image" src="https://github.com/user-attachments/assets/5c30347d-cf96-4a54-ab4f-51ce0ae482e9" /> Toolbars </h1>
 
 Toolbars are Qt widgets for desktop OS(es) that can be dragged, docked, or left floating freely without recompiling the browser. If you don't like toolbars dragging or floating, left click on the drag handle to customize how you want.
+![e](https://github.com/user-attachments/assets/b6b9df3e-83db-47f8-b06e-85696e8f83f6)
 
 If you hid all toolbars, don't worry - just press `Ctrl+Shift+,` and customize them from here:
 
