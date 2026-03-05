@@ -40,19 +40,19 @@ sudo mv libcrash.so /usr/share/trigonometry/
 
 
 **Latest releases:**
-- 🔗 **[Download Onu 0.5.9 AppImage](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.Appimage)** (96MB due to embedded libraries, also you dont need libtrigonometry in this version along with Qt libraries)
-- 🔗 **[Download Onu 0.5.9 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.deb)**
-- 🔗 **[Download Onu 0.5.9 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.9.rpm)**
-- 🔗 **[Download Onu 0.5 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.deb)**
-- 🔗 **[Download Onu 0.5 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu_0.5.rpm)**
+- 🔗 **[Download Onu 0.5.9 AppImage](https://github.com/zynomon/onu/raw/release/beta/onu-0.5.9.AppImage)** (96MB due to embedded libraries, also you dont need libtrigonometry in this version along with Qt libraries)
+- 🔗 **[Download Onu 0.5.9 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.deb)**
+- 🔗 **[Download Onu 0.5.9 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.rpm)**
+- 🔗 **[Download Onu 0.5 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.deb)**
+- 🔗 **[Download Onu 0.5 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.rpm)**
 
 <details>
 <summary><b>Older versions</b></summary>
 
-- 🔗 **[Onu 0.4 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.4.deb)**
-- 🔗 **[Onu 0.3 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.3.deb)**
-- 🔗 **[Onu 0.2 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.2.deb)**
-- 🔗 **[Onu 0.1 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu_0.1.deb)**
+- 🔗 **[Onu 0.4 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.4.deb)**
+- 🔗 **[Onu 0.3 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.3.deb)**
+- 🔗 **[Onu 0.2 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.2.deb)**
+- 🔗 **[Onu 0.1 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.1.deb)**
 - 🔗 **[Source code archives](https://github.com/zynomon/onu/blob/release/)**
 
 </details>
