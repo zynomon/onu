@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
+
+<svg
+   version="1.1"
+   id="Uploaded to svgrepo.com"
+   width="800px"
+   height="800px"
+   viewBox="0 0 32 32"
+   xml:space="preserve"
+   sodipodi:docname="build.svg"
+   inkscape:version="1.4.3 (0d15f75, 2025-12-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs11" /><sodipodi:namedview
+   id="namedview11"
+   pagecolor="#ffffff"
+   bordercolor="#000000"
+   borderopacity="0.25"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="0.7125"
+   inkscape:cx="399.29825"
+   inkscape:cy="341.75439"
+   inkscape:window-width="1440"
+   inkscape:window-height="829"
+   inkscape:window-x="-8"
+   inkscape:window-y="-8"
+   inkscape:window-maximized="1"
+   inkscape:current-layer="g2" />
+<style
+   type="text/css"
+   id="style1">
+	.isometric_vijf{fill:#F29227;}
+	.isometric_zes{fill:#F28103;}
+	.isometric_zeven{fill:#FF7344;}
+	.isometric_acht{fill:#F05A28;}
+	.isometric_negen{fill:#BE1E2D;}
+	.isometric_tien{fill:#7BD6C4;}
+	.isometric_elf{fill:#72C0AB;}
+	.isometric_twaalf{fill:#569080;}
+	.st0{fill:#225B49;}
+	.st1{fill:#F8F7C5;}
+	.st2{fill:#BE1E2D;}
+	.st3{fill:#AD9A74;}
+	.st4{fill:#F2D76C;}
+	.st5{fill:#F5DF89;}
+	.st6{fill:#7BD6C4;}
+	.st7{fill:#80CCBE;}
+</style>
+<g
+   id="g11">
+	<line
+   class="isometric_twaalf"
+   x1="10"
+   y1="20.356"
+   x2="16"
+   y2="16.923"
+   id="line1" />
+	<polygon
+   class="isometric_acht"
+   points="10,13.466 16,16.923 10,20.356 4,16.915 "
+   id="polygon1"
+   transform="translate(0.1122807,0.05614035)"
+   style="fill:#2b28f0;fill-opacity:1" />
+	<polygon
+   class="isometric_negen"
+   points="10,28 16,24.536 16,16.923 10,20.356  "
+   id="polygon2" />
+	<line
+   class="isometric_twaalf"
+   x1="10"
+   y1="20.356"
+   x2="16"
+   y2="16.923"
+   id="line2" />
+	<polygon
+   class="isometric_acht"
+   points="10,20.356 4,16.915 10,13.466 16,16.923 "
+   id="polygon3"
+   transform="translate(-0.33684214,8.477193)"
+   style="fill:#12065c;fill-opacity:1" />
+	<polygon
+   class="isometric_negen"
+   points="10,28 16,24.536 16,16.923 10,20.356  "
+   id="polygon4"
+   style="fill:#1e2dbe;fill-opacity:1" />
+	<polygon
+   class="isometric_zeven"
+   points="4,24.536 4,16.915 10,20.356 10,28 "
+   id="polygon5"
+   transform="translate(-0.44912281,0.2245614)"
+   style="fill:#444dff;fill-opacity:1" />
+	<line
+   class="isometric_twaalf"
+   x1="22"
+   y1="20.379"
+   x2="27.962"
+   y2="16.915"
+   id="line5" />
+	<polygon
+   class="isometric_zes"
+   points="16,16.923 21.962,13.456 27.962,16.915 22,20.379  "
+   id="polygon6"
+   style="fill:#ab03f2;fill-opacity:1" />
+	<polygon
+   class="isometric_vijf"
+   points="22,28 16,24.536 16,16.923 22,20.379  "
+   id="polygon7"
+   style="fill:#8a27f2;fill-opacity:1" />
+	<polygon
+   class="isometric_acht"
+   points="22,28 27.962,24.536 27.962,16.915 22,20.379  "
+   id="polygon8"
+   style="fill:#9f28f0;fill-opacity:1" />
+	<line
+   class="isometric_twaalf"
+   x1="16"
+   y1="9.323"
+   x2="21.962"
+   y2="5.865"
+   id="line8" />
+	<polygon
+   class="isometric_elf"
+   points="16.037,2.406 21.962,5.865 16,9.323 10,5.865 "
+   id="polygon9"
+   transform="translate(0.1122807,-0.28070175)"
+   style="fill:#7fc072;fill-opacity:1" />
+	<polygon
+   class="isometric_twaalf"
+   points="16,16.923 21.962,13.456 21.962,5.865 16,9.323  "
+   id="polygon10"
+   style="fill:#5a9056;fill-opacity:1" />
+	<polygon
+   class="isometric_tien"
+   points="10,13.466 10,5.865 16,9.323 16,16.923 "
+   id="polygon11"
+   transform="translate(-0.1122807,0.05614035)"
+   style="fill:#9fd67b;fill-opacity:1" />
+</g>
+<g
+   id="g7"
+   transform="matrix(0.03311967,0,0,0.0350537,13.963411,13.348409)">
+	<g
+   id="g2">
+		<polygon
+   style="fill:#d1d0d0"
+   points="106.811,286.672 147.874,327.736 314.281,161.325 273.221,120.258 "
+   id="polygon1-0" />
+		<polygon
+   style="fill:#002893;fill-opacity:1"
+   points="29.964,434.577 0,404.624 0,374.431 144.829,229.602 204.944,289.714 60.088,434.57 "
+   id="polygon2-9"
+   transform="translate(-1.6950758)" />
+	</g>
+	<polygon
+   style="fill:#adacad"
+   points="213.768,179.704 295.896,179.704 310.958,164.649 270.399,123.081 "
+   id="polygon3-4" />
+	<g
+   id="g6">
+		<path
+   style="fill:#5b5555"
+   d="m 266.248,63.565 1.226,1.524 c -0.491,-0.61 -0.907,-1.146 -1.226,-1.524 z m 2.063,2.524 c -0.072,-0.065 -0.134,-0.155 -0.219,-0.244 l 0.299,0.392 c -0.007,-0.035 -0.038,-0.069 -0.052,-0.124 0,0 -0.014,-0.01 -0.028,-0.024 z M 195.516,11.69 c 25.847,10.341 53.407,34.451 70.11,51.144 l 0.1,0.1 c 0,0 0.01,0.02 0.044,0.044 0.951,0.979 1.803,2.012 2.541,3.111 0.014,0.014 0.027,0.024 0.027,0.024 0.347,0.467 0.718,0.934 1.092,1.401 l -1.04,-1.277 c 7.406,11.241 3.879,29.012 -11.67,44.555 l -6.204,20.508 53.97,53.963 21.157,-5.548 19.529,-19.526 c 9.751,-9.751 26.664,-12.377 42.169,3.125 8.659,8.662 4.264,21.208 6.009,31.316 0.563,3.289 1.764,6.317 4.326,8.872 l 37.926,37.919 c 5.383,5.397 14.132,5.383 19.515,-0.007 l 52.834,-52.827 c 5.383,-5.39 5.398,-14.142 0.014,-19.523 l -37.926,-37.932 c -2.561,-2.548 -5.582,-3.76 -8.879,-4.313 -10.101,-1.747 -22.654,2.644 -31.313,-6.005 -10.163,-10.166 -0.069,-23.364 -8.295,-37.009 -1.085,-1.823 -2.493,-3.646 -4.313,-5.459 0,0 -43.687,-43.694 -73.544,-73.551 -37.908,-37.908 -103.373,-35.618 -143.857,-19.828 -15.8,3.75 -20.782,20.117 -4.322,26.723 z"
+   id="path3" />
+		<path
+   style="fill:#6a6b6b"
+   d="m 461.159,126.819 -67.81,67.81 c 0.563,3.289 1.764,6.317 4.326,8.872 l 37.926,37.919 c 5.383,5.397 14.132,5.383 19.515,-0.007 l 52.834,-52.827 c 5.383,-5.39 5.398,-14.142 0.014,-19.523 l -37.926,-37.932 c -2.561,-2.547 -5.582,-3.759 -8.879,-4.312 z"
+   id="path4" />
+		<path
+   style="fill:#6a6b6b"
+   d="m 195.516,11.69 c 25.847,10.341 53.407,34.451 70.11,51.144 l 0.1,0.1 c 0,0 0.01,0.02 0.044,0.044 0.055,0.089 0.189,0.244 0.374,0.467 l 0.103,0.12 1.226,1.524 0.618,0.755 0.299,0.392 c 7.406,11.241 3.879,29.012 -11.67,44.555 l -6.204,20.508 53.97,53.963 21.157,-5.548 95.909,-95.91 c -1.085,-1.823 -2.493,-3.646 -4.313,-5.459 0,0 -43.687,-43.694 -73.544,-73.551 -37.908,-37.908 -103.373,-35.618 -143.857,-19.828 -15.8,3.751 -20.782,20.118 -4.322,26.724 z"
+   id="path5" />
+		<path
+   style="fill:#8c8c8c"
+   d="m 507.957,188.587 -52.82,52.834 c -5.398,5.397 -14.153,5.397 -19.543,0 l 72.363,-72.37 c 5.391,5.394 5.391,14.145 0,19.536 z"
+   id="path6" />
+	</g>
+</g></svg>
