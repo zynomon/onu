@@ -1,4 +1,4 @@
-<img src="https://github.com/zynomon/onu/blob/release/Notices/icons/config.svg" height="256" width="256">
+<img src="https://github.com/zynomon/onu/blob/release/Notices/icons/home.svg" height="256" width="256">
 
 # Onu Browser Configurations
 
