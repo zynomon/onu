@@ -25,14 +25,14 @@ User JavaScript snippets scripts.
 
 ## <img src="https://github.com/zynomon/onu/blob/release/Notices/icons/adblock.svg" height="32" width="32"> Adblock Rules
 
-**Location:** `/Adblock`
+**Location:** `/Adblock-rules`
 
 Filter lists and adblocking rules.
 
 
 ## <img src="https://github.com/zynomon/onu/blob/release/Notices/icons/home.svg" height="32" width="32"> Global Config
 
-**Location:** `/Config`
+**Location:** `/Configs`
 individual  configuration files and presets.
 
 
