@@ -1,4 +1,4 @@
-<img src="https://github.com/zynomon/onu/blob/release/Notices/icons/themes.svg" height="256" width="256">
+<img src="https://github.com/zynomon/onu/blob/release/Notices/icons/theme.svg" height="256" width="256">
 
 # Onu Browser QSS Themes
 
