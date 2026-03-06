@@ -2,17 +2,12 @@
 </div>
 <h1> Onu Browser Extension System</h1>
 
-## Overview
-This guide explains how to build, install, and contribute your own extension for the Onu browser. Follow the steps in order for a smooth setup.
-
----
 
 ## 1. Prerequisites
 - Qt6 development libraries  
 - CMake 3.16+  
 - C++17 compatible compiler  
 
----
 
 ## 2. Setup Development Environment
 
@@ -27,7 +22,6 @@ make
 cd ../..
 ```
 
----
 
 ## 3. Create Your Extension
 
@@ -39,7 +33,6 @@ mkdir Your_Extension
 mkdir Your_Extension/src
 ```
 
----
 
 ## 4. Configure CMake
 
@@ -87,8 +80,6 @@ set_target_properties(YourExtension PROPERTIES   # required
 
 ```
 
----
-
 ## 5. Write Extension Source files
 
 Create `Your_Extension/src/main.cxx`:
@@ -130,7 +121,6 @@ public:
 #include "main.moc"
 ```
 
----
 
 ## 6. Build Your Extension
 
@@ -143,7 +133,6 @@ make
 
 The compiled extension will appear in `Your_Extension/` directory.
 
----
 
 ## 7. Install Extension
 
@@ -152,8 +141,6 @@ Copy the compiled extension to:
 - **Linux:** `~/.local/share/Onu/Conf/extensions/`  
 - **Windows:** `%APPDATA%/Onu/Conf/extensions/`  
 - **macOS:** `~/Library/Application Support/Onu/Conf/extensions/`  
-
----
 
 ## 8. Enable Extension
 
