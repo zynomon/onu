@@ -1,4 +1,4 @@
-## <img src="https://github.com/zynomon/onu/blob/release/Notices/icons/stng.svg"  height="256" width="256"> Scripts
+<h1><img src="https://github.com/zynomon/onu/blob/release/Notices/icons/stng.svg"  height="256" width="256"> Scripts</h1>
 
 
 Scripts are JavaScript files that get injected into every webpage you visit. They can modify page behavior, add features, or automate tasks.
