@@ -1,4 +1,4 @@
-<div align=center><img src=https://github.com/zynomon/onu/blob/release/Notices/icons/ext.svg height=128 width=128>
+<div align=center><img src=https://github.com/zynomon/onu/blob/release/Notices/icons/ext.svg  height="256" width="256">
 </div>
 <h1> Onu Browser Extension System</h1>
 
