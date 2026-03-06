@@ -1,6 +1,6 @@
-<div align=center><img src=https://github.com/zynomon/onu/blob/release/Notices/icons/ext.svg>
+<div align=center><img src=https://github.com/zynomon/onu/blob/release/Notices/icons/ext.svg height=128 width=128>
 </div>
-# Onu Browser Extension System
+<h1> Onu Browser Extension System</h1>
 
 ## Overview
 This guide explains how to build, install, and contribute your own extension for the Onu browser. Follow the steps in order for a smooth setup.
