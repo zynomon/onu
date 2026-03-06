@@ -1,4 +1,5 @@
 # QR CODE Extension by Onu Team
+<img width="1372" height="740" alt="image" src="https://github.com/user-attachments/assets/144bd926-4cde-434c-b394-ee9ef0f5d7a1" />
 
 ## Overview
 QR code extension that adds QR code generation capabilities to Onu browser. Available in two versions: Basic and Advanced.
@@ -33,7 +34,10 @@ eg  64kb vs 124 kb difference.
 
 
 ---
+<img width="288" height="342" alt="image" src="https://github.com/user-attachments/assets/88380a49-7ccc-4a06-b722-36056e9767fd" />
+<img width="411" height="120" alt="image" src="https://github.com/user-attachments/assets/8dd9837b-5d72-4c59-a3de-f3a970d23ca2" />
 
+both version offers same (left click) Context menu, and also an icon in navbar
 ## QR-CODE Basic
 *Simple QR code generator for everyday use*
 
