@@ -284,13 +284,9 @@ Settings → General → "Enable AdBlock". It's on by default.
 | `--disable-notifications` | Block website notifications. |
 | `--disable-geolocation` | Block geolocation requests. |
 
+
 </details>
 
-**How to use:**
-Settings → Privacy & Downloads → Chromium Flags. Add them space-separated:
-```
---disable-gpu --enable-logging --force-dark-mode
-```
 
 **View active flags:**
 Check `onu://about` page. It shows what flags are currently being used.
