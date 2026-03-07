@@ -645,4 +645,4 @@ keybind editor (Ctrl+K)<img width="779" height="654" alt="image" src="https://gi
 ![Built with](https://img.shields.io/badge/Built%20with-070707?style=for-the-badge) ![C++](https://img.shields.io/badge/-00599C?logo=cplusplus&logoColor=white&style=for-the-badge)
 ![Qt6 Webengine](https://img.shields.io/badge/Qt6%20Webengine-185214?style=for-the-badge&logo=qt&logoColor=white)
 ![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)
-[![Star History Chart](https://api.star-history.com/image?repos=zynomon/onu&type=date&legend=top-left)](https://www.star-history.com/?repos=zynomon%2Fonu&type=date&legend=top-left)
+![Star History Chart](https://www.star-history.com/?repos=zynomon%2Fonu&type=date&legend=top-left)
