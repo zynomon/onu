@@ -646,4 +646,4 @@ keybind editor (Ctrl+K)<img width="779" height="654" alt="image" src="https://gi
 ![Qt6 Webengine](https://img.shields.io/badge/Qt6%20Webengine-185214?style=for-the-badge&logo=qt&logoColor=white)
 ![Ko-fi](https://img.shields.io/badge/Ko--fi-FF5E5B?style=for-the-badge&logo=kofi&logoColor=white)
 
-
+![](https://www.star-history.com/?repos=zynomon%2Fonu&type=date&legend=top-left)
