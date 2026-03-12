@@ -17,7 +17,6 @@ Its made for powerusers customizers and beginners ( frankly ).
 if your desktop environment is KDE ( linux ) Most packages are under 1MB . If you're on GNOME or something else, dependencies might take up to 200MB.
 Appimages are typically under 100Mb they contain the libraries intact 
 
-```markdown
 # Before starting;
 Onu browser version 0.6 is released. They are might be some issues but closest release will fix that,
 
