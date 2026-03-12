@@ -55,11 +55,14 @@ sudo mv libcrash.so /usr/share/trigonometry/
 - 🔗 **[Onu 0.1 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.1.deb)**
 - 🔗 **[Source code archives](https://github.com/zynomon/onu/blob/release/)**
 
-</details><summary><b>For Advanced users and other distros</b></summary>
+</details>
 
 
 ---
 
+
+<details><summary><b>For Advanced users and other distros</b></summary>
+  
 ## 🔧 Building from Source
 
 ```bash
@@ -73,7 +76,6 @@ sudo apt install -f
 # ONLY FOR DEBIAN LIKE AND DEBIAN LINUX
 ```
 
-<details>
 If you use other distros, check https://github.com/zynomon/libtrigonometry and compile it for your OS instead of installing that .deb.
 and also
 
@@ -94,8 +96,7 @@ make -j$(nproc) && make install
 ```
 
 If you face any issues while compiling, feel free to open an issue.
-and also you may need to add some additions to make it compile for your distro if its obscure.
-
+and also you may need to add some additions to make it compile for your distro if its obscure. or Qt needs logic for it,
 </details>
 
 And as for forking check this [#Forking](#creating-a-fork-very-easily)
