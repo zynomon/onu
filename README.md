@@ -21,6 +21,8 @@ Why not check my other projects?
 ---
 
 <h2><img src=https://github.com/zynomon/onu/raw/release/Notices/icons/pkg.svg height=32 width=32> Releases <sub>Order: Oldest → Newest</sub></h2>
+
+
 | Version | Package Links | Type |
 |---------|---------------|------|
 | `0.1`   | [.deb](https://github.com/zynomon/raw/tree/release/beta/onu-0.1.deb) [.src.7z](https://github.com/zynomon/raw/tree/release/beta/onu-0.1-source-code.7z) | ⚠️ beta |
@@ -30,6 +32,7 @@ Why not check my other projects?
 | `0.5`   | [.deb](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.deb) [.rpm](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.rpm) [.src.7z](https://github.com/zynomon/raw/tree/release/beta/onu-0.5-source-code.7z) | ⚠️ beta |
 | `0.5.9` | [.AppImage](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.AppImage) [.deb](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.deb) [.rpm](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.rpm) [.tar.zst](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.tar.zst) | ⚠️ beta |
 | `0.6`   | [.AppImage](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.AppImage) [.deb](https://github.com/zynomon/raw/tree/release/alpha/onu_0.6.deb) [.rpm](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.rpm) [.tar.zst](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.tar.zst) | 🛡️ alpha |
+
 
 ---
 
