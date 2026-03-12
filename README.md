@@ -61,7 +61,7 @@ sudo mv libcrash.so /usr/share/trigonometry/
 ---
 
 
-<details><summary><b>For Advanced users and other distros</b></summary>
+<details><summary><h1>For Advanced users and other distros</h1></summary>
   
 ## 🔧 Building from Source
 
