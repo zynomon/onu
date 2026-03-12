@@ -4,7 +4,6 @@
         <file>game.html</file>
         <file>home.html</file>
         <file>light.qss</file>
-        <file>test.html</file>
         <file>about.html</file>
     </qresource>
 </RCC>

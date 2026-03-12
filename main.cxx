@@ -56,10 +56,17 @@ private:
 class Browser_Backend : public QObject {
     Q_OBJECT
 public:
-    explicit Browser_Backend(QObject *parent = nullptr) : QObject(parent) {
-        m_recentTabs = Settings_Backend::instance().loadHistory();
-        m_favorites = Settings_Backend::instance().loadFavorites();
+    static Browser_Backend& instance() {
+        static Browser_Backend inst;
+        return inst;
     }
+
+    void openInNewTab(const QUrl &url) {
+        if (url.isValid()) {
+            emit newTabRequested(url);
+        }
+    }
+
     void setFavorites(const QVariantList &favs) {
         m_favorites = favs;
         Settings_Backend::instance().saveFavorites(m_favorites);
@@ -74,7 +81,7 @@ public:
             {"url", url.toString()},
             {"iconPath", iPath},
             {"title", title},
-            {"time", QDateTime::currentDateTime().toMSecsSinceEpoch()}
+            {"time", QDateTime::currentMSecsSinceEpoch()}
         });
         if (m_recentTabs.size() > 50) m_recentTabs.removeLast();
         Settings_Backend::instance().saveHistory(m_recentTabs);
@@ -105,7 +112,6 @@ public:
     const QVariantList& favorites() const { return m_favorites; }
     const QVariantList& recentTabs() const { return m_recentTabs; }
     void  close(QWidget* parent, const QList<QUrl>& currentTabs) {
-
         if (Settings_Backend::instance().confirmClose()) {
             QMessageBox box(parent);
             box.setIcon(QMessageBox::Critical);
@@ -113,14 +119,11 @@ public:
             box.setInformativeText("Are you sure you want to close the browser?");
             box.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
             box.setDefaultButton(QMessageBox::No);
-
             QCheckBox *dontShowAgain = new QCheckBox("Don't show this dialog next time", &box);
             box.setCheckBox(dontShowAgain);
-
             if (box.exec() == QMessageBox::No) {
                 return;
             }
-
             if (dontShowAgain->isChecked()) {
                 Settings_Backend::instance().setPublicValue("privacy/confirmClose", false);
             }
@@ -128,13 +131,20 @@ public:
         if (Settings_Backend::instance().restoreSessions()) {
             saveSession(currentTabs);
         }
-
         COS::Tri_term();
     }
 signals:
     void recentTabsChanged();
     void favoritesChanged();
+    void newTabRequested(const QUrl &url);
 private:
+    Browser_Backend() {
+        m_recentTabs = Settings_Backend::instance().loadHistory();
+        m_favorites = Settings_Backend::instance().loadFavorites();
+    }
+
+    Q_DISABLE_COPY(Browser_Backend)
+
     QVariantList m_recentTabs;
     QVariantList m_favorites;
 };
@@ -159,6 +169,7 @@ public:
             buffer->setData(generateAboutPage().toUtf8());
         else if (host == "game")
             buffer->setData(generateGamePage().toUtf8());
+#ifdef CMAKE_DEBUG
         else if (host == "test") {
             QFile testFile(":/test.html");
             if (testFile.open(QIODevice::ReadOnly)) {
@@ -167,6 +178,7 @@ public:
                 testFile.close();
             }
         }
+#endif
         else
             buffer->setData(generate404Page(host).toUtf8());
         buffer->open(QIODevice::ReadOnly);
@@ -251,318 +263,6 @@ private:
             return script + html;
         }
     }
-};
-class Onu_Web : public QWebEnginePage {
-    Q_OBJECT
-public:
-    explicit Onu_Web(QWebEngineProfile *profile, QObject *parent = nullptr)
-        : QWebEnginePage(profile, parent) {
-        loadHostsFilter();
-    }
-
-    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override {
-        if (isAdBlocked(url.toString())) {
-            if (isMainFrame) {
-                setHtml("<html><h1>Blocked by AdBlock</h1>"
-                        "<p>The request to <b>" + url.host().toHtmlEscaped() + "</b> was prevented.</p>"
-                                                       "<p style='color:#888; font-size:12px;'>Although You can manage blocked hosts in Settings → Privacy & Downloads</p></html>");
-            }
-            return false;
-        }
-
-        if (isMainFrame && type == QWebEnginePage::NavigationTypeLinkClicked) {
-            emit navigationRequestAccepted(url);
-        }
-        return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
-    }
-
-    void loadHostsFilter() {
-        blockedHosts.clear();
-        if (!Settings_Backend::instance().adblockEnabled()) return;
-        QString hostsFile = Settings_Backend::instance().blockedHostsFile();
-        QFile file(hostsFile);
-        if (file.open(QIODevice::ReadOnly)) {
-            while (!file.atEnd()) {
-                QByteArray line = file.readLine().trimmed();
-                if (!line.isEmpty() && !line.startsWith('#')) {
-                    blockedHosts.insert(QString::fromUtf8(line).toLower());
-                }
-            }
-            file.close();
-        }
-    }
-
-    void reloadHostsFilter() {
-        loadHostsFilter();
-    }
-
-    QWebEnginePage* createWindow(WebWindowType type) override {
-        if (type != QWebEnginePage::WebBrowserTab)
-            return QWebEnginePage::createWindow(type);
-        auto *tempPage = new QWebEnginePage(this);
-        connect(tempPage, &QWebEnginePage::urlChanged, this, [this, tempPage](const QUrl &url) {
-            emit newTabRequested(url);
-            tempPage->deleteLater();
-        });
-        return tempPage;
-    }
-
-    void showContextMenu(QWebEngineView *view, const QPoint &globalPos) {
-        QWebEngineContextMenuRequest *contextData = view->lastContextMenuRequest();
-        if (!contextData) return;
-        if (m_menuActive) return;
-        m_menuActive = true;
-
-        QMenu menu(view);
-
-        bool isLink = !contextData->linkUrl().isEmpty();
-        bool isImage = contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeImage;
-        bool isVideo = contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeVideo;
-        bool isAudio = contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeAudio;
-        bool isSelection = !contextData->selectedText().isEmpty();
-
-        QUrl linkUrl = isLink ? contextData->linkUrl() : QUrl();
-        QUrl imageUrl = isImage ? contextData->mediaUrl() : QUrl();
-        QUrl mediaUrl = (isVideo || isAudio) ? contextData->mediaUrl() : QUrl();
-        QString selectedText = isSelection ? contextData->selectedText() : QString();
-
-        auto cleanseUrl = [](const QUrl &url) -> QString {
-            if (url.isEmpty()) return url.toString();
-            QString urlStr = url.toString();
-            int queryStart = urlStr.indexOf('?');
-            return (queryStart != -1) ? urlStr.left(queryStart) : urlStr;
-        };
-
-        auto hasQuery = [](const QUrl &url) -> bool {
-            return url.toString().contains('?');
-        };
-
-
-        auto createCleanAction = [this, cleanseUrl, hasQuery](QMenu *parent, const QString &label, const QUrl &url) -> QAction* {
-            if (!hasQuery(url)) return nullptr;
-            QAction *action = new QAction(QIcon::fromTheme("edit-clear"), label, parent);
-            action->setToolTip("Removes everything after \"?\" of this url\nWorks great on social media\nMay break search engines - use with caution");
-            QObject::connect(action, &QAction::triggered, this, [this, url, cleanseUrl]() {
-                QString clean = cleanseUrl(url);
-                QApplication::clipboard()->setText(clean);
-                emit copyStatusRequested(QString("Copied clean URL: %1").arg(clean));
-            });
-            return action;
-        };
-
-        menu.addSeparator();
-
-        QAction *backAct = menu.addAction(QIcon::fromTheme(QIcon::ThemeIcon::GoPrevious), "Back");
-        backAct->setEnabled(view->history()->canGoBack());
-        QObject::connect(backAct, &QAction::triggered, view, &QWebEngineView::back);
-
-        QAction *forwardAct = menu.addAction(QIcon::fromTheme(QIcon::ThemeIcon::GoNext), "Forward");
-        forwardAct->setEnabled(view->history()->canGoForward());
-        QObject::connect(forwardAct, &QAction::triggered, view, &QWebEngineView::forward);
-
-        QAction *reloadAct = menu.addAction(QIcon::fromTheme(QIcon::ThemeIcon::ViewRefresh), "Reload");
-        QObject::connect(reloadAct, &QAction::triggered, view, &QWebEngineView::reload);
-
-        menu.addSeparator();
-
-        QAction *favAct = menu.addAction(QIcon::fromTheme("bookmark-new"), "Add to Favorites");
-        QObject::connect(favAct, &QAction::triggered, [this, view]() {
-            emit addToFavoritesRequested(view->title(), view->url(), view->icon());
-            emit copyStatusRequested(QString("Added to favorites: %1").arg(view->title()));
-        });
-
-        menu.addSeparator();
-
-        QAction *viewSourceAct = menu.addAction(QIcon::fromTheme("text-html"), "View Page Source");
-        QObject::connect(viewSourceAct, &QAction::triggered, [this, view]() {
-            view->page()->toHtml([this, view](const QString &html) {
-                emit viewPageSourceRequested(html, view->title());
-            });
-        });
-
-        menu.addSeparator();
-
-        QMenu *copyMenu = menu.addMenu(QIcon::fromTheme("edit-copy"), "Copy");
-
-        QAction *copyUrlAct = copyMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Page URL");
-        QObject::connect(copyUrlAct, &QAction::triggered, [view, this]() {
-            QApplication::clipboard()->setText(view->url().toString());
-            emit copyStatusRequested(QString("Copied URL: %1").arg(view->url().toString()));
-        });
-
-
-        if (auto *cleanAct = createCleanAction(copyMenu, "Copy Clean URL", view->url())) {
-            copyMenu->addAction(cleanAct);
-        }
-
-        QAction *copyTitleAct = copyMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Page Title");
-        QObject::connect(copyTitleAct, &QAction::triggered, [view, this]() {
-            QApplication::clipboard()->setText(view->title());
-            emit copyStatusRequested(QString("Copied title: %1").arg(view->title()));
-        });
-
-        if (!selectedText.isEmpty()) {
-            QAction *copySelectionAct = copyMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Selected Text");
-            QObject::connect(copySelectionAct, &QAction::triggered, [selectedText, this]() {
-                QApplication::clipboard()->setText(selectedText);
-                emit copyStatusRequested(QString("Copied text: %1").arg(selectedText.left(30) + (selectedText.length() > 30 ? "..." : "")));
-            });
-
-
-            QMenu *searchMenu = copyMenu->addMenu(QIcon::fromTheme("edit-find"), "Search with");
-            auto engines = Settings_Backend::instance().searchEngines();
-            for (int i = 0; i < engines.size(); ++i) {
-                QVariantMap engine = engines[i].toMap();
-                QString name = engine["name"].toString();
-                QString urlPattern = engine["url"].toString();
-
-                QAction *searchAct = searchMenu->addAction(name);
-                QObject::connect(searchAct, &QAction::triggered, [this, selectedText, urlPattern]() {
-
-
-                    QUrl searchUrl = QUrl(urlPattern.arg(QUrl::toPercentEncoding(selectedText)));
-                    emit openInNewTabRequested(searchUrl);
-                    emit copyStatusRequested(QString("Searched for: %1").arg(selectedText));
-                });
-            }
-        }
-
-        if (isLink) {
-            menu.addSeparator();
-            QMenu *linkMenu = menu.addMenu(QIcon::fromTheme("insert-link"), "Link");
-
-            QAction *openLinkAct = linkMenu->addAction(QIcon::fromTheme("window-new"), "Open in New Tab");
-            QObject::connect(openLinkAct, &QAction::triggered, [this, linkUrl]() {
-                emit openInNewTabRequested(linkUrl);
-            });
-
-            QAction *copyLinkAct = linkMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Link Address");
-            QObject::connect(copyLinkAct, &QAction::triggered, [linkUrl, this]() {
-                QApplication::clipboard()->setText(linkUrl.toString());
-                emit copyStatusRequested(QString("Copied link: %1").arg(linkUrl.toString()));
-            });
-
-
-            if (auto *cleanLinkAct = createCleanAction(linkMenu, "Copy Clean Link", linkUrl)) {
-                linkMenu->addAction(cleanLinkAct);
-            }
-        }
-
-        if (isImage) {
-            menu.addSeparator();
-            QMenu *imageMenu = menu.addMenu(QIcon::fromTheme("image-x-generic"), "Image");
-
-            QAction *saveImageAct = imageMenu->addAction(QIcon::fromTheme("document-save"), "Save Image");
-            QObject::connect(saveImageAct, &QAction::triggered, [this, imageUrl]() {
-                emit saveImageRequested(imageUrl);
-                emit copyStatusRequested(QString("Downloading image..."));
-            });
-
-            QAction *copyImageAct = imageMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Image Address");
-            QObject::connect(copyImageAct, &QAction::triggered, [imageUrl, this]() {
-                QApplication::clipboard()->setText(imageUrl.toString());
-                emit copyStatusRequested(QString("Copied image URL: %1").arg(imageUrl.toString()));
-            });
-
-
-            if (auto *cleanImgAct = createCleanAction(imageMenu, "Copy Clean Image URL", imageUrl)) {
-                imageMenu->addAction(cleanImgAct);
-            }
-
-            QAction *viewImageAct = imageMenu->addAction(QIcon::fromTheme("image-viewer"), "View Image");
-            QObject::connect(viewImageAct, &QAction::triggered, [this, imageUrl]() {
-                QDesktopServices::openUrl(imageUrl);
-                emit copyStatusRequested(QString("Opening image in default viewer: %1").arg(imageUrl.toString()));
-            });
-        }
-
-        if (isVideo || isAudio) {
-            menu.addSeparator();
-            QString type = isVideo ? "Video" : "Audio";
-            QIcon typeIcon = isVideo ? QIcon::fromTheme("video-x-generic") : QIcon::fromTheme("audio-x-generic");
-            QMenu *mediaMenu = menu.addMenu(typeIcon, type);
-
-            if (isVideo) {
-                QAction *saveVideoAct = mediaMenu->addAction(QIcon::fromTheme("document-save"), "Save Video");
-                QObject::connect(saveVideoAct, &QAction::triggered, [this, mediaUrl]() {
-                    emit saveMediaRequested(mediaUrl, "video");
-                    emit copyStatusRequested(QString("Downloading video..."));
-                });
-            }
-
-            if (isAudio) {
-                QAction *saveAudioAct = mediaMenu->addAction(QIcon::fromTheme("document-save"), "Save Audio");
-                QObject::connect(saveAudioAct, &QAction::triggered, [this, mediaUrl]() {
-                    emit saveMediaRequested(mediaUrl, "audio");
-                    emit copyStatusRequested(QString("Downloading audio..."));
-                });
-            }
-
-            QAction *copyMediaAct = mediaMenu->addAction(QIcon::fromTheme("edit-copy"), "Copy Media Address");
-            QObject::connect(copyMediaAct, &QAction::triggered, [mediaUrl, this]() {
-                QApplication::clipboard()->setText(mediaUrl.toString());
-                emit copyStatusRequested(QString("Copied media URL: %1").arg(mediaUrl.toString()));
-            });
-
-
-            if (auto *cleanMediaAct = createCleanAction(mediaMenu, "Copy Clean URL", mediaUrl)) {
-                mediaMenu->addAction(cleanMediaAct);
-            }
-        }
-
-        menu.addSeparator();
-
-        QAction *newTabAct = menu.addAction(QIcon::fromTheme(QIcon::ThemeIcon::WindowNew), "Open in New Tab");
-        QObject::connect(newTabAct, &QAction::triggered, [this, view]() {
-            emit openInNewTabRequested(view->url());
-        });
-
-        menu.addSeparator();
-
-        QAction *inspectAct = menu.addAction(QIcon::fromTheme("tools-report-bug"), "Inspect Element");
-        QObject::connect(inspectAct, &QAction::triggered, [view]() {
-            view->page()->triggerAction(QWebEnginePage::InspectElement);
-        });
-
-        for (const auto& ext : Extense::all()) {
-               if (ext.state == 1 && ext.inst) {
-                   QList<QAction*> actions = ext.inst->getContextMenuActions(view);
-                   for (QAction* action : actions) {
-                       menu.addAction(action);
-                   }
-               }
-           }
-
-        menu.exec(globalPos);
-        m_menuActive = false;
-    }
-
-signals:
-    void newTabRequested(const QUrl &url);
-    void navigationRequestAccepted(const QUrl &url);
-    void openInNewTabRequested(const QUrl &url);
-    void addToFavoritesRequested(const QString &title, const QUrl &url, const QIcon &icon);
-    void saveImageRequested(const QUrl &imageUrl);
-    void saveMediaRequested(const QUrl &mediaUrl, const QString &mediaType);
-    void viewPageSourceRequested(const QString &html, const QString &title);
-    void copyStatusRequested(const QString &message);
-
-private:
-    bool isAdBlocked(const QString &urlStr) const {
-        if (!Settings_Backend::instance().adblockEnabled()) return false;
-        QUrl url(urlStr);
-        QString host = url.host().toLower();
-        if (blockedHosts.contains(host)) return true;
-        QStringList parts = host.split('.');
-        for (int i = 0; i < parts.size() - 1; ++i) {
-            QString parentDomain = parts.mid(i).join('.');
-            if (blockedHosts.contains(parentDomain)) return true;
-        }
-        return false;
-    }
-
-    QSet<QString> blockedHosts;
-    bool m_menuActive = false;
 };
 class SettingsDialog : public QDialog {
 Q_OBJECT
@@ -1610,6 +1310,24 @@ private:
 
         layout->addStretch();
 
+
+        QGroupBox *permissionsGroup = new QGroupBox("Site Permissions");
+        QVBoxLayout *permissionsLayout = new QVBoxLayout(permissionsGroup);
+
+        QLabel *permDesc = new QLabel("Control which sites can access device features and show notifications.");
+        permDesc->setWordWrap(true);
+        permissionsLayout->addWidget(permDesc);
+        permissionsLayout->addSpacing(5);
+
+        QPushButton *manageSitesBtn = new QPushButton("Manage Site Permissions");
+        manageSitesBtn->setIcon(QIcon::fromTheme("preferences-system"));
+        manageSitesBtn->setObjectName("btnSitePermissions");
+        manageSitesBtn->setMinimumHeight(32);
+        manageSitesBtn->setToolTip("View and manage permissions for all sites");
+        permissionsLayout->addWidget(manageSitesBtn);
+
+        layout->addWidget(permissionsGroup);
+
         return createScrollableTab(widget);
     }
 
@@ -1699,7 +1417,7 @@ private:
             QListWidgetItem *item = new QListWidgetItem();
             QString text = engine["name"].toString();
             if (i == currentIndex) {
-                text += "   < Default";
+                text += "   ← Default";
                 QFont font = item->font();
                 font.setBold(true);
                 item->setFont(font);
@@ -1772,11 +1490,11 @@ private:
         m_setPasswordBtn->setEnabled(encMethod == "custom");
     }
     void handleEncryptionMethodChange(int index) {
-    m_setPasswordBtn->setEnabled(index == 1);
+        m_setPasswordBtn->setEnabled(index == 1);
 
         auto &backend = Settings_Backend::instance();
 
-     if (index == 0 && backend.useCustomEncryption()) {
+        if (index == 0 && backend.useCustomEncryption()) {
             QMessageBox::StandardButton reply = QMessageBox::question(
                 this,
                 "Switch to Default Encryption",
@@ -1806,12 +1524,13 @@ private:
                     QMessageBox::warning(this, "Failed",
                         "Could not verify your current encryption key. Data remains encrypted.");
                     m_encryptionMethodCombo->setCurrentIndex(1);
+
                     return;
                 }
 
-                QVariantList history   = backend.loadHistory();
+                QVariantList history = backend.loadHistory();
                 QVariantList favorites = backend.loadFavorites();
-                QVariantList session   = backend.loadSession();
+                QVariantList session = backend.loadSession();
                 QList<Settings_Backend::ExtState> extensions = backend.loadExtensionStates();
 
                 backend.setEncryptionMethod("default");
@@ -1830,12 +1549,16 @@ private:
                 backend.saveSession(session);
                 backend.saveExtensionStates(extensions);
 
+                backend.setEncryptionVerificationValue();
+
                 QMessageBox::information(this, "Encryption Reset",
                     "Data has been successfully re-encrypted using the default system key.");
             } else {
+
                 m_encryptionMethodCombo->setCurrentIndex(1);
             }
         }
+
     }
     void saveSettings() {
         auto &s = Settings_Backend::instance();
@@ -1913,11 +1636,52 @@ private:
         }
     }
 };
-#include "Qtdl.H"
+class SessionNotifications {
+public:
+    struct Notification {
+        QString origin;
+        QString title;
+        QString body;
+        QString iconPath;
+        qint64 timestamp;
+    };
+
+    static void add(const QString &origin, const QString &title,
+                    const QString &body, const QString &iconPath) {
+        Notification n{origin, title, body, iconPath, QDateTime::currentMSecsSinceEpoch()};
+        instance().notifications.prepend(n);
+        if (instance().notifications.size() > 50) instance().notifications.removeLast();
+    }
+
+    static QList<Notification> getForOrigin(const QString &origin) {
+        QList<Notification> filtered;
+        for (const auto &n : std::as_const(instance().notifications)) {
+            if (n.origin == origin) filtered.append(n);
+        }
+        return filtered;
+    }
+
+    static void clearForOrigin(const QString &origin) {
+        auto &inst = instance();
+        inst.notifications.erase(
+            std::remove_if(inst.notifications.begin(), inst.notifications.end(),
+                [&origin](const Notification &n) { return n.origin == origin; }),
+            inst.notifications.end()
+        );
+    }
+
+    static void clear() { instance().notifications.clear(); }
+
+private:
+    static SessionNotifications& instance() {
+        static SessionNotifications inst;
+        return inst;
+    }
+    QList<Notification> notifications;
+};
 class Dialogs : public QObject {
     Q_OBJECT
 public:
-
     static void fav(QWidget *parent, QVariantList &favorites, std::function<void()> refreshCallback) {
         auto dialog = std::make_unique<QDialog>(parent);
         dialog->setWindowTitle("Favorites Manager");
@@ -2049,7 +1813,7 @@ public:
 
                 QUrl url(item->data(Qt::UserRole).toString());
                 if (url.isValid()) {
-                    QDesktopServices::openUrl(url);
+                     Browser_Backend::instance().openInNewTab(url);
                 }
             });
 
@@ -2212,7 +1976,6 @@ public:
             if (refreshCallback) refreshCallback();
         }
     }
-
     static void history(QWidget *parent, const QVariantList &recentTabs, std::function<void()> clearCallback) {
         auto dialog = std::make_unique<QDialog>(parent);
         dialog->setWindowTitle("Browsing History");
@@ -2408,7 +2171,7 @@ public:
 
             menu.addAction(QIcon::fromTheme("window-new"), "Open in New Tab", [item]() {
                 QString url = item->data(0, Qt::UserRole).toString();
-                QDesktopServices::openUrl(QUrl(url));
+                 Browser_Backend::instance().openInNewTab(url);
             });
 
             menu.addAction(QIcon::fromTheme("edit-copy"), "Copy URL", [item]() {
@@ -2464,7 +2227,7 @@ public:
             if (item->childCount() > 0) return;
 
             QString url = item->data(0, Qt::UserRole).toString();
-            QDesktopServices::openUrl(QUrl(url));
+             Browser_Backend::instance().openInNewTab(url);
         });
 
         QHBoxLayout *btnLayout = new QHBoxLayout();
@@ -2552,30 +2315,6 @@ public:
         connect(closeBtn, &QPushButton::clicked, dialog.get(), &QDialog::accept);
 
         dialog->exec();
-    }
-    static void settings(QWidget *parent, std::function<void()> applyCallback) {
-        SettingsDialog dialog(parent, applyCallback);
-
-        QPushButton *kbBtn = dialog.findChild<QPushButton*>("btnKeybinds");
-        if (kbBtn) connect(kbBtn, &QPushButton::clicked, [&]() { keybinds(&dialog, applyCallback); });
-
-        QPushButton *favBtn = dialog.findChild<QPushButton*>("btnFavorites");
-        if (favBtn) connect(favBtn, &QPushButton::clicked, [&]() {
-            QVariantList favs = Settings_Backend::instance().loadFavorites();
-            fav(&dialog, favs, applyCallback);
-            Settings_Backend::instance().saveFavorites(favs);
-        });
-
-        QPushButton *histBtn = dialog.findChild<QPushButton*>("btnHistory");
-        if (histBtn) connect(histBtn, &QPushButton::clicked, [&]() {
-            history(&dialog, Settings_Backend::instance().loadHistory(),
-                   []() { Settings_Backend::instance().clearHistory(); });
-        });
-
-        QPushButton *extBtn = dialog.findChild<QPushButton*>("btnExtensions");
-        if (extBtn) connect(extBtn, &QPushButton::clicked, [&]() { ExtMan(&dialog, applyCallback); });
-
-        dialog.exec();
     }
 
     static void source(QWidget *parent, const QString &html, const QString &title) {
@@ -2673,7 +2412,6 @@ public:
         dialog->show();
         dialog.release();
     }
-
     static void inspect(QWebEnginePage *page, const QString &title) {
         auto devTools = new QWebEngineView();
         devTools->setWindowTitle("Inspect: " + title);
@@ -2684,8 +2422,6 @@ public:
         devTools->resize(1200, 800);
         devTools->show();
     }
-
-
     static void keybinds(QWidget *parent, std::function<void()> onClosed = nullptr) {
         auto dialog = std::make_unique<QDialog>(parent);
         dialog->setWindowTitle("Keybinds Editor");
@@ -3059,6 +2795,9 @@ public:
 
         QHBoxLayout* btnLayout = new QHBoxLayout();
 
+        QPushButton* extBtn = new QPushButton("Get extensions");
+        extBtn->setIcon(QIcon::fromTheme("plugin"));
+
         QPushButton* addBtn = new QPushButton("Add Extension");
         addBtn->setIcon(QIcon::fromTheme("list-add"));
 
@@ -3072,6 +2811,8 @@ public:
         QPushButton* refreshBtn = new QPushButton("Refresh");
         refreshBtn->setIcon(QIcon::fromTheme("view-refresh"));
 
+
+        btnLayout->addWidget(extBtn);
         btnLayout->addWidget(addBtn);
         btnLayout->addWidget(removeBtn);
         btnLayout->addWidget(openFolderBtn);
@@ -3274,6 +3015,13 @@ public:
             }
         });
 
+
+        connect(extBtn, &QPushButton::clicked, []() {
+            Browser_Backend::instance().openInNewTab(
+                QUrl("https://github.com/zynomon/onu/tree/assets/Extensions")
+            );
+        });
+
         connect(openFolderBtn, &QPushButton::clicked, []() {
             QDesktopServices::openUrl(QUrl::fromLocalFile(
                 Settings_Backend::instance().extensionsPath()));
@@ -3298,6 +3046,530 @@ public:
 
         if (refreshCallback) refreshCallback();
     }
+
+    static void permissionPrompt(QWidget *parent, const QString &origin,
+                                 const QString &permission,
+                                 std::function<void(int, bool)> callback) {
+        auto dialog = std::make_unique<QDialog>(parent);
+        dialog->setWindowTitle("Permission Request");
+        dialog->setWindowIcon(QIcon::fromTheme("dialog-question"));
+        dialog->setModal(true);
+        dialog->setMinimumSize(450, 300);
+        dialog->resize(450, 320);
+
+        QVBoxLayout *layout = new QVBoxLayout(dialog.get());
+        layout->setSpacing(15);
+        layout->setContentsMargins(25, 25, 25, 25);
+
+        QLabel *iconLabel = new QLabel();
+        iconLabel->setPixmap(QIcon::fromTheme("dialog-question").pixmap(64, 64));
+        iconLabel->setAlignment(Qt::AlignCenter);
+        layout->addWidget(iconLabel);
+
+        QLabel *titleLabel = new QLabel(QString("<b>%1</b> wants to:").arg(origin));
+        titleLabel->setAlignment(Qt::AlignCenter);
+        titleLabel->setWordWrap(true);
+        QFont titleFont = titleLabel->font();
+        titleFont.setPointSize(12);
+        titleLabel->setFont(titleFont);
+        layout->addWidget(titleLabel);
+
+        auto permMap = getPermissionMap();
+        PermissionInfo info = permMap.value(permission, {permission, "dialog-question"});
+
+        QHBoxLayout *permLayout = new QHBoxLayout();
+        QLabel *permIconLabel = new QLabel();
+        permIconLabel->setPixmap(QIcon::fromTheme(info.iconName).pixmap(32, 32));
+
+        QLabel *permLabel = new QLabel(info.displayName);
+        QFont permFont = permLabel->font();
+        permFont.setPointSize(12);
+        permFont.setBold(true);
+        permLabel->setFont(permFont);
+
+        permLayout->addStretch();
+        permLayout->addWidget(permIconLabel);
+        permLayout->addWidget(permLabel);
+        permLayout->addStretch();
+        layout->addLayout(permLayout);
+
+        layout->addSpacing(10);
+        QCheckBox *rememberCheck = new QCheckBox("Remember my choice for this site");
+        rememberCheck->setChecked(true);
+        layout->addWidget(rememberCheck);
+
+        layout->addStretch();
+        QHBoxLayout *btnLayout = new QHBoxLayout();
+        btnLayout->setContentsMargins(0, 10, 0, 0);
+
+        QPushButton *denyBtn = new QPushButton("Deny");
+        denyBtn->setIcon(QIcon::fromTheme("dialog-cancel"));
+        denyBtn->setMinimumHeight(32);
+
+        QPushButton *allowBtn = new QPushButton("Allow");
+        allowBtn->setIcon(QIcon::fromTheme("dialog-ok-apply"));
+        allowBtn->setMinimumHeight(32);
+        allowBtn->setDefault(true);
+
+        btnLayout->addStretch();
+        btnLayout->addWidget(denyBtn);
+        btnLayout->addWidget(allowBtn);
+        layout->addLayout(btnLayout);
+
+        QObject::connect(denyBtn, &QPushButton::clicked, [&]() {
+            if (callback) callback(2, rememberCheck->isChecked());
+            dialog->accept();
+        });
+
+        QObject::connect(allowBtn, &QPushButton::clicked, [&]() {
+            if (callback) callback(1, rememberCheck->isChecked());
+            dialog->accept();
+        });
+
+        QObject::connect(dialog.get(), &QDialog::rejected, [&]() {
+            if (callback) callback(2, false);
+        });
+
+        dialog->exec();
+    }
+    static void siteInfo(QWidget *parent, const QString &origin, bool isCurrentlyOpen = false) {
+        auto &s = Settings_Backend::instance();
+
+        QStringList storedSites = s.getPermissionSites();
+
+        QString matchedOrigin = origin;
+        QUrl originUrl = QUrl::fromUserInput(origin);
+        QString originHost = originUrl.host();
+
+        for (const QString &stored : storedSites) {
+            QUrl storedUrl(stored);
+            if (storedUrl.host() == originHost || stored == origin) {
+                matchedOrigin = stored;
+                break;
+            }
+        }
+
+        QDialog dialog(parent);
+        dialog.setWindowTitle("Site Information - " + origin);
+        dialog.setWindowIcon(QIcon::fromTheme("dialog-information"));
+        dialog.setModal(true);
+        dialog.setMinimumSize(650, 600);
+        dialog.resize(700, 650);
+
+        QVBoxLayout *layout = new QVBoxLayout(&dialog);
+        layout->setSpacing(10);
+        layout->setContentsMargins(15, 15, 15, 15);
+
+        QHBoxLayout *headerLayout = new QHBoxLayout();
+
+        QIcon siteIcon = QIcon::fromTheme("applications-internet");
+        if (isCurrentlyOpen) {
+            if (auto *view = qobject_cast<QWebEngineView*>(parent)) {
+                QIcon favicon = view->icon();
+                if (!favicon.isNull()) {
+                    siteIcon = favicon;
+                }
+            }
+        }
+
+        QLabel *iconLabel = new QLabel();
+        iconLabel->setPixmap(siteIcon.pixmap(48, 48));
+        headerLayout->addWidget(iconLabel);
+
+        QLabel *titleLabel = new QLabel(QString("<b>%1</b>").arg(origin));
+        QFont titleFont = titleLabel->font();
+        titleFont.setPointSize(14);
+        titleLabel->setFont(titleFont);
+        headerLayout->addWidget(titleLabel);
+        headerLayout->addStretch();
+
+        layout->addLayout(headerLayout);
+        layout->addSpacing(10);
+
+        QTabWidget *tabWidget = new QTabWidget();
+
+        QWidget *permTab = new QWidget();
+        QVBoxLayout *permTabLayout = new QVBoxLayout(permTab);
+
+        QGroupBox *permGroup = new QGroupBox("Site-specific permissions");
+        QVBoxLayout *permLayout = new QVBoxLayout(permGroup);
+
+        QStringList permissions = s.allPermissionTypes();
+
+        for (const QString &perm : permissions) {
+            QWidget *permWidget = createPermissionWidget(matchedOrigin, perm, false);
+            permLayout->addWidget(permWidget);
+        }
+
+        permTabLayout->addWidget(permGroup);
+        permTabLayout->addStretch();
+        tabWidget->addTab(permTab, QIcon::fromTheme("preferences-system"), "Permissions");
+
+        if (isCurrentlyOpen) {
+            QWidget *cookieTab = new QWidget();
+            QVBoxLayout *cookieTabLayout = new QVBoxLayout(cookieTab);
+
+            QGroupBox *cookieGroup = new QGroupBox("Cookies");
+            QVBoxLayout *cookieLayout = new QVBoxLayout(cookieGroup);
+
+            QListWidget *cookieList = new QListWidget();
+            cookieList->setMaximumHeight(250);
+            cookieLayout->addWidget(cookieList);
+
+            if (auto *view = qobject_cast<QWebEngineView*>(parent)) {
+                QWebEngineCookieStore *cookieStore = view->page()->profile()->cookieStore();
+
+                auto *loadingItem = new QListWidgetItem("Loading cookies...");
+                loadingItem->setForeground(Qt::gray);
+                loadingItem->setFlags(loadingItem->flags() & ~Qt::ItemIsSelectable);
+                cookieList->addItem(loadingItem);
+
+                connect(cookieStore, &QWebEngineCookieStore::cookieAdded,
+                        &dialog, [cookieList, matchedOrigin](const QNetworkCookie &cookie) {
+
+                    QString cookieDomain = cookie.domain();
+                    if (cookieDomain.startsWith('.')) {
+                        cookieDomain = cookieDomain.mid(1);
+                    }
+
+                    QUrl matchedUrl(matchedOrigin);
+                    QString matchedHost = matchedUrl.host();
+
+                    if (cookieDomain.contains(matchedHost) || matchedHost.contains(cookieDomain)) {
+
+                        if (cookieList->count() == 1 &&
+                            cookieList->item(0)->text() == "Loading cookies...") {
+                            cookieList->clear();
+                        }
+
+                        QString cookieText = QString("%1 = %2")
+                            .arg(QString::fromUtf8(cookie.name()))
+                            .arg(QString::fromUtf8(cookie.value()));
+
+                        if (cookieText.length() > 60) {
+                            cookieText = cookieText.left(57) + "...";
+                        }
+
+                        QString expiryStr = cookie.isSessionCookie() ?
+                            "Session" : cookie.expirationDate().toString("yyyy-MM-dd hh:mm");
+
+                        QString tooltip = QString("Name: %1\nValue: %2\nDomain: %3\nPath: %4\nExpires: %5\nSecure: %6\nHttpOnly: %7")
+                            .arg(QString::fromUtf8(cookie.name()))
+                            .arg(QString::fromUtf8(cookie.value()))
+                            .arg(cookie.domain())
+                            .arg(cookie.path())
+                            .arg(expiryStr)
+                            .arg(cookie.isSecure() ? "Yes" : "No")
+                            .arg(cookie.isHttpOnly() ? "Yes" : "No");
+
+                        auto *item = new QListWidgetItem(
+                            QIcon::fromTheme("preferences-web-browser-cookies"),
+                            cookieText
+                        );
+                        item->setToolTip(tooltip);
+                        cookieList->addItem(item);
+                    }
+                });
+
+                cookieStore->loadAllCookies();
+
+                QTimer::singleShot(2000, &dialog, [cookieList]() {
+                    if (cookieList->count() == 1 &&
+                        cookieList->item(0)->text() == "Loading cookies...") {
+                        cookieList->clear();
+                        auto *item = new QListWidgetItem("No cookies found for this site");
+                        item->setForeground(Qt::gray);
+                        item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+                        cookieList->addItem(item);
+                    }
+                });
+
+                QPushButton *clearCookiesBtn = new QPushButton("Clear All Cookies");
+                clearCookiesBtn->setIcon(QIcon::fromTheme("edit-clear"));
+                connect(clearCookiesBtn, &QPushButton::clicked, [cookieStore, cookieList]() {
+                    cookieStore->deleteAllCookies();
+                    cookieList->clear();
+                    auto *item = new QListWidgetItem("All cookies cleared");
+                    item->setForeground(Qt::gray);
+                    item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+                    cookieList->addItem(item);
+                });
+                cookieLayout->addWidget(clearCookiesBtn);
+            }
+
+            cookieTabLayout->addWidget(cookieGroup);
+            cookieTabLayout->addStretch();
+            tabWidget->addTab(cookieTab, QIcon::fromTheme("preferences-web-browser-cookies"), "Cookies");
+        }
+
+        QWidget *notifTab = new QWidget();
+        QVBoxLayout *notifTabLayout = new QVBoxLayout(notifTab);
+
+        QGroupBox *notifGroup = new QGroupBox("Session Notifications");
+        QVBoxLayout *notifLayout = new QVBoxLayout(notifGroup);
+
+        QListWidget *notifList = new QListWidget();
+        notifList->setMaximumHeight(250);
+        notifLayout->addWidget(notifList);
+
+        auto notifications = SessionNotifications::getForOrigin(matchedOrigin);
+
+        if (notifications.isEmpty()) {
+            auto *item = new QListWidgetItem("No notifications received this session");
+            item->setForeground(Qt::gray);
+            item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+            notifList->addItem(item);
+        } else {
+            for (const auto &n : notifications) {
+                QIcon notifIcon = n.iconPath.isEmpty() ?
+                    QIcon::fromTheme("dialog-information") :
+                    Icon_Man::instance().loadIcon(n.iconPath);
+
+                QString displayText = QString("%1 - %2")
+                    .arg(QDateTime::fromMSecsSinceEpoch(n.timestamp).toString("hh:mm:ss"))
+                    .arg(n.title);
+
+                if (displayText.length() > 60) {
+                    displayText = displayText.left(57) + "...";
+                }
+
+                auto *item = new QListWidgetItem(notifIcon, displayText);
+                item->setToolTip(QString("Title: %1\nBody: %2\nTime: %3")
+                    .arg(n.title)
+                    .arg(n.body)
+                    .arg(QDateTime::fromMSecsSinceEpoch(n.timestamp).toString("yyyy-MM-dd hh:mm:ss")));
+                notifList->addItem(item);
+            }
+        }
+
+        QPushButton *clearNotifBtn = new QPushButton("Clear Notification History");
+        clearNotifBtn->setIcon(QIcon::fromTheme("edit-clear"));
+        connect(clearNotifBtn, &QPushButton::clicked, [notifList, matchedOrigin]() {
+            SessionNotifications::clearForOrigin(matchedOrigin);
+            notifList->clear();
+            auto *item = new QListWidgetItem("Notification history cleared");
+            item->setForeground(Qt::gray);
+            item->setFlags(item->flags() & ~Qt::ItemIsSelectable);
+            notifList->addItem(item);
+        });
+        notifLayout->addWidget(clearNotifBtn);
+
+        notifTabLayout->addWidget(notifGroup);
+        notifTabLayout->addStretch();
+        tabWidget->addTab(notifTab, QIcon::fromTheme("preferences-desktop-notification"), "Notifications");
+
+        layout->addWidget(tabWidget);
+
+        QPushButton *resetBtn = new QPushButton("Reset all to global defaults");
+        resetBtn->setIcon(QIcon::fromTheme("edit-clear"));
+        connect(resetBtn, &QPushButton::clicked, [&dialog, matchedOrigin, parent, isCurrentlyOpen]() {
+            if (QMessageBox::question(&dialog, "Reset Site",
+                "Reset all permissions for this site to global defaults?") == QMessageBox::Yes) {
+                Settings_Backend::instance().clearSitePermissions(matchedOrigin);
+                dialog.accept();
+                siteInfo(parent, matchedOrigin, isCurrentlyOpen);
+            }
+        });
+        layout->addWidget(resetBtn);
+
+        layout->addStretch();
+
+        QHBoxLayout *btnLayout = new QHBoxLayout();
+        btnLayout->addStretch();
+        QPushButton *closeBtn = new QPushButton("Close");
+        closeBtn->setMinimumHeight(32);
+        closeBtn->setDefault(true);
+        connect(closeBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+        btnLayout->addWidget(closeBtn);
+        layout->addLayout(btnLayout);
+
+        dialog.exec();
+    }
+    static void sitesManager(QWidget *parent) {
+        QDialog dialog(parent);
+        dialog.setWindowTitle("Site Permissions Manager");
+        dialog.setWindowIcon(QIcon::fromTheme("preferences-system"));
+        dialog.resize(800, 600);
+        dialog.setModal(true);
+
+        QVBoxLayout *mainLayout = new QVBoxLayout(&dialog);
+        mainLayout->setSpacing(10);
+        mainLayout->setContentsMargins(10, 10, 10, 10);
+
+        QTabWidget *tabWidget = new QTabWidget();
+
+        QWidget *globalTab = new QWidget();
+        QVBoxLayout *globalLayout = new QVBoxLayout(globalTab);
+
+        QLabel *globalDesc = new QLabel(
+            "Default permissions for all sites. These apply when a site hasn't set a specific override."
+        );
+        globalDesc->setWordWrap(true);
+        globalDesc->setStyleSheet("color: gray; padding: 5px;");
+        globalLayout->addWidget(globalDesc);
+
+        QGroupBox *globalGroup = new QGroupBox("Global Default Permissions");
+        QVBoxLayout *globalPermLayout = new QVBoxLayout(globalGroup);
+
+        auto &s = Settings_Backend::instance();
+        QStringList permissions = s.allPermissionTypes();
+
+        for (const QString &perm : permissions) {
+            QWidget *permWidget = createPermissionWidget("", perm, true);
+
+            globalPermLayout->addWidget(permWidget);
+        }
+
+        globalLayout->addWidget(globalGroup);
+        globalLayout->addStretch();
+
+        tabWidget->addTab(globalTab, QIcon::fromTheme("preferences-system"), "Global Defaults");
+
+        QWidget *sitesTab = new QWidget();
+        QVBoxLayout *sitesLayout = new QVBoxLayout(sitesTab);
+
+        QHBoxLayout *searchLayout = new QHBoxLayout();
+        QLineEdit *searchEdit = new QLineEdit();
+        searchEdit->setPlaceholderText("Search sites...");
+        searchEdit->setClearButtonEnabled(true);
+        searchLayout->addWidget(new QLabel("Search:"));
+        searchLayout->addWidget(searchEdit);
+        sitesLayout->addLayout(searchLayout);
+
+        QSplitter *splitter = new QSplitter(Qt::Horizontal);
+
+        QListWidget *sitesList = new QListWidget();
+        sitesList->setMinimumWidth(200);
+        sitesList->setSelectionMode(QAbstractItemView::SingleSelection);
+
+        QStringList sites = s.getPermissionSites();
+        for (const QString &site : std::as_const(sites)) {
+            QListWidgetItem *item = new QListWidgetItem(site);
+            item->setIcon(QIcon::fromTheme("applications-internet"));
+            sitesList->addItem(item);
+        }
+
+        if (sites.isEmpty()) {
+            QListWidgetItem *item = new QListWidgetItem("No sites with custom permissions");
+            item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+            sitesList->addItem(item);
+        }
+
+        splitter->addWidget(sitesList);
+
+        QWidget *sitePermWidget = new QWidget();
+        QVBoxLayout *sitePermLayout = new QVBoxLayout(sitePermWidget);
+
+        QLabel *selectLabel = new QLabel("Select a site to view its permissions");
+        selectLabel->setAlignment(Qt::AlignCenter);
+        selectLabel->setStyleSheet("color: gray; padding: 20px;");
+        sitePermLayout->addWidget(selectLabel);
+        sitePermLayout->addStretch();
+
+        splitter->addWidget(sitePermWidget);
+        splitter->setStretchFactor(0, 1);
+        splitter->setStretchFactor(1, 2);
+
+        sitesLayout->addWidget(splitter);
+
+        QTimer::singleShot(0, [&]() {
+            connect(sitesList, &QListWidget::currentItemChanged,
+                [&, sitePermWidget, sitePermLayout](QListWidgetItem *current, QListWidgetItem*) {
+                if (!current || current->text() == "No sites with custom permissions") return;
+
+                QLayoutItem *child;
+                while ((child = sitePermLayout->takeAt(0)) != nullptr) {
+                    delete child->widget();
+                    delete child;
+                }
+
+                QString origin = current->text();
+
+                QLabel *titleLabel = new QLabel(QString("<b>%1</b>").arg(origin));
+                titleLabel->setStyleSheet("font-size: 14px; padding: 5px;");
+                sitePermLayout->addWidget(titleLabel);
+
+                QGroupBox *siteGroup = new QGroupBox("Site-specific overrides");
+                QVBoxLayout *siteGroupLayout = new QVBoxLayout(siteGroup);
+
+                QMap<QString, int> sitePerms = s.getSitePermissions(origin);
+
+                for (const QString &perm : permissions) {
+                    QWidget *permWidget = createPermissionWidget(origin, perm, false);
+                    siteGroupLayout->addWidget(permWidget);
+                }
+
+                sitePermLayout->addWidget(siteGroup);
+
+                QPushButton *clearBtn = new QPushButton("Reset all for this site");
+                clearBtn->setIcon(QIcon::fromTheme("edit-clear"));
+              connect(clearBtn, &QPushButton::clicked, [&dialog, origin, sitesList, &s]() {
+                  if (QMessageBox::question(&dialog, "Reset Site",
+                        "Reset all permissions for this site to global defaults?") == QMessageBox::Yes) {
+                        s.clearSitePermissions(origin);
+
+                        sitesList->clear();
+                        QStringList updatedSites = s.getPermissionSites();
+                        for (const QString &site : updatedSites) {
+                            QListWidgetItem *item = new QListWidgetItem(site);
+                            item->setIcon(QIcon::fromTheme("applications-internet"));
+                            sitesList->addItem(item);
+                        }
+                        if (updatedSites.isEmpty()) {
+                            QListWidgetItem *item = new QListWidgetItem("No sites with custom permissions");
+                            item->setFlags(item->flags() & ~Qt::ItemIsEnabled);
+                            sitesList->addItem(item);
+                        }
+                    }
+                });
+                sitePermLayout->addWidget(clearBtn);
+
+                sitePermLayout->addStretch();
+            });
+        });
+
+        connect(searchEdit, &QLineEdit::textChanged, [sitesList](const QString &text) {
+            for (int i = 0; i < sitesList->count(); ++i) {
+                QListWidgetItem *item = sitesList->item(i);
+                bool hide = !text.isEmpty() && !item->text().contains(text, Qt::CaseInsensitive);
+                item->setHidden(hide);
+            }
+        });
+
+        tabWidget->addTab(sitesTab, QIcon::fromTheme("applications-internet"), "Sites");
+
+        mainLayout->addWidget(tabWidget);
+
+        QHBoxLayout *btnLayout = new QHBoxLayout();
+
+        QPushButton *clearAllBtn = new QPushButton("Clear All Site Permissions");
+        clearAllBtn->setIcon(QIcon::fromTheme("edit-delete"));
+        connect(clearAllBtn, &QPushButton::clicked, [&dialog, parent]() {
+            if (QMessageBox::warning(&dialog, "Clear All",
+                "Remove ALL site-specific permissions?\n\nThis cannot be undone.",
+                QMessageBox::Yes | QMessageBox::No) == QMessageBox::Yes) {
+                Settings_Backend::instance().clearAllSitePermissions();
+                dialog.accept();
+                sitesManager(parent);
+
+            }
+        });
+        btnLayout->addWidget(clearAllBtn);
+
+        btnLayout->addStretch();
+
+        QPushButton *closeBtn = new QPushButton("Close");
+        closeBtn->setMinimumHeight(32);
+        closeBtn->setDefault(true);
+        connect(closeBtn, &QPushButton::clicked, &dialog, &QDialog::accept);
+        btnLayout->addWidget(closeBtn);
+
+        mainLayout->addLayout(btnLayout);
+
+        dialog.exec();
+    }
+
+
     static bool requestEncryptionKey(QWidget *parent, int &attemptCount) {
         constexpr int maxAttempts = 10;
 
@@ -3320,7 +3592,7 @@ public:
                 "3. Delete the file: encrypted.conf\n"
                 "4. Restart Onu\n\n"
                 "Warning: This will permanently delete all encrypted data "
-                "(history, favorites, sessions)."
+                "(history, favorites, sessions,extension prefernces, permissions given to sites)."
             );
             msgBox.setStandardButtons(QMessageBox::Ok);
             msgBox.exec();
@@ -3403,10 +3675,218 @@ public:
 
         return dialog.exec() == QDialog::Accepted;
     }
+static void settings(QWidget *parent, std::function<void()> applyCallback) {
+        SettingsDialog dialog(parent, applyCallback);
 
+        QPushButton *kbBtn = dialog.findChild<QPushButton*>("btnKeybinds");
+        if (kbBtn) connect(kbBtn, &QPushButton::clicked, [&]() { keybinds(&dialog, applyCallback); });
+
+        QPushButton *favBtn = dialog.findChild<QPushButton*>("btnFavorites");
+        if (favBtn) connect(favBtn, &QPushButton::clicked, [&]() {
+            QVariantList favs = Settings_Backend::instance().loadFavorites();
+            fav(&dialog, favs, applyCallback);
+            Settings_Backend::instance().saveFavorites(favs);
+        });
+
+        QPushButton *histBtn = dialog.findChild<QPushButton*>("btnHistory");
+        if (histBtn) connect(histBtn, &QPushButton::clicked, [&]() {
+            history(&dialog, Settings_Backend::instance().loadHistory(),
+                   []() { Settings_Backend::instance().clearHistory(); });
+        });
+
+        QPushButton *extBtn = dialog.findChild<QPushButton*>("btnExtensions");
+        if (extBtn) connect(extBtn, &QPushButton::clicked, [&]() { ExtMan(&dialog, applyCallback); });
+
+        QPushButton *sitesBtn = dialog.findChild<QPushButton*>("btnSitePermissions");
+        if (sitesBtn) connect(sitesBtn, &QPushButton::clicked, [&]() {
+            sitesManager(&dialog);
+        });
+
+        dialog.exec();
+    }
 
 private:
-    static void showFavoriteDialog(QWidget *parent, QVariantList &favorites,
+struct PermissionInfo {
+    QString displayName;
+    QString iconName;
+};
+
+static QMap<QString, PermissionInfo> getPermissionMap() {
+    static QMap<QString, PermissionInfo> permMap = {
+        {"geolocation", {"Access your location", "find-location"}},
+        {"microphone", {"Use your microphone", "audio-input-microphone"}},
+        {"camera", {"Use your camera", "camera-video"}},
+        {"camera_microphone", {"Use your camera and microphone", "camera-video"}},
+        {"mouselock", {"Lock your mouse pointer", "input-mouse"}},
+        {"notifications", {"Show desktop notifications", "preferences-desktop-notification"}},
+        {"popups", {"Open popup windows", "window-new"}},
+        {"clipboard", {"Read and write to clipboard", "edit-copy"}},
+        {"localFonts", {"Access your local fonts", "preferences-desktop-font"}},
+        {"desktopVideo", {"Share your screen", "video-display"}},
+        {"desktopAudioVideo", {"Share your screen with audio", "video-display"}},
+        {"fileAccess", {"Access files on your device", "document-open"}}
+    };
+    return permMap;
+}
+static QWidget* createPermissionRow(const QString &context, const QString &permission, bool isGlobal = false) {
+    QWidget *rowWidget = new QWidget();
+    QHBoxLayout *rowLayout = new QHBoxLayout(rowWidget);
+    rowLayout->setContentsMargins(5, 2, 5, 2);
+    rowLayout->setSpacing(10);
+
+    auto permMap = getPermissionMap();
+    PermissionInfo info = permMap.value(permission, {permission, "dialog-question"});
+
+    QLabel *iconLabel = new QLabel();
+    iconLabel->setPixmap(QIcon::fromTheme(info.iconName).pixmap(16, 16));
+    iconLabel->setFixedSize(20, 20);
+    rowLayout->addWidget(iconLabel);
+
+    QLabel *nameLabel = new QLabel(info.displayName);
+    nameLabel->setMinimumWidth(200);
+    rowLayout->addWidget(nameLabel);
+
+    rowLayout->addStretch();
+
+    QRadioButton *denyRadio = new QRadioButton();
+    QRadioButton *allowRadio = new QRadioButton();
+    QRadioButton *askRadio = new QRadioButton();
+
+    denyRadio->setFixedWidth(70);
+    allowRadio->setFixedWidth(70);
+    askRadio->setFixedWidth(70);
+
+    int currentState;
+    if (isGlobal) {
+        currentState = Settings_Backend::instance().getGlobalPermission(permission);
+    } else {
+        currentState = Settings_Backend::instance().getSitePermission(context, permission);
+    }
+
+    if (currentState == 1) allowRadio->setChecked(true);
+    else if (currentState == 2) denyRadio->setChecked(true);
+    else askRadio->setChecked(true);
+
+    rowLayout->addWidget(denyRadio);
+    rowLayout->addWidget(allowRadio);
+    rowLayout->addWidget(askRadio);
+
+    if (isGlobal) {
+        QObject::connect(denyRadio, &QRadioButton::toggled, [permission](bool checked) {
+            if (checked) Settings_Backend::instance().setGlobalPermission(permission, 2);
+        });
+        QObject::connect(allowRadio, &QRadioButton::toggled, [permission](bool checked) {
+            if (checked) Settings_Backend::instance().setGlobalPermission(permission, 1);
+        });
+        QObject::connect(askRadio, &QRadioButton::toggled, [permission](bool checked) {
+            if (checked) Settings_Backend::instance().setGlobalPermission(permission, 0);
+        });
+    } else {
+        QObject::connect(denyRadio, &QRadioButton::toggled, [context, permission](bool checked) {
+            if (checked) Settings_Backend::instance().setSitePermission(context, permission, 2);
+        });
+        QObject::connect(allowRadio, &QRadioButton::toggled, [context, permission](bool checked) {
+            if (checked) Settings_Backend::instance().setSitePermission(context, permission, 1);
+        });
+        QObject::connect(askRadio, &QRadioButton::toggled, [context, permission](bool checked) {
+            if (checked) Settings_Backend::instance().setSitePermission(context, permission, 0);
+        });
+    }
+
+    return rowWidget;
+}
+
+static QWidget* createPermissionWidget(const QString &context, const QString &permission, bool isGlobal = false) {
+
+    static QWidget *container = nullptr;
+    static QVBoxLayout *containerLayout = nullptr;
+    static QScrollArea *scrollArea = nullptr;
+    static QWidget *contentWidget = nullptr;
+    static QVBoxLayout *contentLayout = nullptr;
+    static int callCount = 0;
+    static QPointer<QWidget> lastContainer;
+
+    if (lastContainer.isNull() || !lastContainer) {
+        container = nullptr;
+        containerLayout = nullptr;
+        scrollArea = nullptr;
+        contentWidget = nullptr;
+        contentLayout = nullptr;
+        callCount = 0;
+    }
+
+    if (callCount == 0) {
+        container = new QWidget();
+        lastContainer = container;
+
+        containerLayout = new QVBoxLayout(container);
+        containerLayout->setContentsMargins(0, 0, 0, 0);
+        containerLayout->setSpacing(0);
+
+        scrollArea = new QScrollArea();
+        scrollArea->setWidgetResizable(true);
+        scrollArea->setFrameShape(QFrame::NoFrame);
+        scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+
+        contentWidget = new QWidget();
+        contentLayout = new QVBoxLayout(contentWidget);
+        contentLayout->setContentsMargins(0, 0, 0, 0);
+        contentLayout->setSpacing(0);
+
+        QHBoxLayout *headerLayout = new QHBoxLayout();
+        headerLayout->setContentsMargins(5, 2, 5, 2);
+        headerLayout->setSpacing(10);
+
+        QLabel *permHeader = new QLabel("Permission");
+        permHeader->setMinimumWidth(220);
+        headerLayout->addWidget(permHeader);
+
+        headerLayout->addStretch();
+
+        QLabel *denyHeader = new QLabel("Deny");
+        denyHeader->setFixedWidth(70);
+        denyHeader->setAlignment(Qt::AlignCenter);
+        headerLayout->addWidget(denyHeader);
+
+        QLabel *allowHeader = new QLabel("Allow");
+        allowHeader->setFixedWidth(70);
+        allowHeader->setAlignment(Qt::AlignCenter);
+        headerLayout->addWidget(allowHeader);
+
+        QLabel *askHeader = new QLabel("Ask");
+        askHeader->setFixedWidth(70);
+        askHeader->setAlignment(Qt::AlignCenter);
+        headerLayout->addWidget(askHeader);
+
+        contentLayout->addLayout(headerLayout);
+
+        QFrame *line = new QFrame();
+        line->setFrameShape(QFrame::HLine);
+        line->setFrameShadow(QFrame::Sunken);
+        contentLayout->addWidget(line);
+
+        scrollArea->setWidget(contentWidget);
+        containerLayout->addWidget(scrollArea);
+    }
+
+    QWidget *permissionRow = createPermissionRow(context, permission, isGlobal);
+    contentLayout->addWidget(permissionRow);
+
+    callCount++;
+
+    if (callCount >= 12) {
+        callCount = 0;
+        container = nullptr;
+        containerLayout = nullptr;
+        scrollArea = nullptr;
+        contentWidget = nullptr;
+        contentLayout = nullptr;
+    }
+
+    return lastContainer;
+}
+static void showFavoriteDialog(QWidget *parent, QVariantList &favorites,
                                    std::function<void(const QString&)> populateList,
                                    const QString &title, const QString &url,
                                    const QString &iconPath, bool isEdit) {
@@ -3560,6 +4040,133 @@ private:
         }
     }
 };
+class Content_Protector : public QWebEngineUrlRequestInterceptor {
+    Q_OBJECT
+public:
+    explicit Content_Protector(QObject *parent = nullptr)
+        : QWebEngineUrlRequestInterceptor(parent) {
+        loadFilterRules();
+    }
+
+    void interceptRequest(QWebEngineUrlRequestInfo &info) override {
+        QUrl url = info.requestUrl();
+        QString urlStr = url.toString();
+        QString host = url.host().toLower();
+
+        if (Settings_Backend::instance().adblockEnabled()) {
+            if (isHostBlocked(host) || isUrlPatternBlocked(urlStr)) {
+                info.block(true);
+                return;
+            }
+        }
+
+        if (Settings_Backend::instance().doNotTrack()) {
+            info.setHttpHeader("DNT", "1");
+            info.setHttpHeader("Sec-GPC", "1");
+        }
+    }
+
+    QString getInjectionScript() const {
+        QString userScript = Settings_Backend::instance().userScript();
+        QString collectorScript = dataCollectionScript();
+        QString combined = collectorScript;
+        if (!userScript.trimmed().isEmpty()) {
+            combined += "\n// === User Script ===\n" + userScript;
+        }
+        return combined;
+    }
+
+    void reloadRules() {
+        loadFilterRules();
+    }
+
+private:
+    QSet<QString> m_blockedHosts;
+    QList<QRegularExpression> m_blockedPatterns;
+
+    void loadFilterRules() {
+        m_blockedHosts.clear();
+        m_blockedPatterns.clear();
+        if (!Settings_Backend::instance().adblockEnabled()) return;
+
+        QString filePath = Settings_Backend::instance().blockedHostsFile();
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) return;
+
+        QTextStream in(&file);
+        while (!in.atEnd()) {
+            QString line = in.readLine().trimmed();
+            if (line.isEmpty() || line.startsWith('!') || line.startsWith('[')) continue;
+            if (line.startsWith("@@")) continue;
+
+            if (line.startsWith("||")) {
+                int endIdx = line.indexOf('^');
+                QString domain = (endIdx > 2) ? line.mid(2, endIdx - 2) : line.mid(2);
+                m_blockedHosts.insert(domain.toLower());
+            } else if (!line.contains('*') && !line.contains('?')) {
+                m_blockedHosts.insert(line.toLower());
+            } else {
+                QString pattern = QRegularExpression::escape(line);
+                pattern.replace("\\*", ".*");
+                m_blockedPatterns.append(QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
+            }
+        }
+        file.close();
+    }
+
+    bool isHostBlocked(const QString &host) const {
+        return m_blockedHosts.contains(host);
+    }
+
+    bool isUrlPatternBlocked(const QString &url) const {
+        for (const QRegularExpression &re : m_blockedPatterns) {
+            if (re.match(url).hasMatch()) return true;
+        }
+        return false;
+    }
+
+    static QString dataCollectionScript() {
+        return R"JS(
+(function() {
+    'use strict';
+    function collectMedia() {
+        var results = [];
+        document.querySelectorAll('img, video, audio, source').forEach(function(el) {
+            var rect = el.getBoundingClientRect();
+            results.push({
+                tag: el.tagName.toLowerCase(),
+                src: el.src || el.currentSrc || '',
+                alt: el.alt || el.title || '',
+                width: Math.round(rect.width),
+                height: Math.round(rect.height)
+            });
+        });
+        return results;
+    }
+    var debounceTimer;
+    function scheduleCollection() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            var origin = location.protocol + '//' + location.host;
+            if (window.onuDataCollector) {
+                window.onuDataCollector(origin, collectMedia());
+            }
+        }, 500);
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', scheduleCollection);
+    } else {
+        scheduleCollection();
+    }
+    if (typeof MutationObserver !== 'undefined') {
+        var observer = new MutationObserver(scheduleCollection);
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+})();
+)JS";
+    }
+};
+#include "Qtdl.H"
 class Create_Toolbars : public QObject {
     Q_OBJECT
 
@@ -3607,7 +4214,7 @@ public:
         m_favoritesData = favorites;
     }
 
-    
+
     void updateVerticalTabs() {
         Qt::ToolBarArea tabArea = m_mainWindow->toolBarArea(m_tabToolbar);
         bool isVertical = (tabArea == Qt::LeftToolBarArea || tabArea == Qt::RightToolBarArea);
@@ -3617,7 +4224,7 @@ public:
         }
     }
 
-    
+
     void updateVerticalTab(int index, const QIcon &icon, const QString &text) {
         if (m_verticalTabWidget && index >= 0 && index < m_verticalTabWidget->count()) {
             m_verticalTabWidget->blockSignals(true);
@@ -3627,7 +4234,7 @@ public:
         }
     }
 
-    
+
     void updateTab(int index, const QIcon &icon, const QString &text) {
         if (m_tabBar && index >= 0 && index < m_tabBar->count()) {
             m_tabBar->setTabIcon(index, icon);
@@ -3636,7 +4243,7 @@ public:
         updateVerticalTab(index, icon, text);
     }
 
-    
+
     void updateTabToolTip(int index, const QString &tooltip) {
         if (m_tabBar && index >= 0 && index < m_tabBar->count()) {
             m_tabBar->setTabToolTip(index, tooltip);
@@ -3646,7 +4253,7 @@ public:
         }
     }
 
-    
+
     void addVerticalTab(const QIcon &icon, const QString &text) {
         Qt::ToolBarArea tabArea = m_mainWindow->toolBarArea(m_tabToolbar);
         bool isVertical = (tabArea == Qt::LeftToolBarArea || tabArea == Qt::RightToolBarArea);
@@ -3657,14 +4264,14 @@ public:
         }
     }
 
-    
+
     void removeVerticalTab(int index) {
         if (m_verticalTabWidget && index >= 0 && index < m_verticalTabWidget->count()) {
             m_verticalTabWidget->removeTab(index);
         }
     }
 
-    
+
     void setVerticalCurrentTab(int index) {
         if (m_verticalTabWidget && index >= 0 && index < m_verticalTabWidget->count()) {
             m_verticalTabWidget->blockSignals(true);
@@ -3741,7 +4348,7 @@ signals:
     void findRequested();
     void navigateRequested(const QUrl &url);
     void recentActionTriggered(const QUrl &url, bool isManage);
-    void favActionTriggered(const QUrl &url, bool isCustomize);
+    void Open_InNewTab_tb(const QUrl &url, bool isCustomize);
     void tabCloseRequested(int index);
     void tabChanged(int index);
     void tabMoved(int from, int to);
@@ -3776,7 +4383,7 @@ private:
     QLineEdit *m_findEdit = nullptr;
     QLineEdit *m_addressBar = nullptr;
     QTabBar *m_tabBar = nullptr;
-    QTabWidget *m_verticalTabWidget = nullptr;  
+    QTabWidget *m_verticalTabWidget = nullptr;
     QComboBox *m_searchEngineCombo = nullptr;
     QAction *m_backAction = nullptr;
     QAction *m_forwardAction = nullptr;
@@ -3789,15 +4396,15 @@ private:
     QAction *m_zoomAction = nullptr;
     QAction *m_searchIconAction = nullptr;
     QAction *m_addressBarAction = nullptr;
-    QAction *m_tabBarAction = nullptr;           
-    QAction *m_verticalTabWidgetAction = nullptr; 
+    QAction *m_tabBarAction = nullptr;
+    QAction *m_verticalTabWidgetAction = nullptr;
     QSlider *m_volumeSlider = nullptr;
     QToolButton *m_menuButton = nullptr;
     QToolButton *m_forwardButton = nullptr;
     QToolButton *m_zoomButton = nullptr;
     QToolButton *m_searchIconButton = nullptr;
 
-    
+
     QComboBox *m_verticalSearchEngineCombo = nullptr;
     QLineEdit *m_verticalAddressBar = nullptr;
 
@@ -3853,7 +4460,7 @@ private:
         });
     }
 
-    
+
     void installToolbarEventFilters() {
         m_urlToolbar->installEventFilter(this);
         m_tabToolbar->installEventFilter(this);
@@ -3869,7 +4476,7 @@ private:
         handleSearchBarOrientation(urlArea);
     }
 
-    
+
     void checkTabToolbarOrientation() {
         Qt::ToolBarArea tabArea = m_mainWindow->toolBarArea(m_tabToolbar);
         handleTabBarOrientation(tabArea);
@@ -3877,12 +4484,12 @@ private:
 
     void handleSearchBarOrientation(Qt::ToolBarArea area) {
         if (area == Qt::LeftToolBarArea || area == Qt::RightToolBarArea) {
-            
+
             if (m_addressBarAction) m_addressBarAction->setVisible(false);
             if (m_searchEngineComboAction) m_searchEngineComboAction->setVisible(false);
             if (m_searchIconAction) m_searchIconAction->setVisible(true);
         } else {
-            
+
             if (m_searchIconAction) m_searchIconAction->setVisible(false);
             if (m_addressBarAction) m_addressBarAction->setVisible(true);
             if (m_searchEngineComboAction) {
@@ -3891,28 +4498,28 @@ private:
         }
     }
 
-    
+
     void handleTabBarOrientation(Qt::ToolBarArea area) {
         bool isVertical = (area == Qt::LeftToolBarArea || area == Qt::RightToolBarArea);
 
         if (isVertical) {
-            
+
             if (m_tabBarAction) m_tabBarAction->setVisible(false);
 
-            
+
             if (!m_verticalTabWidget) {
-                
+
                 m_verticalTabWidget = new QTabWidget();
                 m_verticalTabWidget->setDocumentMode(true);
                 m_verticalTabWidget->setTabsClosable(true);
                 m_verticalTabWidget->setMovable(true);
                 m_verticalTabWidget->setUsesScrollButtons(true);
 
-                
+
                 connect(m_verticalTabWidget, &QTabWidget::tabCloseRequested, this, &Create_Toolbars::tabCloseRequested);
                 connect(m_verticalTabWidget, &QTabWidget::currentChanged, this, &Create_Toolbars::tabChanged);
 
-                
+
                 connect(m_verticalTabWidget->tabBar(), &QTabBar::tabMoved, this, [this](int from, int to) {
                     emit tabMoved(from, to);
                 });
@@ -3922,23 +4529,23 @@ private:
 
             if (m_verticalTabWidgetAction) m_verticalTabWidgetAction->setVisible(true);
 
-            
+
             if (area == Qt::LeftToolBarArea) {
                 m_verticalTabWidget->setTabPosition(QTabWidget::West);
             } else {
                 m_verticalTabWidget->setTabPosition(QTabWidget::East);
             }
 
-            
+
             syncTabsToVertical();
         } else {
-            
+
             if (m_tabBarAction) m_tabBarAction->setVisible(true);
 
-            
+
             if (m_verticalTabWidgetAction) m_verticalTabWidgetAction->setVisible(false);
 
-            
+
             if (m_verticalTabWidget && m_tabBar) {
                 int verticalIndex = m_verticalTabWidget->currentIndex();
                 if (verticalIndex >= 0 && verticalIndex < m_tabBar->count()) {
@@ -3948,42 +4555,42 @@ private:
         }
     }
 
-    
+
     void syncTabsToVertical() {
         if (!m_verticalTabWidget || !m_tabBar) return;
 
-        
+
         m_verticalTabWidget->blockSignals(true);
 
-        
+
         while (m_verticalTabWidget->count() > 0) {
             m_verticalTabWidget->removeTab(0);
         }
 
-        
+
         for (int i = 0; i < m_tabBar->count(); ++i) {
-            
+
             QWidget *placeholder = new QWidget();
             m_verticalTabWidget->addTab(placeholder, m_tabBar->tabIcon(i), m_tabBar->tabText(i));
             m_verticalTabWidget->setTabToolTip(i, m_tabBar->tabToolTip(i));
         }
 
-        
+
         m_verticalTabWidget->setCurrentIndex(m_tabBar->currentIndex());
 
         m_verticalTabWidget->blockSignals(false);
     }
 
-    
+
     void setupTabSyncing() {
         if (!m_tabBar) return;
 
-        
+
         connect(m_tabBar, &QTabBar::currentChanged, this, [this](int index) {
             setVerticalCurrentTab(index);
         });
 
-        
+
         if (m_verticalTabWidget) {
             connect(m_verticalTabWidget, &QTabWidget::currentChanged, this, [this](int index) {
                 if (m_tabBar && index >= 0 && index < m_tabBar->count()) {
@@ -4124,7 +4731,7 @@ private:
         QLabel *engineLabel = new QLabel("Search Engine:");
         engineLabel->setStyleSheet("font-weight: bold;");
 
-        
+
         m_verticalSearchEngineCombo = new QComboBox();
         auto engines = Settings_Backend::instance().searchEngines();
         for (const auto &v : engines) {
@@ -4149,7 +4756,7 @@ private:
         searchLayout->addWidget(new QLabel("Query:"));
         searchLayout->addWidget(m_verticalAddressBar);
 
-        
+
         connect(m_verticalAddressBar, &QLineEdit::returnPressed, this, [this, searchMenu]() {
             QString t = m_verticalAddressBar->text().trimmed();
             if (t.isEmpty()) return;
@@ -4162,7 +4769,7 @@ private:
             m_verticalAddressBar->clear();
         });
 
-        
+
         connect(m_verticalSearchEngineCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this, [this](int index) {
                     Settings_Backend::instance().setCurrentSearchEngineIndex(index);
@@ -4171,7 +4778,7 @@ private:
                     }
                 });
 
-        
+
         connect(m_searchEngineCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
                 this, [this](int index) {
                     if (m_verticalSearchEngineCombo) {
@@ -4201,17 +4808,19 @@ private:
 
         QMenu *onuSitesMenu = mainMenu->addMenu(QIcon::fromTheme("folder-symbolic"), "Onu Sites");
         onuSitesMenu->addAction(QIcon::fromTheme("go-home"), "Home", this, [this]() {
-            emit navigateRequested(QUrl("onu://home"));
+            emit Open_InNewTab_tb(QUrl("onu://home"), false);
         });
         onuSitesMenu->addAction(QIcon::fromTheme("input-gaming"), "Game", this, [this]() {
-            emit navigateRequested(QUrl("onu://game"));
+            emit Open_InNewTab_tb(QUrl("onu://game"), false);
         });
         onuSitesMenu->addAction(QIcon::fromTheme("dialog-information"), "About", this, [this]() {
-            emit navigateRequested(QUrl("onu://about"));
+            emit Open_InNewTab_tb(QUrl("onu://about"), false);
         });
+        #ifdef CMAKE_DEBUG
         onuSitesMenu->addAction(QIcon::fromTheme("applications-science"), "Test", this, [this]() {
-            emit navigateRequested(QUrl("onu://test"));
+            emit Open_InNewTab_tb(QUrl("onu://test"), false);
         });
+        #endif
 
         mainMenu->addSeparator();
 
@@ -4246,7 +4855,7 @@ private:
                     );
                 QUrl url = fav["url"].toUrl();
                 connect(act, &QAction::triggered, this, [this, url]() {
-                    emit navigateRequested(url);
+                    emit Open_InNewTab_tb(url, false);
                 });
             }
             if (m_favoritesData.isEmpty()) {
@@ -4256,7 +4865,7 @@ private:
             favsMenu->addSeparator();
             favsMenu->addAction(QIcon::fromTheme(QIcon::ThemeIcon::DocumentProperties),
                                 "Manage Favorites...", this, [this]() {
-                                    emit favActionTriggered(QUrl(), true);
+                                    emit Open_InNewTab_tb(QUrl(), true);
                                 });
         });
 
@@ -4272,7 +4881,7 @@ private:
                     );
                 QUrl url = item["url"].toUrl();
                 connect(act, &QAction::triggered, this, [this, url]() {
-                    emit navigateRequested(url);
+                    emit Open_InNewTab_tb(url, false);
                 });
             }
             if (m_historyData.isEmpty()) {
@@ -4649,7 +5258,7 @@ private:
             if (i >= 0) emit tabContextMenuRequested(i, m_tabBar->mapToGlobal(p));
         });
 
-        
+
         connect(m_tabBar, &QTabBar::currentChanged, this, [this](int index) {
             setVerticalCurrentTab(index);
         });
@@ -4689,9 +5298,9 @@ private:
 
         connect(m_favToolbar, &QToolBar::actionTriggered, [this](QAction *a){
             if(a->data().toString() == "customize")
-                emit favActionTriggered(QUrl(), true);
+                emit Open_InNewTab_tb(QUrl(), true);
             else
-                emit favActionTriggered(a->data().toUrl(), false);
+                emit Open_InNewTab_tb(a->data().toUrl(), false);
         });
     }
     void createFindBar() {
@@ -4746,7 +5355,7 @@ private:
         m_searchEngineCombo->blockSignals(false);
     }
 
-    
+
     bool eventFilter(QObject *obj, QEvent *event) override {
         if (obj == m_urlToolbar) {
             if (event->type() == QEvent::Move || event->type() == QEvent::Resize) {
@@ -4756,7 +5365,7 @@ private:
             }
         }
 
-        
+
         if (obj == m_tabToolbar) {
             if (event->type() == QEvent::Move || event->type() == QEvent::Resize) {
                 QTimer::singleShot(50, this, [this]() {
@@ -4796,7 +5405,7 @@ private:
 
             if (url.isValid()) {
 
-                emit navigateRequested(url);
+                emit Open_InNewTab_tb(url, false);
                 dropEvent->acceptProposedAction();
                 return true;
             }
@@ -4850,105 +5459,468 @@ private:
 };
 
 
-
-class Content_Protector : public QWebEngineUrlRequestInterceptor {
+class Onu_Web : public QWebEnginePage {
     Q_OBJECT
 public:
-    explicit Content_Protector(QObject *parent = nullptr)
-        : QWebEngineUrlRequestInterceptor(parent) {
-        loadFilterRules();
+    explicit Onu_Web(QWebEngineProfile *profile, QObject *parent = nullptr)
+        : QWebEnginePage(profile, parent), m_menuActive(false)
+    {
+        connect(this, &QWebEnginePage::permissionRequested,
+                this, &Onu_Web::onPermissionRequested);
+
+        connect(this, &QWebEnginePage::fileSystemAccessRequested,
+                this, &Onu_Web::onFileSystemAccessRequested);
     }
 
-    void interceptRequest(QWebEngineUrlRequestInfo &info) override {
-        QUrl url = info.requestUrl();
-        QString urlStr = url.toString();
-        QString host = url.host().toLower();
+    static QWebEngineProfile* defaultProfile() {
+        static QWebEngineProfile* profile = nullptr;
+        if (!profile) {
+            profile = new QWebEngineProfile("OnuBrowser");
+            configureProfile(profile);
+        }
+        return profile;
+    }
 
-        if (Settings_Backend::instance().adblockEnabled()) {
-            if (isHostBlocked(host) || isUrlPatternBlocked(urlStr)) {
-                info.block(true);
-                return;
+    static void configureProfile(QWebEngineProfile *profile) {
+        if (!profile) return;
+
+        auto &s = Settings_Backend::instance();
+
+        QString storagePath = s.dataPath() + "/Webengine";
+        QString cachePath = s.dataPath() + "/Cache";
+
+        profile->setPersistentStoragePath(storagePath);
+        profile->setCachePath(cachePath);
+
+        if (s.deleteCookies()) {
+            profile->setPersistentCookiesPolicy(QWebEngineProfile::NoPersistentCookies);
+            profile->setHttpCacheType(QWebEngineProfile::MemoryHttpCache);
+        } else {
+            profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
+            profile->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
+        }
+
+        QString userAgent = profile->httpUserAgent();
+        if (!userAgent.contains("Onu")) {
+            userAgent += " Onu/" + QApplication::applicationVersion();
+            profile->setHttpUserAgent(userAgent);
+        }
+
+        QWebEngineSettings *ws = profile->settings();
+        if (!ws) return;
+
+        ws->setAttribute(QWebEngineSettings::LocalStorageEnabled, !s.deleteCookies());
+        ws->setAttribute(QWebEngineSettings::JavascriptEnabled, s.javascriptEnabled());
+        ws->setAttribute(QWebEngineSettings::AutoLoadImages, s.imagesEnabled());
+
+        /* ws->setAttribute(QWebEngineSettings::FullScreenSupportEnabled, true); soon will be added after adding its own logic as a permission api */
+        ws->setAttribute(QWebEngineSettings::ErrorPageEnabled, true);
+        ws->setAttribute(QWebEngineSettings::LocalContentCanAccessFileUrls, true);
+
+ }
+    bool acceptNavigationRequest(const QUrl &url, NavigationType type, bool isMainFrame) override {
+        if (type == NavigationTypeLinkClicked && !isMainFrame) {
+            QString origin = url.scheme() + "://" + url.host();
+            int state = Settings_Backend::instance().getSitePermission(origin, "popups");
+
+            if (state == 2) {
+                return false;
+            } else if (state == 1) {
+                emit openInNewTabRequested(url);
+                return false;
+            } else {
+                int requestId = m_nextRequestId++;
+                m_pendingPopups[requestId] = url;
+                m_pendingOrigins[requestId] = origin;
+                m_pendingTypes[requestId] = "popups";
+                QWidget *parentWidget = qobject_cast<QWidget*>(parent());
+
+                auto callback = [this, requestId](int decision, bool remember) {
+                    handlePopupResponse(requestId, decision, remember);
+                };
+
+                emit permissionPromptRequested(parentWidget, origin, "popups", requestId, callback);
+                return false;
             }
         }
 
-        if (Settings_Backend::instance().doNotTrack()) {
-            info.setHttpHeader("DNT", "1");
-            info.setHttpHeader("Sec-GPC", "1");
+        if (isMainFrame && type == NavigationTypeLinkClicked) {
+            emit navigationRequestAccepted(url);
+        }
+        return QWebEnginePage::acceptNavigationRequest(url, type, isMainFrame);
+    }
+
+    QWebEnginePage* createWindow(WebWindowType type) override {
+        if (type != WebBrowserTab) {
+            return QWebEnginePage::createWindow(type);
+        }
+
+        QString origin = this->url().scheme() + "://" + this->url().host();
+        int state = Settings_Backend::instance().getSitePermission(origin, "popups");
+
+        if (state == 2) {
+            return nullptr;
+        } else if (state == 1) {
+            auto *tempPage = new QWebEnginePage(this);
+            connect(tempPage, &QWebEnginePage::urlChanged, this, [this, tempPage](const QUrl &url) {
+                emit newTabRequested(url);
+                tempPage->deleteLater();
+            });
+            return tempPage;
+        } else {
+            int requestId = m_nextRequestId++;
+            m_pendingPopups[requestId] = QUrl();
+            m_pendingOrigins[requestId] = origin;
+            m_pendingTypes[requestId] = "popups";
+            QWidget *parentWidget = qobject_cast<QWidget*>(parent());
+
+            auto callback = [this, requestId](int decision, bool remember) {
+                handlePopupResponse(requestId, decision, remember);
+            };
+
+            emit permissionPromptRequested(parentWidget, origin, "popups", requestId, callback);
+            return nullptr;
         }
     }
 
-    QString getInjectionScript() const {
-        return Settings_Backend::instance().userScript();
+    void onPermissionRequested(QWebEnginePermission permission) {
+        QUrl originUrl = permission.origin();
+        QString origin = originUrl.scheme() + "://" + originUrl.host();
+
+        QString permTypeStr;
+
+        switch (permission.permissionType()) {
+            case QWebEnginePermission::PermissionType::Geolocation:
+                permTypeStr = "geolocation";
+                break;
+            case QWebEnginePermission::PermissionType::MediaAudioCapture:
+                permTypeStr = "microphone";
+                break;
+            case QWebEnginePermission::PermissionType::MediaVideoCapture:
+                permTypeStr = "camera";
+                break;
+            case QWebEnginePermission::PermissionType::MediaAudioVideoCapture:
+                permTypeStr = "camera_microphone";
+                break;
+            case QWebEnginePermission::PermissionType::MouseLock:
+                permTypeStr = "mouselock";
+                break;
+            case QWebEnginePermission::PermissionType::Notifications:
+                permTypeStr = "notifications";
+                break;
+            case QWebEnginePermission::PermissionType::DesktopVideoCapture:
+                permTypeStr = "desktopVideo";
+                break;
+            case QWebEnginePermission::PermissionType::DesktopAudioVideoCapture:
+                permTypeStr = "desktopAudioVideo";
+                break;
+            case QWebEnginePermission::PermissionType::ClipboardReadWrite:
+                permTypeStr = "clipboard";
+                break;
+            case QWebEnginePermission::PermissionType::LocalFontsAccess:
+                permTypeStr = "localFonts";
+                break;
+            default:
+                permission.deny();
+                return;
+        }
+
+        auto &s = Settings_Backend::instance();
+        int state = s.getSitePermission(origin, permTypeStr);
+
+        if (state == 1) {
+            permission.grant();
+            return;
+        }
+        if (state == 2) {
+            permission.deny();
+            return;
+        }
+
+        int requestId = m_nextRequestId++;
+        m_pendingPermissions[requestId] = permission;
+        m_pendingOrigins[requestId] = origin;
+        m_pendingTypes[requestId] = permTypeStr;
+
+        QWidget *parentWidget = qobject_cast<QWidget*>(parent());
+
+        auto callback = [this, requestId](int decision, bool remember) {
+            handlePermissionResponse(requestId, decision, remember);
+        };
+
+        emit permissionPromptRequested(parentWidget, origin, permTypeStr, requestId, callback);
     }
 
-    void reloadRules() {
-        loadFilterRules();
+    void onFileSystemAccessRequested(QWebEngineFileSystemAccessRequest request) {
+        QUrl originUrl = request.origin();
+        QString origin = originUrl.scheme() + "://" + originUrl.host();
+        QString permTypeStr = "fileAccess";
+
+        auto &s = Settings_Backend::instance();
+        int state = s.getSitePermission(origin, permTypeStr);
+
+        QString accessType = (request.accessFlags() & QWebEngineFileSystemAccessRequest::Write) ? "write" : "read";
+        QString handleType = request.handleType() == QWebEngineFileSystemAccessRequest::File ? "file" : "directory";
+        QString description = QString("%1 %2 access to: %3")
+            .arg(handleType)
+            .arg(accessType)
+            .arg(request.filePath().toString());
+
+        if (state == 1) {
+            request.accept();
+            return;
+        }
+        if (state == 2) {
+            request.reject();
+            return;
+        }
+
+        int requestId = m_nextRequestId++;
+
+        m_pendingFileAccessRequests.append({requestId, std::move(request)});
+        m_pendingOrigins[requestId] = origin;
+        m_pendingTypes[requestId] = permTypeStr;
+        m_pendingDescriptions[requestId] = description;
+
+        QWidget *parentWidget = qobject_cast<QWidget*>(parent());
+
+        auto callback = [this, requestId](int decision, bool remember) {
+            handleFileAccessResponse(requestId, decision, remember);
+        };
+
+        emit fileAccessPromptRequested(parentWidget, origin, description, requestId, callback);
+    }
+
+    void notification(std::unique_ptr<QWebEngineNotification> notification) {
+        QUrl originUrl = notification->origin();
+        QString origin = originUrl.scheme() + "://" + originUrl.host();
+
+        QString title = notification->title();
+        QString body = notification->message();
+        QString iconPath;
+
+        if (!notification->icon().isNull()) {
+            iconPath = Icon_Man::instance().saveIcon(QIcon(QPixmap::fromImage(notification->icon())));
+        }
+
+        SessionNotifications::add(origin, title, body, iconPath);
+        emit notificationReceived(origin, title, body, iconPath);
+
+        m_activeNotifications[notification.get()] = origin;
+        notification->show();
+
+        connect(notification.get(), &QWebEngineNotification::closed, this, [this, notificationPtr = notification.get()]() {
+            m_activeNotifications.remove(notificationPtr);
+        });
+    }
+
+    void showContextMenu(QWebEngineView *view, const QPoint &globalPos) {
+        if (m_menuActive) return;
+        m_menuActive = true;
+        auto *contextData = view->lastContextMenuRequest();
+        if (!contextData) { m_menuActive = false; return; }
+
+        QMenu menu(view);
+        bool isLink = !contextData->linkUrl().isEmpty();
+        bool isImage = contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeImage;
+        bool isMedia = contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeVideo ||
+                       contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeAudio;
+        bool hasSelection = !contextData->selectedText().isEmpty();
+
+        menu.addAction(QIcon::fromTheme("go-previous"), "Back", view, &QWebEngineView::back)
+            ->setEnabled(view->history()->canGoBack());
+        menu.addAction(QIcon::fromTheme("go-next"), "Forward", view, &QWebEngineView::forward)
+            ->setEnabled(view->history()->canGoForward());
+        menu.addAction(QIcon::fromTheme("view-refresh"), "Reload", view, &QWebEngineView::reload);
+        menu.addSeparator();
+
+        menu.addAction(QIcon::fromTheme("bookmark-new"), "Add to Favorites", [this, view]() {
+            emit addToFavoritesRequested(view->title(), view->url(), view->icon());
+        });
+
+        menu.addAction(QIcon::fromTheme("text-html"), "View Page Source", [view]() {
+            view->page()->toHtml([view](const QString &html) {
+                QWidget *parentWidget = view->parentWidget();
+                Dialogs::source(parentWidget, html, view->title());
+            });
+        });
+
+        menu.addAction(QIcon::fromTheme("dialog-information"), "Site Information", [view]() {
+            QString origin = view->url().scheme() + "://" + view->url().host();
+            QWidget *parentWidget = view->parentWidget();
+            Dialogs::siteInfo(parentWidget, origin, true);
+        });
+        menu.addSeparator();
+
+        auto *copyMenu = menu.addMenu(QIcon::fromTheme("edit-copy"), "Copy");
+        copyMenu->addAction("Copy URL", [view, this]() {
+            QApplication::clipboard()->setText(view->url().toString());
+            emit copyStatusRequested("Copied: " + view->url().toString());
+        });
+        copyMenu->addAction("Copy Title", [view, this]() {
+            QApplication::clipboard()->setText(view->title());
+            emit copyStatusRequested("Copied title: " + view->title());
+        });
+
+        if (hasSelection) {
+            QString text = contextData->selectedText();
+            copyMenu->addAction("Copy Selection", [text, this]() {
+                QApplication::clipboard()->setText(text);
+                emit copyStatusRequested("Copied: " + text.left(50) + (text.length() > 50 ? "..." : ""));
+            });
+        }
+
+        if (isLink) {
+            menu.addSeparator();
+            QMenu *linkMenu = menu.addMenu(QIcon::fromTheme("insert-link"), "Link");
+            linkMenu->addAction(QIcon::fromTheme("window-new"), "Open in New Tab", [this, contextData]() {
+                emit openInNewTabRequested(contextData->linkUrl());
+            });
+            linkMenu->addAction("Copy Link Address", [contextData, this]() {
+                QApplication::clipboard()->setText(contextData->linkUrl().toString());
+                emit copyStatusRequested("Copied link: " + contextData->linkUrl().toString());
+            });
+        }
+
+        if (isImage) {
+            menu.addSeparator();
+            QMenu *imageMenu = menu.addMenu(QIcon::fromTheme("image-x-generic"), "Image");
+            imageMenu->addAction(QIcon::fromTheme("document-save"), "Save Image", [this, contextData]() {
+                emit saveImageRequested(contextData->mediaUrl());
+            });
+            imageMenu->addAction("Copy Image Address", [contextData, this]() {
+                QApplication::clipboard()->setText(contextData->mediaUrl().toString());
+                emit copyStatusRequested("Copied image URL");
+            });
+        }
+
+        if (isMedia) {
+            menu.addSeparator();
+            QMenu *mediaMenu = menu.addMenu(QIcon::fromTheme("video-x-generic"), "Media");
+            mediaMenu->addAction(QIcon::fromTheme("document-save"), "Save Media", [this, contextData]() {
+                emit saveMediaRequested(contextData->mediaUrl(),
+                    contextData->mediaType() == QWebEngineContextMenuRequest::MediaTypeVideo ? "video" : "audio");
+            });
+        }
+
+        menu.addSeparator();
+
+        menu.addAction(QIcon::fromTheme("tools-report-bug"), "Inspect Element", [view]() {
+            Dialogs::inspect(view->page(), view->title());
+        });
+
+        menu.exec(globalPos);
+        m_menuActive = false;
+    }
+
+signals:
+    void newTabRequested(const QUrl &url);
+    void navigationRequestAccepted(const QUrl &url);
+    void openInNewTabRequested(const QUrl &url);
+    void addToFavoritesRequested(const QString &title, const QUrl &url, const QIcon &icon);
+    void saveImageRequested(const QUrl &imageUrl);
+    void saveMediaRequested(const QUrl &mediaUrl, const QString &mediaType);
+    void copyStatusRequested(const QString &message);
+    void permissionPromptRequested(QWidget *parent, const QString &origin,
+                                   const QString &permission, int requestId,
+                                   std::function<void(int, bool)> callback);
+    void fileAccessPromptRequested(QWidget *parent, const QString &origin,
+                                   const QString &description, int requestId,
+                                   std::function<void(int, bool)> callback);
+    void notificationReceived(const QString &origin, const QString &title,
+                              const QString &body, const QString &iconPath);
+    void siteInfoRequested(const QString &origin, bool isCurrentlyOpen);
+    void viewPageSourceRequested(const QString &html, const QString &title);
+
+private slots:
+    void handlePermissionResponse(int requestId, int decision, bool remember) {
+        if (!m_pendingPermissions.contains(requestId)) return;
+
+        QWebEnginePermission permission = m_pendingPermissions.take(requestId);
+        QString origin = m_pendingOrigins.take(requestId);
+        QString permType = m_pendingTypes.take(requestId);
+
+        if (decision == 1) {
+            permission.grant();
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 1);
+            }
+        } else {
+            permission.deny();
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 2);
+            }
+        }
+    }
+
+    void handleFileAccessResponse(int requestId, int decision, bool remember) {
+        auto it = std::find_if(m_pendingFileAccessRequests.begin(),
+                               m_pendingFileAccessRequests.end(),
+                               [requestId](const FileAccessRequest& far) {
+                                   return far.requestId == requestId;
+                               });
+
+        if (it == m_pendingFileAccessRequests.end()) return;
+
+        QWebEngineFileSystemAccessRequest request = std::move(it->request);
+        m_pendingFileAccessRequests.erase(it);
+
+        QString origin = m_pendingOrigins.value(requestId);
+        QString permType = m_pendingTypes.value(requestId);
+
+        if (decision == 1) {
+            request.accept();
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 1);
+            }
+        } else {
+            request.reject();
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 2);
+            }
+        }
+
+        m_pendingOrigins.remove(requestId);
+        m_pendingTypes.remove(requestId);
+        m_pendingDescriptions.remove(requestId);
+    }
+
+    void handlePopupResponse(int requestId, int decision, bool remember) {
+        if (!m_pendingPopups.contains(requestId)) return;
+
+        QUrl url = m_pendingPopups.take(requestId);
+        QString origin = m_pendingOrigins.take(requestId);
+        QString permType = m_pendingTypes.take(requestId);
+
+        if (decision == 1) {
+            if (url.isValid()) {
+                emit newTabRequested(url);
+            }
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 1);
+            }
+        } else if (decision == 2) {
+            if (remember) {
+                Settings_Backend::instance().setSitePermission(origin, permType, 2);
+            }
+        }
     }
 
 private:
-    QSet<QString> m_blockedHosts;
-    QList<QRegularExpression> m_blockedPatterns;
+    struct FileAccessRequest {
+        int requestId;
+        QWebEngineFileSystemAccessRequest request;
+    };
 
-    void loadFilterRules() {
-        m_blockedHosts.clear();
-        m_blockedPatterns.clear();
-
-        if (!Settings_Backend::instance().adblockEnabled()) {
-            return;
-        }
-
-        QString filePath = Settings_Backend::instance().blockedHostsFile();
-        QFile file(filePath);
-        if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            return;
-        }
-
-        QTextStream in(&file);
-        while (!in.atEnd()) {
-            QString line = in.readLine().trimmed();
-
-            if (line.isEmpty() || line.startsWith('!') || line.startsWith('[')) continue;
-            if (line.startsWith("@@")) continue;
-
-            if (line.startsWith("||")) {
-                int endIdx = line.indexOf('^');
-                QString domain = (endIdx > 2) ? line.mid(2, endIdx - 2) : line.mid(2);
-                QString escapedDomain = QRegularExpression::escape(domain);
-                QString pattern = R"(^https?://([a-z0-9.-]*\.)?)" + escapedDomain + R"((/|$|\?))";
-                m_blockedPatterns.append(QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
-            }
-            else if (line.startsWith("|")) {
-                QString pattern = "^" + QRegularExpression::escape(line.mid(1));
-                m_blockedPatterns.append(QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
-            }
-            else if (line.contains('*')) {
-                QString pattern = QRegularExpression::escape(line);
-                pattern.replace("\\*", ".*");
-                m_blockedPatterns.append(QRegularExpression(pattern, QRegularExpression::CaseInsensitiveOption));
-            }
-            else if (line.startsWith("/") && line.endsWith("/")) {
-                m_blockedPatterns.append(QRegularExpression(line.mid(1, line.size()-2)));
-            }
-            else {
-                QString pattern = QRegularExpression::escape(line);
-                m_blockedPatterns.append(QRegularExpression(R"((^|/|\?))" + pattern + R"((/|$|\?))", QRegularExpression::CaseInsensitiveOption));
-            }
-        }
-        file.close();
-    }
-
-    bool isHostBlocked(const QString &host) const {
-        return m_blockedHosts.contains(host);
-    }
-
-    bool isUrlPatternBlocked(const QString &url) const {
-        for (const QRegularExpression &re : m_blockedPatterns) {
-            if (re.match(url).hasMatch()) {
-                return true;
-            }
-        }
-        return false;
-    }
+    bool m_menuActive;
+    QMap<int, QWebEnginePermission> m_pendingPermissions;
+    QList<FileAccessRequest> m_pendingFileAccessRequests;
+    QMap<int, QUrl> m_pendingPopups;
+    QMap<int, QString> m_pendingOrigins;
+    QMap<int, QString> m_pendingTypes;
+    QMap<int, QString> m_pendingDescriptions;
+    QMap<QWebEngineNotification*, QString> m_activeNotifications;
+    int m_nextRequestId = 0;
 };
 
 
@@ -4970,19 +5942,24 @@ public:
       return false;
     }
 
-    Onu_window() {
+    Onu_window()
+        : m_audioOutput(std::make_unique<QAudioOutput>(this))
+    {
         setWindowTitle("Onu.");
         setWindowIcon(QIcon::fromTheme("onu"));
         resize(1280, 800);
         REG_CRASH();
+
         setupContentProtector();
+
         setupUI();
         setupToolbars();
         setupKeybinds();
         applyTheme();
         loadExtensions();
+
         if (Settings_Backend::instance().restoreSessions()) {
-            QList<QUrl> sessionTabs = m_backend->restoreSession();
+            QList<QUrl> sessionTabs = Browser_Backend::instance().restoreSession();
             if (sessionTabs.isEmpty()) {
                 addTab();
             } else {
@@ -4994,13 +5971,24 @@ public:
             addTab();
         }
 
-        connect(QWebEngineProfile::defaultProfile(), &QWebEngineProfile::downloadRequested,
+        connect(Onu_Web::defaultProfile(), &QWebEngineProfile::downloadRequested,
                 this, &Onu_window::handleDownload);
+
+        m_audioOutput->setVolume(Settings_Backend::instance().audioVolume() / 100.0);
     }
+
     ~Onu_window() {
+
+        if (m_contentProtector) {
+            Onu_Web::defaultProfile()->setUrlRequestInterceptor(nullptr);
+
+            m_contentProtector = nullptr;
+        }
+
         qDeleteAll(m_shortcuts);
         m_shortcuts.clear();
     }
+
 
     void openUrls(const QList<QUrl> &urls) {
         for (const QUrl &url : urls) {
@@ -5008,7 +5996,7 @@ public:
         }
     }
 
-    Browser_Backend* backend() const { return m_backend; }
+    Browser_Backend* backend() const { return &Browser_Backend::instance(); }
 
     void viewPageSource() {
         QWebEngineView *view = currentWebView();
@@ -5031,7 +6019,7 @@ protected:
         QByteArray toolbarState = m_toolbars->saveToolbarGeometry();
         Settings_Backend::instance().saveToolbarState(toolbarState);
 
-        m_backend->close(this, tabs);
+        Browser_Backend::instance().close(this, tabs);
         event->ignore();
     }
 
@@ -5044,8 +6032,8 @@ private slots:
         auto view = std::make_unique<QWebEngineView>();
         if (!view) return;
 
-        Onu_Web *page = new Onu_Web(QWebEngineProfile::defaultProfile(), view.get());
-        if (!page) return;
+     Onu_Web *page = new Onu_Web(Onu_Web::defaultProfile(), view.get());
+     if (!page) return;
 
         view->setPage(page);
 
@@ -5078,207 +6066,286 @@ private slots:
     }
 
     void setupTabCallbacks(QWebEngineView *viewPtr, Onu_Web *page, int index) {
-        auto getOnuIcon = [](const QString &host) -> QIcon {
+        QPointer<QWebEngineView> safeView(viewPtr);
+        QPointer<Onu_Web> safePage(page);
+        QPointer<Create_Toolbars> safeToolbars(m_toolbars);
+        QPointer<Onu_window> safeThis(this);
+        int tabIndex = index;
+
+        const auto getOnuIcon = [](const QString &host) -> QIcon {
             if (host == "home")  return QIcon::fromTheme("go-home");
             if (host == "game")  return QIcon::fromTheme("input-gaming");
             if (host == "about") return QIcon::fromTheme("dialog-information");
-            return QIcon::fromTheme("onu");
+            return QIcon::fromTheme("applications-internet");
         };
 
-        auto updateTabIcon = [this, index, viewPtr, getOnuIcon]() {
-            if (!viewPtr || index < 0 || index >= m_toolbars->tabBar()->count()) return;
-            QUrl url = viewPtr->url();
+        const auto validateTab = [safeToolbars, tabIndex]() -> bool {
+            return safeToolbars &&
+                   safeToolbars->tabBar() &&
+                   tabIndex >= 0 &&
+                   tabIndex < safeToolbars->tabBar()->count();
+        };
+
+        const auto updateTabIcon = [safeThis, safeView, safeToolbars, tabIndex, &getOnuIcon, validateTab]() {
+            if (!safeThis || !safeView || !validateTab()) return;
+
+            const QUrl url = safeView->url();
             if (url.scheme() == "onu") {
-                m_toolbars->tabBar()->setTabIcon(index, getOnuIcon(url.host()));
+                safeToolbars->tabBar()->setTabIcon(tabIndex, getOnuIcon(url.host()));
             } else {
-                QIcon icon = viewPtr->icon();
-                if (!icon.isNull()) {
-                    m_toolbars->tabBar()->setTabIcon(index, icon);
-                } else {
-                    m_toolbars->tabBar()->setTabIcon(index, QIcon::fromTheme("applications-internet"));
-                }
+                const QIcon icon = safeView->icon();
+                safeToolbars->tabBar()->setTabIcon(tabIndex,
+                    icon.isNull() ? QIcon::fromTheme("applications-internet") : icon);
             }
         };
 
-        auto updateTabTitle = [this, index, viewPtr]() {
-            if (!viewPtr || index < 0 || index >= m_toolbars->tabBar()->count()) return;
-            QString title = viewPtr->title();
+        const auto updateTabTitle = [safeThis, safeView, safeToolbars, tabIndex, validateTab]() {
+            if (!safeThis || !safeView || !validateTab()) return;
+
+            QString title = safeView->title();
             if (title.isEmpty()) {
-                QUrl url = viewPtr->url();
-                if (url.scheme() == "onu") {
-                    title = url.host();
-                    if (title.isEmpty()) title = "onu";
-                } else {
-                    title = "New Tab";
-                }
+                const QUrl url = safeView->url();
+                title = (url.scheme() == "onu") ?
+                        (url.host().isEmpty() ? "onu" : url.host()) :
+                        "New Tab";
             }
-            if (index < m_fullTitles.size()) {
-                m_fullTitles[index] = title;
+
+            if (tabIndex < safeThis->m_fullTitles.size()) {
+                safeThis->m_fullTitles[tabIndex] = title;
             }
-            bool vertical = (m_toolbars->tabToolbar()->orientation() == Qt::Vertical);
-            int maxChars = vertical ? 15 : 30;
-            QString displayTitle = title.length() > maxChars ? title.left(maxChars) + "…" : title;
-            m_toolbars->tabBar()->setTabText(index, displayTitle);
-            m_toolbars->tabBar()->setTabToolTip(index, title + "\n" + viewPtr->url().toString());
+
+            const bool vertical = (safeToolbars->tabToolbar()->orientation() == Qt::Vertical);
+            const int maxChars = vertical ? 15 : 30;
+            const QString displayTitle = (title.length() > maxChars) ?
+                                          title.left(maxChars) + "…" :
+                                          title;
+
+            safeToolbars->tabBar()->setTabText(tabIndex, displayTitle);
+            safeToolbars->tabBar()->setTabToolTip(tabIndex, title + "\n" + safeView->url().toString());
         };
 
-        connect(page, &Onu_Web::newTabRequested, this, [this](const QUrl &newUrl) {
-            addTab(newUrl);
+        connect(safePage, &Onu_Web::permissionPromptRequested, safeThis,
+            [safeThis](QWidget *parent, const QString &origin, const QString &permission,
+                       int requestId, std::function<void(int, bool)> callback) {
+                if (!safeThis) return;
+                Q_UNUSED(requestId);
+                Dialogs::permissionPrompt(parent, origin, permission, std::move(callback));
+            });
+
+    connect(safePage, &Onu_Web::fileAccessPromptRequested, safeThis,
+            [safeThis](QWidget *parent, const QString &origin, const QString &description,
+                       int requestId, std::function<void(int, bool)> callback) {
+                if (!safeThis) return;
+                Q_UNUSED(requestId);
+                Dialogs::permissionPrompt(parent, origin, description, std::move(callback));
+            });
+
+    connect(safePage, &Onu_Web::notificationReceived, safeThis,
+        [safeThis](const QString &origin, const QString &title,
+                   const QString &body, const QString &iconPath) {
+            if (!safeThis) return;
+            safeThis->showNotification(origin, title, body, iconPath);
         });
 
-        connect(page, &Onu_Web::openInNewTabRequested, this, [this](const QUrl &url) {
-            addTab(url);
-        });
 
-        viewPtr->setContextMenuPolicy(Qt::CustomContextMenu);
-        connect(viewPtr, &QWidget::customContextMenuRequested, this, [this, page, viewPtr](const QPoint &pos) {
-            page->showContextMenu(viewPtr, viewPtr->mapToGlobal(pos));
-        });
+        connect(safePage, &Onu_Web::siteInfoRequested, safeThis,
+            [safeThis](const QString &origin, bool isCurrentlyOpen) {
+                if (!safeThis) return;
+                Dialogs::siteInfo(safeThis, origin, isCurrentlyOpen);
+            });
 
-        connect(viewPtr, &QWebEngineView::titleChanged, this, updateTabTitle, Qt::QueuedConnection);
+        connect(safePage, &Onu_Web::newTabRequested, safeThis,
+            [safeThis](const QUrl &newUrl) {
+                if (!safeThis) return;
+                safeThis->addTab(newUrl);
+            });
 
-        connect(page, &Onu_Web::navigationRequestAccepted, this, [this](const QUrl &url) {
-            if (auto* view = currentWebView()) {
-                m_toolbars->addressBar()->setText(url.toString());
-                m_toolbars->addressBar()->setCursorPosition(0);
-            }
-        });
+        connect(safePage, &Onu_Web::openInNewTabRequested, safeThis,
+            [safeThis](const QUrl &url) {
+                if (!safeThis) return;
+                safeThis->addTab(url);
+            });
 
-        connect(page, &QWebEnginePage::linkHovered, this, [this](const QString &url) {
-            if (url.isEmpty()) {
-                hideStatusBubble();
-            } else {
-                showStatusBubble("Referencing: " + url);
-            }
-        });
+        if (safeView) {
+            safeView->setContextMenuPolicy(Qt::CustomContextMenu);
+            connect(safeView, &QWidget::customContextMenuRequested, safeThis,
+                [safeThis, safePage, safeView](const QPoint &pos) {
+                    if (!safeThis || !safePage || !safeView) return;
+                    safePage->showContextMenu(safeView, safeView->mapToGlobal(pos));
+                });
+        }
 
-        connect(page, &Onu_Web::copyStatusRequested, this, [this](const QString &message) {
-            showStatusMessage(message, 2000);
-        });
+        connect(safeView, &QWebEngineView::titleChanged, safeThis,
+            [updateTabTitle](const QString&) {
+                QMetaObject::invokeMethod(qApp, [updateTabTitle]() {
+                    updateTabTitle();
+                }, Qt::QueuedConnection);
+            });
 
-        connect(page, &Onu_Web::viewPageSourceRequested, this, [this](const QString &html, const QString &title) {
-            Dialogs::source(this, html, title);
-        });
-
-        connect(page, &Onu_Web::saveImageRequested, this, [this](const QUrl &imageUrl) {
-            if (!m_downloadManager) {
-                m_downloadManager = new DL_Man(this);
-            }
-            m_downloadManager->addDownload(imageUrl, imageUrl.fileName());
-            m_downloadManager->show();
-            showStatusMessage("Downloading image...", 2000);
-        });
-
-        connect(page, &Onu_Web::saveMediaRequested, this, [this](const QUrl &mediaUrl, const QString &mediaType) {
-            if (!m_downloadManager) {
-                m_downloadManager = new DL_Man(this);
-            }
-
-            QString suggestedName;
-            if (mediaType == "video") {
-                suggestedName = QFileInfo(mediaUrl.path()).fileName();
-                if (suggestedName.isEmpty() || suggestedName.contains('?')) {
-                    suggestedName = "video_" + QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss") + ".mp4";
+        connect(safeView, &QWebEngineView::iconChanged, safeThis,
+            [safeThis, safeView, safeToolbars, tabIndex, updateTabIcon, validateTab](const QIcon &icon) {
+                if (!safeThis || !safeView || !validateTab()) return;
+                if (safeView->url().scheme() != "onu" && !icon.isNull()) {
+                    QMetaObject::invokeMethod(qApp, [updateTabIcon]() {
+                        updateTabIcon();
+                    }, Qt::QueuedConnection);
                 }
-            } else {
-                suggestedName = QFileInfo(mediaUrl.path()).fileName();
-                if (suggestedName.isEmpty() || suggestedName.contains('?')) {
-                    suggestedName = "audio_" + QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss") + ".mp3";
+            });
+
+        connect(safePage, &Onu_Web::navigationRequestAccepted, safeThis,
+            [safeThis, safeToolbars](const QUrl &url) {
+                if (!safeThis || !safeToolbars) return;
+                if (auto* view = safeThis->currentWebView()) {
+                    safeToolbars->addressBar()->setText(url.toString());
+                    safeToolbars->addressBar()->setCursorPosition(0);
                 }
-            }
+            });
 
-            m_downloadManager->addDownload(mediaUrl, suggestedName);
-            m_downloadManager->show();
-            showStatusMessage(QString("Downloading %1 to %2").arg(mediaType).arg(Settings_Backend::instance().downloadPath()), 3000);
-        });
+        connect(safePage, &QWebEnginePage::linkHovered, safeThis,
+            [safeThis](const QString &url) {
+                if (!safeThis) return;
+                if (url.isEmpty()) {
+                    safeThis->hideStatusBubble();
+                } else {
+                    safeThis->showStatusBubble("Referencing: " + url);
+                }
+            }, Qt::QueuedConnection);
 
-        connect(page, &Onu_Web::addToFavoritesRequested, this, [this](const QString &title, const QUrl &url, const QIcon &icon) {
-            m_backend->addToFavorites(title, url, icon);
-            m_toolbars->refreshFavToolbar(m_backend->favorites());
-            m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
-            showStatusMessage("Added to favorites: " + title, 2000);
-        });
+        connect(safePage, &Onu_Web::copyStatusRequested, safeThis,
+            [safeThis](const QString &message) {
+                if (!safeThis) return;
+                safeThis->showStatusMessage(message, 2000);
+            });
 
-        connect(viewPtr, &QWebEngineView::urlChanged, this,
-                [this, index, viewPtr, page, getOnuIcon, updateTabIcon, updateTabTitle](const QUrl &newUrl) {
-                    if (!viewPtr) return;
+        connect(safePage, &Onu_Web::viewPageSourceRequested, safeThis,
+            [safeThis](const QString &html, const QString &title) {
+                if (!safeThis) return;
+                Dialogs::source(safeThis, html, title);
+            });
 
-                    if (m_toolbars->tabBar()->currentIndex() == index) {
-                        m_toolbars->addressBar()->setText(newUrl.toString());
-                        m_toolbars->addressBar()->setCursorPosition(0);
+        connect(safePage, &Onu_Web::saveImageRequested, safeThis,
+            [safeThis](const QUrl &imageUrl) {
+                if (!safeThis) return;
+                if (!safeThis->m_downloadManager) {
+                    safeThis->m_downloadManager = new DL_Man(safeThis);
+                }
+                safeThis->m_downloadManager->addDownload(imageUrl, imageUrl.fileName());
+                safeThis->m_downloadManager->show();
+                safeThis->showStatusMessage("Downloading image...", 2000);
+            });
+
+        connect(safePage, &Onu_Web::saveMediaRequested, safeThis,
+            [safeThis](const QUrl &mediaUrl, const QString &mediaType) {
+                if (!safeThis) return;
+                if (!safeThis->m_downloadManager) {
+                    safeThis->m_downloadManager = new DL_Man(safeThis);
+                }
+                QString suggestedName = QFileInfo(mediaUrl.path()).fileName();
+                if (suggestedName.isEmpty() || suggestedName.contains('?')) {
+                    suggestedName = QString("%1_%2.%3")
+                        .arg(mediaType)
+                        .arg(QDateTime::currentDateTime().toString("yyyyMMdd_hhmmss"))
+                        .arg(mediaType == "video" ? "mp4" : "mp3");
+                }
+                safeThis->m_downloadManager->addDownload(mediaUrl, suggestedName);
+                safeThis->m_downloadManager->show();
+                safeThis->showStatusMessage(QString("Downloading %1...").arg(mediaType), 3000);
+            });
+
+        connect(safePage, &Onu_Web::addToFavoritesRequested, safeThis,
+            [safeThis, safeToolbars](const QString &title, const QUrl &url, const QIcon &icon) {
+                if (!safeThis || !safeToolbars) return;
+                Browser_Backend::instance().addToFavorites(title, url, icon);
+                safeToolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
+                safeToolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
+                safeThis->showStatusMessage("Added to favorites: " + title, 2000);
+            });
+
+        connect(safeView, &QWebEngineView::urlChanged, safeThis,
+            [safeThis, safeView, safePage, safeToolbars, tabIndex,
+             updateTabIcon, updateTabTitle, validateTab, getOnuIcon](const QUrl &newUrl) {
+                if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
+
+                QMetaObject::invokeMethod(qApp, [=]() {
+                    if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
+
+                    if (safeToolbars->tabBar()->currentIndex() == tabIndex) {
+                        safeToolbars->addressBar()->setText(newUrl.toString());
+                        safeToolbars->addressBar()->setCursorPosition(0);
                     }
 
                     if (newUrl.scheme() == "onu") {
-                        QString host = newUrl.host();
-                        m_toolbars->tabBar()->setTabIcon(index, getOnuIcon(host));
-                        QString title = host.isEmpty() ? "onu" : host;
-                        m_toolbars->tabBar()->setTabText(index, title);
-                        m_toolbars->tabBar()->setTabToolTip(index, title + "\n" + newUrl.toString());
-                        if (index < m_fullTitles.size()) m_fullTitles[index] = title;
-
-                        QTimer::singleShot(0, this, [this, index, title]() {
-                            if (index >= 0 && index < m_toolbars->tabBar()->count()) {
-                                m_toolbars->tabBar()->setTabText(index, title);
-                            }
-                        });
+                        const QString host = newUrl.host();
+                        safeToolbars->tabBar()->setTabIcon(tabIndex, getOnuIcon(host));
+                        const QString title = host.isEmpty() ? "onu" : host;
+                        safeToolbars->tabBar()->setTabText(tabIndex, title);
+                        safeToolbars->tabBar()->setTabToolTip(tabIndex, title + "\n" + newUrl.toString());
+                        if (tabIndex < safeThis->m_fullTitles.size()) {
+                            safeThis->m_fullTitles[tabIndex] = title;
+                        }
                     } else {
                         updateTabIcon();
                     }
 
                     if (newUrl.scheme() != "onu" && !newUrl.isEmpty()) {
-                        QTimer::singleShot(500, this, [this, newUrl, viewPtr]() {
-                            if (viewPtr) {
-                                m_backend->addToHistory(newUrl, viewPtr->title(), viewPtr->icon());
-                                m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+                        QTimer::singleShot(500, safeThis, [=]() {
+                            if (safeView && safeToolbars) {
+                                Browser_Backend::instance().addToHistory(newUrl, safeView->title(), safeView->icon());
+                                safeToolbars->updateSuggestions(Browser_Backend::instance().recentTabs(),
+                                                              Browser_Backend::instance().favorites());
                             }
                         });
                     }
 
-                    setupScriptInjection(page);
+                    safeThis->setupScriptInjection(safePage);
 
-                    if (m_toolbars->tabBar()->currentIndex() == index && viewPtr) {
-                        m_toolbars->updateNavActions(viewPtr->history()->canGoBack(),
-                                                     viewPtr->history()->canGoForward());
+                    if (safeToolbars->tabBar()->currentIndex() == tabIndex && safeView) {
+                        safeToolbars->updateNavActions(safeView->history()->canGoBack(),
+                                                      safeView->history()->canGoForward());
                     }
                 }, Qt::QueuedConnection);
+            });
 
-        connect(viewPtr, &QWebEngineView::iconChanged, this,
-                [this, index, viewPtr, updateTabIcon](const QIcon &icon) {
-                    if (!viewPtr) return;
-                    if (index < 0 || index >= m_toolbars->tabBar()->count()) return;
-                    if (viewPtr->url().scheme() != "onu" && !icon.isNull()) {
-                        m_toolbars->tabBar()->setTabIcon(index, icon);
+        connect(safeView, &QWebEngineView::loadStarted, safeThis,
+            [safeThis, safeView, safeToolbars, tabIndex, validateTab]() {
+                if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
+
+                QMetaObject::invokeMethod(qApp, [=]() {
+                    if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
+
+                    safeToolbars->tabBar()->setTabIcon(tabIndex, QIcon::fromTheme("image-loading"));
+                    if (safeToolbars->tabBar()->currentIndex() == tabIndex) {
+                        safeToolbars->reloadAction()->setVisible(false);
+                        safeToolbars->stopAction()->setVisible(true);
                     }
+                    safeThis->showStatusMessage("Loading: " + safeView->url().host(), 0);
                 }, Qt::QueuedConnection);
+            });
 
-        connect(viewPtr, &QWebEngineView::loadStarted, this, [this, index, viewPtr]() {
-            if (!viewPtr) return;
-            if (index < 0 || index >= m_toolbars->tabBar()->count()) return;
-            m_toolbars->tabBar()->setTabIcon(index, QIcon::fromTheme(QIcon::ThemeIcon::ImageLoading));
-            if (m_toolbars->tabBar()->currentIndex() == index) {
-                m_toolbars->reloadAction()->setVisible(false);
-                m_toolbars->stopAction()->setVisible(true);
-            }
-            showStatusMessage("Loading: " + viewPtr->url().host(), 0);
-        });
+        connect(safeView, &QWebEngineView::loadProgress, safeThis,
+            [safeThis, safeToolbars, tabIndex, validateTab](int progress) {
+                if (!safeThis || !safeToolbars || !validateTab()) return;
 
-        connect(viewPtr, &QWebEngineView::loadProgress, this, [this, index](int progress) {
-            if (index == m_toolbars->tabBar()->currentIndex() && progress > 0 && progress < 100) {
-                showStatusMessage(QString("Loading... %1%").arg(progress), 0);
-            }
-        });
+                if (safeToolbars->tabBar()->currentIndex() == tabIndex &&
+                    progress > 0 && progress < 100) {
+                    safeThis->showStatusMessage(QString("Loading... %1%").arg(progress), 0);
+                }
+            });
 
-        connect(viewPtr, &QWebEngineView::loadFinished, this,
-                [this, index, viewPtr, updateTabIcon, updateTabTitle](bool ok) {
-                    if (!viewPtr) return;
-                    if (index < 0 || index >= m_toolbars->tabBar()->count()) return;
+        connect(safeView, &QWebEngineView::loadFinished, safeThis,
+            [safeThis, safeView, safeToolbars, tabIndex, updateTabIcon, updateTabTitle, validateTab]
+            (bool ok) {
+                if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
 
-                    if (viewPtr->url().scheme() == "onu") {
-                        QString host = viewPtr->url().host();
-                        QString title = host.isEmpty() ? "onu" : host;
-                        m_toolbars->tabBar()->setTabText(index, title);
-                        if (index < m_fullTitles.size()) {
-                            m_fullTitles[index] = title;
+                QMetaObject::invokeMethod(qApp, [=]() {
+                    if (!safeThis || !safeView || !safeToolbars || !validateTab()) return;
+
+                    if (safeView->url().scheme() == "onu") {
+                        const QString host = safeView->url().host();
+                        const QString title = host.isEmpty() ? "onu" : host;
+                        safeToolbars->tabBar()->setTabText(tabIndex, title);
+                        if (tabIndex < safeThis->m_fullTitles.size()) {
+                            safeThis->m_fullTitles[tabIndex] = title;
                         }
                     } else {
                         updateTabIcon();
@@ -5286,24 +6353,20 @@ private slots:
                     }
 
                     if (!ok) {
-                        showStatusMessage("Failed to load: " + viewPtr->url().toString(), 3000);
+                        safeThis->showStatusMessage("Failed to load: " + safeView->url().toString(), 3000);
                     } else {
-                        hideStatusBubble();
+                        safeThis->hideStatusBubble();
                     }
 
-                    if (m_toolbars->tabBar()->currentIndex() == index) {
-                        m_toolbars->reloadAction()->setVisible(true);
-                        m_toolbars->stopAction()->setVisible(false);
-                        m_toolbars->updateNavActions(viewPtr->history()->canGoBack(),
-                                                     viewPtr->history()->canGoForward());
+                    if (safeToolbars->tabBar()->currentIndex() == tabIndex) {
+                        safeToolbars->reloadAction()->setVisible(true);
+                        safeToolbars->stopAction()->setVisible(false);
+                        safeToolbars->updateNavActions(safeView->history()->canGoBack(),
+                                                      safeView->history()->canGoForward());
                     }
-                });
-
-        connect(page, &Onu_Web::newTabRequested, this, [this](const QUrl &newUrl) {
-            addTab(newUrl);
-        });
+                }, Qt::QueuedConnection);
+            });
     }
-
     void closeTab(int index) {
         if (index < 0 || index >= (int)m_contents.size()) return;
 
@@ -5388,11 +6451,19 @@ private slots:
         menu.addAction("View Page Source", this, &Onu_window::viewPageSource);
         menu.addAction("Add to Favorites", [this, index]() {
             if (m_contents[index]) {
-                m_backend->addToFavorites(m_contents[index]->title(),
+                Browser_Backend::instance().addToFavorites(m_contents[index]->title(),
                                           m_contents[index]->url(),
                                           m_contents[index]->icon());
             }
         });
+        menu.addAction(QIcon::fromTheme("dialog-information"), "Site Information", [this, index]() {
+            if (m_contents[index]) {
+                QString origin = m_contents[index]->url().scheme() + "://" +
+                                m_contents[index]->url().host();
+                Dialogs::siteInfo(this, origin);
+            }
+        });
+
         menu.addSeparator();
 
         if (m_contents.size() > 1) {
@@ -5413,9 +6484,9 @@ private slots:
                                                                   "Are you sure you want to clear all browsing history?",
                                                                   QMessageBox::Yes | QMessageBox::No);
         if (reply == QMessageBox::Yes) {
-            m_backend->clearHistory();
-            m_toolbars->refreshRecentToolbar(m_backend->recentTabs());
-            m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+            Browser_Backend::instance().clearHistory();
+            m_toolbars->refreshRecentToolbar(Browser_Backend::instance().recentTabs());
+            m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
             showStatusMessage("History cleared", 2000);
         }
     }
@@ -5431,24 +6502,26 @@ private slots:
     {
         showStatusBubble(message);
 
-        if (timeout > 0) {
-            QTimer::singleShot(timeout, this, []() {
-                QToolTip::hideText();
-            });
-        }
+           if (timeout > 0) {
+               QTimer::singleShot(timeout, this, [this]() {
+                   hideStatusBubble();
+               });
+           }
     }
 
     void showStatusBubble(const QString &text)
-    {
-        QWidget *parent = centralWidget() ? centralWidget() : this;
+      {
+          QWidget *parent = centralWidget() ? centralWidget() : this;
 
-        const int margin = 10;
-        QPoint pos = parent->mapToGlobal(
-            QPoint(margin, parent->height() - margin)
-        );
+          const int margin = 10;
+          QPoint pos = parent->mapToGlobal(
+              QPoint(margin, parent->height() - margin)
+          );
 
-        QToolTip::showText(pos, text, parent);
-    }
+          QToolTip::showText(pos, text, parent);
+      }
+
+
 
     void hideStatusBubble() {
         if (m_statusBubble) {
@@ -5493,8 +6566,8 @@ private slots:
 
 private:
     Create_Toolbars *m_toolbars = nullptr;
-    Browser_Backend *m_backend = nullptr;
-    Content_Protector *m_contentProtector = nullptr;
+
+    Content_Protector *m_contentProtector;
     std::vector<std::unique_ptr<QWebEngineView>> m_contents;
     QVector<QString> m_fullTitles;
     QVector<QUrl> m_closedTabs;
@@ -5506,10 +6579,10 @@ private:
     QList<QShortcut*> m_shortcuts;
 
     void setupContentProtector() {
-        m_contentProtector = new Content_Protector(this);
-        QWebEngineProfile::defaultProfile()->setUrlRequestInterceptor(m_contentProtector);
-    }
 
+        m_contentProtector = new Content_Protector(this);
+        Onu_Web::defaultProfile()->setUrlRequestInterceptor(m_contentProtector);
+    }
     void setupScriptInjection(QWebEnginePage *page) {
         QString userScript = Settings_Backend::instance().userScript();
         QString extScripts = Extense::collectScripts();
@@ -5585,7 +6658,7 @@ private:
             m_downloadManager->show();
         });
         addShortcut("Open History", [this]() {
-            Dialogs::history(this, m_backend->recentTabs(), [this]() { clearHistory(); });
+            Dialogs::history(this, Browser_Backend::instance().recentTabs(), [this]() { clearHistory(); });
         });
         addShortcut("Open Settings", [this]() {
             Dialogs::settings(this, [this]() {
@@ -5616,13 +6689,22 @@ private:
         });
         addShortcut("Bookmark Page", [this]() {
             if (auto *v = currentWebView()) {
-                m_backend->addToFavorites(v->title(), v->url(), v->icon());
-                m_toolbars->refreshFavToolbar(m_backend->favorites());
+                Browser_Backend::instance().addToFavorites(v->title(), v->url(), v->icon());
+                m_toolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
                 showStatusMessage("Added to favorites", 2000);
             }
         });
-    }
+        addShortcut("Site Info", [this]() {
+            if (auto *v = currentWebView()) {
+                QString origin = v->url().scheme() + "://" + v->url().host();
+                Dialogs::siteInfo(this, origin, true);
+            }
+        });
 
+        addShortcut("Sites Manager", [this]() {
+            Dialogs::sitesManager(this);
+        });
+    }
     void setupUI() {
         m_central = new QWidget(this);
         m_mainLayout = new QVBoxLayout(m_central);
@@ -5631,11 +6713,15 @@ private:
 
         m_audioOutput = std::make_unique<QAudioOutput>(this);
         m_audioOutput->setVolume(Settings_Backend::instance().audioVolume() / 100.0);
+
+       connect(&Browser_Backend::instance(), &Browser_Backend::newTabRequested,
+                this, [this](const QUrl &url) {
+                    addTab(url);
+                });
     }
 
     void setupToolbars() {
         m_toolbars = new Create_Toolbars(this, this);
-        m_backend = new Browser_Backend(this);
 
         m_mainLayout->insertWidget(0, m_toolbars->findBar());
 
@@ -5696,36 +6782,36 @@ private:
 
         connect(m_toolbars, &Create_Toolbars::recentActionTriggered, this, [this](const QUrl &url, bool manage) {
             if (manage)
-                Dialogs::history(this, m_backend->recentTabs(), [this]() { clearHistory(); });
+                Dialogs::history(this, Browser_Backend::instance().recentTabs(), [this]() { clearHistory(); });
             else if (url.isValid())
                 addTab(url);
         });
 
-        connect(m_toolbars, &Create_Toolbars::favActionTriggered, this, [this](const QUrl &url, bool customize) {
+        connect(m_toolbars, &Create_Toolbars::Open_InNewTab_tb, this, [this](const QUrl &url, bool customize) {
             if (customize) {
-                QVariantList favs = m_backend->favorites();
+                QVariantList favs = Browser_Backend::instance().favorites();
                 Dialogs::fav(this, favs, [this]() {
-                    m_toolbars->refreshFavToolbar(m_backend->favorites());
-                    m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+                    m_toolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
+                    m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
                 });
-                m_backend->setFavorites(favs);
+                Browser_Backend::instance().setFavorites(favs);
             } else if (url.isValid()) {
                 addTab(url);
             }
         });
 
-        connect(m_backend, &Browser_Backend::recentTabsChanged, this, [this]() {
-            m_toolbars->refreshRecentToolbar(m_backend->recentTabs());
-            m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+        connect(&Browser_Backend::instance(), &Browser_Backend::recentTabsChanged, this, [this]() {
+            m_toolbars->refreshRecentToolbar(Browser_Backend::instance().recentTabs());
+            m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
         });
 
-        connect(m_backend, &Browser_Backend::favoritesChanged, this, [this]() {
-            m_toolbars->refreshFavToolbar(m_backend->favorites());
-            m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+        connect(&Browser_Backend::instance(), &Browser_Backend::favoritesChanged, this, [this]() {
+            m_toolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
+            m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
         });
 
         connect(m_toolbars, &Create_Toolbars::showHistoryRequested, this, [this]() {
-            Dialogs::history(this, m_backend->recentTabs(), [this]() { clearHistory(); });
+            Dialogs::history(this, Browser_Backend::instance().recentTabs(), [this]() { clearHistory(); });
         });
 
         connect(m_toolbars, &Create_Toolbars::showSettingsRequested, this, [this]() {
@@ -5750,7 +6836,7 @@ private:
                     tabs.append(view->url());
                 }
             }
-            m_backend->close(this, tabs);
+            Browser_Backend::instance().close(this, tabs);
         });
 
         connect(m_toolbars, &Create_Toolbars::clearHistoryRequested, this, &Onu_window::clearHistory);
@@ -5844,15 +6930,15 @@ private:
                 }
             }
 
-            m_backend->addToFavorites(title, url, icon);
-            m_toolbars->refreshFavToolbar(m_backend->favorites());
-            m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+            Browser_Backend::instance().addToFavorites(title, url, icon);
+            m_toolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
+            m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
             showStatusMessage("Added to favorites: " + title, 2000);
         });
 
-        m_toolbars->refreshRecentToolbar(m_backend->recentTabs());
-        m_toolbars->refreshFavToolbar(m_backend->favorites());
-        m_toolbars->updateSuggestions(m_backend->recentTabs(), m_backend->favorites());
+        m_toolbars->refreshRecentToolbar(Browser_Backend::instance().recentTabs());
+        m_toolbars->refreshFavToolbar(Browser_Backend::instance().favorites());
+        m_toolbars->updateSuggestions(Browser_Backend::instance().recentTabs(), Browser_Backend::instance().favorites());
 
         QByteArray toolbarState = Settings_Backend::instance().loadToolbarState();
         if (!toolbarState.isEmpty()) {
@@ -5870,10 +6956,158 @@ private:
 
         m_toolbars->updateVerticalTabs();
     }
+    void showNotification(const QString &origin, const QString &title,
+                         const QString &body, const QString &iconPath)
+    {
+        if (QSystemTrayIcon::isSystemTrayAvailable()) {
+            QSystemTrayIcon *trayIcon = new QSystemTrayIcon(this);
 
+            QIcon icon = !iconPath.isEmpty() ? Icon_Man::instance().loadIcon(iconPath) : QIcon::fromTheme("onu");
+
+            trayIcon->setIcon(icon);
+
+            trayIcon->show();
+            trayIcon->showMessage(
+                title.isEmpty() ? "Notification from " + origin : title,
+                body,
+                QSystemTrayIcon::Information,
+                5000
+            );
+
+            connect(trayIcon, &QSystemTrayIcon::messageClicked, this, [this, origin]() {
+                if (!origin.isEmpty()) {
+                    QUrl url(origin);
+                    if (url.isValid()) {
+                        addTab(url);
+                    }
+                }
+            });
+
+            QTimer::singleShot(6000, trayIcon, &QSystemTrayIcon::deleteLater);
+            return;
+        }
+
+        QWidget *parent = centralWidget() ? centralWidget() : this;
+
+        QWidget *notification = new QWidget(parent, Qt::ToolTip | Qt::FramelessWindowHint);
+        notification->setAttribute(Qt::WA_DeleteOnClose);
+        notification->setStyleSheet(
+            "QWidget {"
+            "   background-color: palette(window);"
+            "   border: 1px solid palette(mid);"
+            "   border-radius: 4px;"
+            "   padding: 8px;"
+            "}"
+        );
+
+        QVBoxLayout *mainLayout = new QVBoxLayout(notification);
+        QHBoxLayout *contentLayout = new QHBoxLayout();
+
+        if (!iconPath.isEmpty()) {
+            QIcon icon = Icon_Man::instance().loadIcon(iconPath);
+            if (!icon.isNull()) {
+                QLabel *iconLabel = new QLabel();
+                iconLabel->setPixmap(icon.pixmap(32, 32));
+                iconLabel->setFixedSize(32, 32);
+                contentLayout->addWidget(iconLabel);
+            }
+        }
+
+        QVBoxLayout *textLayout = new QVBoxLayout();
+        textLayout->setSpacing(2);
+
+        if (!title.isEmpty()) {
+            QLabel *titleLabel = new QLabel(title);
+            QFont titleFont = titleLabel->font();
+            titleFont.setBold(true);
+            titleLabel->setFont(titleFont);
+            textLayout->addWidget(titleLabel);
+        }
+
+        QLabel *bodyLabel = new QLabel(body);
+        bodyLabel->setWordWrap(true);
+        textLayout->addWidget(bodyLabel);
+
+        if (!origin.isEmpty()) {
+            QLabel *originLabel = new QLabel(origin);
+            originLabel->setStyleSheet("color: gray; font-size: 9px;");
+            originLabel->setAlignment(Qt::AlignRight);
+            textLayout->addWidget(originLabel);
+        }
+
+        contentLayout->addLayout(textLayout);
+        contentLayout->addStretch();
+        mainLayout->addLayout(contentLayout);
+
+        QPushButton *closeButton = new QPushButton("×");
+        closeButton->setFixedSize(24, 24);
+        closeButton->setStyleSheet(
+            "QPushButton {"
+            "   border: none;"
+            "   font-size: 16px;"
+            "   font-weight: bold;"
+            "}"
+            "QPushButton:hover {"
+            "   background-color: palette(highlight);"
+            "   color: palette(highlighted-text);"
+            "   border-radius: 12px;"
+            "}"
+        );
+        connect(closeButton, &QPushButton::clicked, notification, &QWidget::deleteLater);
+
+        QHBoxLayout *buttonLayout = new QHBoxLayout();
+        buttonLayout->addStretch();
+        buttonLayout->addWidget(closeButton);
+        mainLayout->addLayout(buttonLayout);
+
+        class NotificationClickFilter : public QObject {
+        public:
+            NotificationClickFilter(std::function<void()> callback, QObject *parent = nullptr)
+                : QObject(parent), m_callback(callback) {}
+
+        protected:
+            bool eventFilter(QObject *obj, QEvent *event) override {
+                if (event->type() == QEvent::MouseButtonPress) {
+                    m_callback();
+                    return true;
+                }
+                return false;
+            }
+
+        private:
+            std::function<void()> m_callback;
+        };
+
+        notification->setCursor(Qt::PointingHandCursor);
+        notification->installEventFilter(new NotificationClickFilter(
+            [this, origin, notification]() {
+                if (!origin.isEmpty()) {
+                    QUrl url(origin);
+                    if (url.isValid()) {
+                        addTab(url);
+                    }
+                }
+                notification->deleteLater();
+            },
+            notification
+        ));
+
+        notification->adjustSize();
+
+        const int margin = 10;
+        QPoint pos = parent->mapToGlobal(
+            QPoint(parent->width() - notification->width() - margin,
+                   parent->height() - notification->height() - margin)
+        );
+        notification->move(pos);
+
+        notification->show();
+
+        QTimer::singleShot(8000, notification, &QWidget::deleteLater);
+    }
     void loadExtensions() {
         Extense::discover();
-        Extense::applyEnabled(this, m_backend);
+        Extense::applyEnabled(this, &Browser_Backend::instance());
 
         QTimer::singleShot(500, this, [this]() {
             checkUnspecifiedExtensions();
@@ -5982,7 +7216,7 @@ private:
         hLayout->addWidget(detailsWidget);
         mainLayout->addLayout(hLayout);
 
-        QLabel* warn = new QLabel("⚠ Extensions have full access to the browser.");
+        QLabel* warn = new QLabel("Extensions have full access to the browser.");
         warn->setStyleSheet("color: red; font-weight: bold; padding: 5px;");
         mainLayout->addWidget(warn);
 
@@ -6073,7 +7307,7 @@ private:
                 if (info->state != 0) {
                     Extense::setState(info->meta.name, info->meta.maintainer, info->state);
                     if (info->state == 1 && info->inst) {
-                        info->inst->apply(this, m_backend);
+                        info->inst->apply(this, &Browser_Backend::instance());
                     }
                 }
             }
@@ -6100,36 +7334,33 @@ int main(int argc, char *argv[]) {
 
     QApplication app(argc, argv);
     app.setApplicationName("Onu");
-
-    app.setApplicationVersion("0.5");
+    app.setApplicationVersion("0.6");
 
     if (!Onu_window::initializeEncryption()) {
         return 0;
+
     }
-    Onu_window window;
 
-    QWebEngineProfile *profile = QWebEngineProfile::defaultProfile();
+    QWebEngineProfile *profile = Onu_Web::defaultProfile();
 
-    QString storagePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation) + "/webengine";
-    profile->setPersistentStoragePath(storagePath);
-    profile->setPersistentCookiesPolicy(QWebEngineProfile::ForcePersistentCookies);
-    profile->setHttpCacheType(QWebEngineProfile::DiskHttpCache);
-    auto handler = new Url_Scheme(window.backend(), profile);
+    auto handler = new Url_Scheme(&Browser_Backend::instance(), profile);
     profile->installUrlSchemeHandler("onu", handler);
 
+    Onu_window window;
+
     QCommandLineParser parser;
-    parser.setApplicationDescription("Onu is a Qt based web browser, define url to open them");
+    parser.setApplicationDescription("\033[1m\033[1;37mOnu.\033[0m\n---------------------------------------------------\nOnu is a Qt C++ based web browser, \nProject url: https://github.com/zynomon/onu\nLicense: Apache 2.0\nVersion:" + app.applicationVersion() + "\n\ndefine url to open them");
     parser.addHelpOption();
     parser.addVersionOption();
     parser.addPositionalArgument("urls", "URLs to open");
     parser.process(app);
 
+    window.show();
+
     QList<QUrl> startupUrls;
     for (const QString &arg : parser.positionalArguments()) {
         startupUrls << QUrl::fromUserInput(arg);
     }
-
-    window.show();
 
     if (!startupUrls.isEmpty()) {
         window.openUrls(startupUrls);
@@ -6137,11 +7368,10 @@ int main(int argc, char *argv[]) {
 
     return app.exec();
 }
-
 #include "main.moc"
 /*--------------------------
 
                  Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-                                                     project : Onu 0.5
+                                                     project : Onu 0.6
 
-                                                             -----------------------*/
+                                                      --------------------*/

@@ -4,13 +4,19 @@
 #include <QWebEnginePage>
 #include <QWebEngineProfile>
 #include <QWebEngineUrlScheme>
+#include <QWebEngineCookieStore>
+#include <QWebEngineFileSystemAccessRequest>
+#include <QWebEngineNotification>
 #include <QWebEngineUrlSchemeHandler>
 #include <QWebEngineUrlRequestJob>
+#include <QJsonArray>
 #include <QWebEngineSettings>
 #include <QWebEngineDownloadRequest>
 #include <QWebEngineHistory>
 #include <QWebEngineCertificateError>
+#include <QWebEnginePermission>
 #include <QWebEngineFindTextResult>
+#include <QWebEngineFullScreenRequest>
 #include <QToolBar>
 #include <QToolButton>
 #include <QTabBar>
@@ -19,6 +25,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QListWidget>
+#include <QSplitter>
 #include <QTreeWidget>
 #include <QTableWidget>
 #include <QDialog>

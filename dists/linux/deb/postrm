@@ -1,3 +1,4 @@
 #!/bin/bash
 
 rm -rf /home/*/.local/share/Onu
+rm -rf /etc/skel/.local/share/Onu

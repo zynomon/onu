@@ -19,6 +19,8 @@ Installation Instructions (System-wide):
 1. Binary    → Move 'bin/APP_NAME' to '/bin/'
 2. Icon      → Move 'share/icons/ICON_NAME' to '/usr/share/icons/'
 3. Desktop   → Move 'share/applications/APP.desktop' to '/usr/share/applications/'
+4. Onboarder → onboard.so is for onbaording if you put it on  your  '~/.local/share/Onu/Conf/extension/' directory it will run
+
 
 Note: You can also use ~/.local/ instead of /usr/ for user-only installation:
    • Binary    → ~/.local/bin/

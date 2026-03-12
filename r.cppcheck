@@ -9,79 +9,84 @@
     <inline-suppression>true</inline-suppression>
     <max-ctu-depth>4</max-ctu-depth>
     <max-template-recursion>100</max-template-recursion>
-    
+
     <checks>
         <check>all</check>
-        <check>warning</check>
-        <check>style</check>
-        <check>performance</check>
-        <check>portability</check>
-        <check>information</check>
-        <check>unusedFunction</check>
-        <check>missingInclude</check>
     </checks>
-    
+
     <libraries>
         <library>qt</library>
         <library>std</library>
         <library>posix</library>
     </libraries>
-    
-    <tools>
-        <tool>clang-tidy</tool>
-    </tools>
-    
+
     <project-name>onu</project-name>
-    
+
     <paths>
+
         <dir name="." />
+        <file name="main.cxx" />
+        <file name="onu.H" />
+        <file name="settings.Hxx" />
+        <file name="extense.H" />
+        <file name="i.H" />
+        <file name="Qtdl.H" />
+
     </paths>
-    
+
     <defines>
         <define name="__cplusplus" value="201703L" />
         <define name="QT_CORE_LIB" />
         <define name="QT_GUI_LIB" />
         <define name="QT_WIDGETS_LIB" />
         <define name="QT_WEBENGINE_LIB" />
+        <define name="QT_WEBENGINECORE_LIB" />
+        <define name="QT_NETWORK_LIB" />
+        <define name="QT_MULTIMEDIA_LIB" />
     </defines>
-    
+
     <includes>
+
         <dir name="/usr/include/qt6" />
         <dir name="/usr/include/x86_64-linux-gnu/qt6" />
         <dir name="/usr/include/qt6/QtCore" />
         <dir name="/usr/include/qt6/QtGui" />
         <dir name="/usr/include/qt6/QtWidgets" />
         <dir name="/usr/include/qt6/QtWebEngineWidgets" />
+        <dir name="/usr/include/qt6/QtWebEngineCore" />
         <dir name="/usr/include/qt6/QtNetwork" />
         <dir name="/usr/include/qt6/QtMultimedia" />
+
+        <dir name="." />
+
+        <dir name="dists/linux/appimage/usr/lib/trigonometry" />
         <dir name="/usr/include/trigonometry" />
     </includes>
-    
+
     <suppressions>
+
+        <suppression>*missingInclude*</suppression>
+        <suppression>*include*NotFound*</suppression>
         <suppression>unmatchedSuppression</suppression>
-        <suppression>missingIncludeSystem</suppression>
-        <suppression>*:extensions/*</suppression>
+
         <suppression>ctu:*</suppression>
+        <suppression>toomanyconfigs:*</suppression>
+
+        <suppression>*:dists/*</suppression>
+        <suppression>*:qrc/*</suppression>
+        <suppression>*:build/*</suppression>
+        <suppression>*:*.user</suppression>
     </suppressions>
-    
+
     <check-level>exhaustive</check-level>
-    
+
     <output>
         <format>xml</format>
         <version>2</version>
         <file>cppcheck-report.xml</file>
         <verbose>true</verbose>
     </output>
-    
+
     <jobs>0</jobs>
-    
     <error-limit>1000</error-limit>
-    
-    <exit-code>
-        <warning>0</warning>
-        <style>0</style>
-        <performance>0</performance>
-        <portability>0</portability>
-        <information>0</information>
-    </exit-code>
 </project>

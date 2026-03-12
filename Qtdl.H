@@ -2081,7 +2081,7 @@ private:
 /*--------------------------
 
                  Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-                                                     project : Onu 0.5
+                                                     project : Onu 0.6
 
                                                              -----------------------*/
 

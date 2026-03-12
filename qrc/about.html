@@ -1,7 +1,7 @@
 <html>
 <body align="center" bgcolor="f2f4f4">
     <img
-        src="https://raw.githubusercontent.com/zynomon/onu/release/Notices/onu.svg"
+        src="https://raw.githubusercontent.com/zynomon/onu/release/Notices/icons/onu.svg"
         width="343"
         height="140"
         onerror="this.src='%1'; this.width=this.height=140;"
@@ -26,7 +26,7 @@
 
     if (!navigator.onLine) return;
     try {
-        const noticeResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/release/Notices/0.5-NOTICE');
+        const noticeResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/release/Notices/0.6-NOTICE');
         if (noticeResponse.ok) {
             const text = await noticeResponse.text();
             htmlContent += '<h1>Updates about your version</h1><hr>';
@@ -38,7 +38,7 @@
     }
 
     try {
-        const onuResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/main/docs/LICENSE');
+        const onuResponse = await fetch('https://raw.githubusercontent.com/zynomon/onu/main/LICENSE');
         if (onuResponse.ok) {
             const text = await onuResponse.text();
             htmlContent += '<h1>Onu License</h1><hr>';

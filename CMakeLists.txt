@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(onu VERSION 0.5 LANGUAGES CXX)
+project(onu VERSION 0.6 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -18,10 +18,13 @@ add_executable(onu main.cxx
     Qtdl.H
     onu.H
     i.H
+    $<$<CONFIG:Debug>:qrc/t.qrc>
+)
+target_compile_definitions(onu PRIVATE
+    $<$<CONFIG:Debug>:CMAKE_DEBUG>
 )
 
-find_program(CMAKE_STRIP NAMES strip)
-find_package(Trig)
+find_package(Trig REQUIRED)
 
 target_link_libraries(onu PRIVATE
     Trig::crash
@@ -41,6 +44,15 @@ install(TARGETS onu
     BUNDLE DESTINATION .
 )
 
+# Install Onboarding.so to etc/skel for non-macOS Unix systems
+if(UNIX AND NOT APPLE)
+    install(FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/dists/Onboarding.so
+        DESTINATION etc/skel/.local/Onu/Conf/extensions
+        PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE
+    )
+endif()
+
 if(UNIX AND NOT APPLE)
     configure_file(
         ${CMAKE_CURRENT_SOURCE_DIR}/dists/onu.desktop.in
@@ -59,15 +71,18 @@ endif()
 if(APPLE)
     set_target_properties(onu PROPERTIES
         MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/dists/mac/Info.plist # Mistake;
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/dists/mac/Info.plist
         MACOSX_BUNDLE_BUNDLE_NAME "Onu"
         MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
         MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION}
     )
 endif()
+
 # /*--------------------------
 #
 #                 Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-#                                                     project : Onu 0.5
+#                                                     project : Onu 0.6
 #                                                 visit dists folder for deployment
 #                                                            -----------------------*/
+
+add_subdirectory(ext/Onboard)

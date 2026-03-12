@@ -2,199 +2,373 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Permission Architect</title>
+    <style>
+        :root {
+            --bg-deep: #0a0a0a;
+            --card-bg: #1a1a1a;
+            --btn-grey: #444444;
+            --btn-shadow: #000000;
+            --accent-blue: #005bb5;
+            --accent-light: #00a2ff;
+            --text-main: #dcdcdc;
+            --font-mono: "Nimbus Mono", "Courier New", monospace;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: var(--font-mono);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1 {
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--accent-light);
+            text-shadow: 0 0 15px var(--accent-blue);
+            border-bottom: 2px solid var(--accent-blue);
+            padding-bottom: 10px;
+            margin-bottom: 40px;
+        }
+
+        #permission-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .perm-card {
+            background: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.5);
+            transition: transform 0.2s;
+        }
+
+        .perm-card:hover {
+            border-color: var(--accent-blue);
+        }
+
+        .perm-title {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: var(--accent-light);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-left: 4px solid var(--accent-blue);
+            padding-left: 10px;
+        }
+
+        .config-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #111;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.7em;
+            color: #888;
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        input, select {
+            background: #222;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 5px;
+            font-family: var(--font-mono);
+            font-size: 0.8em;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .run-btn {
+            background: var(--btn-grey);
+            color: white;
+            border: none;
+            padding: 12px;
+            font-family: var(--font-mono);
+            font-weight: bold;
+            cursor: pointer;
+            position: relative;
+            box-shadow: 0 4px 0 var(--btn-shadow);
+            text-transform: uppercase;
+            transition: all 0.1s;
+        }
+
+        .run-btn:hover {
+            background: #555;
+            box-shadow: 0 4px 0 var(--accent-blue);
+        }
+
+        .run-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 1px 0 var(--btn-shadow);
+        }
+
+        .status-msg {
+            margin-top: 15px;
+            font-size: 0.75em;
+            min-height: 1.2em;
+            color: #666;
+            word-break: break-all;
+            border-top: 1px solid #333;
+            padding-top: 8px;
+        }
+
+        #master-log {
+            width: 100%;
+            max-width: 1200px;
+            height: 200px;
+            background: #000;
+            margin-top: 40px;
+            border: 1px solid var(--accent-blue);
+            padding: 15px;
+            font-size: 0.8em;
+            color: #00ff41;
+            overflow-y: auto;
+            box-shadow: inset 0 0 10px #001122;
+        }
+
+        .log-entry { margin-bottom: 4px; border-left: 2px solid #222; padding-left: 8px; }
+        .success { color: #00ff41; }
+        .error { color: #ff3333; }
+        .info { color: var(--accent-light); }
+    </style>
 </head>
 <body>
-<pre id="out" style="background:#000;color:#0f0;padding:1rem;font-family:monospace;overflow:auto;">collecting diagnostics...</pre>
+
+    <h1>Permission Testing Lab</h1>
+
+    <div id="permission-container"></div>
+
+    <div id="master-log">
+        <div class="log-entry info">> System Initialized. Awaiting user input...</div>
+    </div>
+
 <script>
-(function(){
-    const out = document.getElementById('out');
-    if(!out) return;
-    const log = [];
-    function raw(label, value) {
-        let str;
-        try {
-            if(value === null) str = 'null';
-            else if(value === undefined) str = 'undefined';
-            else if(typeof value === 'function') str = 'function';
-            else if(typeof value === 'object') {
-                if(value instanceof Error) str = value.name;
-                else if(value instanceof PermissionStatus) str = 'state:' + value.state;
-                else {
-                    try { str = JSON.stringify(value); }
-                    catch { str = Object.prototype.toString.call(value); }
+
+    const config = {
+        notifications: {
+            title: "Notifications",
+            fields: [
+                { id: "notif_title", label: "Title", type: "text", default: "Test Alert" },
+                { id: "notif_body", label: "Body", type: "text", default: "This is a custom notification body content." },
+                { id: "notif_icon", label: "Icon URL", type: "text", default: "https://cdn-icons-png.flaticon.com/512/1827/1827347.png" }
+            ],
+            action: async (vals) => {
+                const permission = await Notification.requestPermission();
+                if (permission === "granted") {
+                    new Notification(vals.notif_title, { body: vals.notif_body, icon: vals.notif_icon });
+                    return "Notification Spawned";
                 }
-            } else str = String(value);
-        } catch { str = 'unreadable'; }
-        log.push(label + ' -> ' + str);
-    }
-    function err(label, e) {
-        log.push(label + ' !! ' + (e.message || String(e)));
+                throw new Error("Permission: " + permission);
+            }
+        },
+        popups: {
+            title: "Popups",
+            fields: [
+                { id: "pop_url", label: "URL", type: "text", default: "about:blank" },
+                { id: "pop_w", label: "Width", type: "number", default: 400 },
+                { id: "pop_h", label: "Height", type: "number", default: 300 }
+            ],
+            action: async (vals) => {
+                const win = window.open(vals.pop_url, '_blank', `width=${vals.pop_w},height=${vals.pop_h}`);
+                if (!win) throw new Error("Popup Blocked by Browser");
+                return "Popup successfully opened";
+            }
+        },
+        geolocation: {
+            title: "Geolocation",
+            fields: [
+                { id: "geo_acc", label: "High Accuracy", type: "select", options: ["true", "false"], default: "true" }
+            ],
+            action: async (vals) => {
+                return new Promise((res, rej) => {
+                    navigator.geolocation.getCurrentPosition(
+                        (p) => res(`Lat: ${p.coords.latitude}, Lon: ${p.coords.longitude}`),
+                        (e) => rej(e),
+                        { enableHighAccuracy: vals.geo_acc === "true" }
+                    );
+                });
+            }
+        },
+        clipboard: {
+            title: "Clipboard",
+            fields: [
+                { id: "clip_mode", label: "Mode", type: "select", options: ["Read", "Write"], default: "Read" },
+                { id: "clip_text", label: "Text to Write", type: "text", default: "Hello World" }
+            ],
+            action: async (vals) => {
+                if (vals.clip_mode === "Write") {
+                    await navigator.clipboard.writeText(vals.clip_text);
+                    return "Text written to clipboard";
+                } else {
+                    const txt = await navigator.clipboard.readText();
+                    return `Read: ${txt || "[Empty]"}`;
+                }
+            }
+        },
+        camera: {
+            title: "Camera",
+            fields: [
+                { id: "cam_res", label: "Resolution", type: "select", options: ["VGA", "HD", "FullHD"], default: "HD" }
+            ],
+            action: async (vals) => {
+                const constraints = { VGA: {width: 640}, HD: {width: 1280}, FullHD: {width: 1920} };
+                const stream = await navigator.mediaDevices.getUserMedia({ video: constraints[vals.cam_res] });
+                stream.getTracks().forEach(t => t.stop());
+                return `Camera Active: ${vals.cam_res}`;
+            }
+        },
+        microphone: {
+            title: "Microphone",
+            fields: [
+                { id: "mic_echo", label: "Echo Cancellation", type: "select", options: ["true", "false"], default: "true" }
+            ],
+            action: async (vals) => {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: vals.mic_echo === "true" } });
+                stream.getTracks().forEach(t => t.stop());
+                return "Microphone Accessed";
+            }
+        },
+        mouselock: {
+            title: "Mouse Lock",
+            fields: [
+                { id: "ml_msg", label: "Overlay Message", type: "text", default: "Pointer Locked!" }
+            ],
+            action: async (vals, btn) => {
+                await btn.requestPointerLock();
+                return vals.ml_msg;
+            }
+        },
+        fileAccess: {
+            title: "File System API",
+            fields: [
+                { id: "file_mode", label: "Mode", type: "select", options: ["Open", "Save"], default: "Open" }
+            ],
+            action: async (vals) => {
+                if (vals.file_mode === "Open") {
+                    const [handle] = await window.showOpenFilePicker();
+                    return `Selected: ${handle.name}`;
+                } else {
+                    const handle = await window.showSaveFilePicker();
+                    return `Saving to: ${handle.name}`;
+                }
+            }
+        },
+        desktopVideo: {
+            title: "Screen Capture",
+            fields: [
+                { id: "dv_audio", label: "Include Audio", type: "select", options: ["true", "false"], default: "false" }
+            ],
+            action: async (vals) => {
+                const stream = await navigator.mediaDevices.getDisplayMedia({ 
+                    video: true, 
+                    audio: vals.dv_audio === "true" 
+                });
+                stream.getTracks().forEach(t => t.stop());
+                return "Screen Share Ended";
+            }
+        },
+        localFonts: {
+            title: "Local Fonts",
+            fields: [
+                { id: "font_limit", label: "Max Display", type: "number", default: 5 }
+            ],
+            action: async (vals) => {
+                if (!window.queryLocalFonts) throw new Error("Not supported in this browser");
+                const fonts = await window.queryLocalFonts();
+                return `Found ${fonts.length}. First ${vals.font_limit}: ` + 
+                        fonts.slice(0, vals.font_limit).map(f => f.fullName).join(", ");
+            }
+        }
+    };
+
+    const container = document.getElementById('permission-container');
+    const logEl = document.getElementById('master-log');
+
+    function log(msg, type = 'info') {
+        const entry = document.createElement('div');
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+        logEl.appendChild(entry);
+        logEl.scrollTop = logEl.scrollHeight;
     }
 
-    raw('userAgent', navigator.userAgent);
-    raw('cookieEnabled', navigator.cookieEnabled);
-    raw('hardwareConcurrency', navigator.hardwareConcurrency);
-    raw('maxTouchPoints', navigator.maxTouchPoints);
-    raw('language', navigator.language);
-    raw('languages', navigator.languages);
-    raw('onLine', navigator.onLine);
-    raw('pdfViewerEnabled', navigator.pdfViewerEnabled);
-    raw('deviceMemory (GB)', navigator.deviceMemory);
-    raw('doNotTrack', navigator.doNotTrack);
-    raw('webdriver', navigator.webdriver);
+    Object.keys(config).forEach(key => {
+        const item = config[key];
+        const card = document.createElement('div');
+        card.className = 'perm-card';
 
-    if(navigator.permissions && navigator.permissions.query) {
-        ['geolocation','notifications','camera','microphone','clipboard-read','clipboard-write','persistent-storage','background-sync'].forEach(p => {
-            navigator.permissions.query({name: p}).then(s => {
-                raw('perm.' + p, s.state);
-            }).catch(e => err('perm.' + p, e));
+        let fieldsHtml = '';
+        item.fields.forEach(f => {
+            fieldsHtml += `<div class="config-group">
+                <label>${f.label}</label>
+                ${f.type === 'select' ? 
+                    `<select id="${f.id}">${f.options.map(o => `<option value="${o}">${o}</option>`).join('')}</select>` : 
+                    `<input type="${f.type}" id="${f.id}" value="${f.default}">`
+                }
+            </div>`;
         });
-    } else raw('permissions', 'absent');
 
-    if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
-        navigator.mediaDevices.enumerateDevices().then(devs => {
-            raw('media devices', devs.map(d => d.kind + ':' + (d.label||'?')).join('; '));
-        }).catch(e => err('enumerateDevices', e));
-    } else raw('mediaDevices', 'no');
+        card.innerHTML = `
+            <div class="perm-title">${item.title}</div>
+            <div class="config-area">${fieldsHtml}</div>
+            <button class="run-btn" id="btn-${key}">Execute Test</button>
+            <div class="status-msg" id="status-${key}">Status: Ready</div>
+        `;
 
-    raw('bluetooth', !!navigator.bluetooth);
-    raw('usb', !!navigator.usb);
-    raw('hid', !!navigator.hid);
-    raw('serial', !!navigator.serial);
-    raw('webauthn', typeof PublicKeyCredential != 'undefined');
+        container.appendChild(card);
 
-    if(navigator.storage && navigator.storage.estimate) {
-        navigator.storage.estimate().then(e => {
-            raw('storage estimate', 'usage:' + (e.usage||'?') + ' quota:' + (e.quota||'?'));
-        }).catch(e => err('storage.estimate', e));
-    } else raw('storage.estimate', 'no');
+        card.querySelector(`#btn-${key}`).addEventListener('click', async function() {
+            const status = card.querySelector(`#status-${key}`);
+            status.textContent = "Status: Processing...";
+            status.className = "status-msg";
 
-    if(navigator.storage && navigator.storage.persisted) {
-        navigator.storage.persisted().then(p => raw('storage.persisted', p)).catch(e => err('persisted', e));
-    }
+            try {
 
-    raw('indexedDB', typeof indexedDB != 'undefined');
-    raw('caches', typeof caches != 'undefined');
+                const vals = {};
+                item.fields.forEach(f => {
+                    vals[f.id] = document.getElementById(f.id).value;
+                });
 
-    if('caches' in window) {
-        caches.open('browser-temp-check').then(cache => {
-            let req = new Request('/browser-dummy.txt');
-            let res = new Response('ok');
-            cache.put(req, res.clone()).then(() => cache.match(req)).then(m => {
-                if(m) m.text().then(t => raw('cache put/match', t)).catch(()=>raw('cache match','failed'));
-                else raw('cache match','none');
-                caches.delete('browser-temp-check');
-            }).catch(e => err('cache ops', e));
-        }).catch(e => err('caches.open', e));
-    }
-
-    raw('serviceWorker.controller', navigator.serviceWorker?.controller?.scriptURL || 'none');
-
-    if(navigator.connection) {
-        let c = navigator.connection;
-        raw('connection', 'type:'+c.type+', effective:'+c.effectiveType+', rtt:'+c.rtt+', down:'+c.downlink);
-    } else raw('network info', 'no');
-
-    let canvas = document.createElement('canvas');
-    let gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-    if(gl) {
-        let ext = gl.getExtension('WEBGL_debug_renderer_info');
-        if(ext) raw('webgl renderer', gl.getParameter(ext.UNMASKED_RENDERER_WEBGL));
-        else raw('webgl renderer', 'hidden');
-    } else raw('webgl', 'unsupported');
-
-    let ctx = canvas.getContext('2d');
-    if(ctx) {
-        canvas.width = 150; canvas.height = 40;
-        ctx.fillStyle = '#aaa'; ctx.fillRect(0,0,150,40);
-        ctx.fillStyle = '#000'; ctx.font = '12px mono'; ctx.fillText('test',5,20);
-        raw('canvas fingerprint', canvas.toDataURL().slice(0,80) + '...');
-    }
-
-    try {
-        let aCtx = new (window.AudioContext || window.webkitAudioContext)();
-        raw('audio sampleRate', aCtx.sampleRate);
-        raw('audio state', aCtx.state);
-        setTimeout(() => aCtx.close(), 50);
-    } catch(e) { err('AudioContext', e); }
-
-    raw('DeviceOrientationEvent', typeof DeviceOrientationEvent);
-    if(window.DeviceOrientationEvent && DeviceOrientationEvent.requestPermission) {
-        raw('orientation request', typeof DeviceOrientationEvent.requestPermission);
-    }
-
-    raw('geolocation', 'geolocation' in navigator);
-
-    if('getBattery' in navigator) {
-        navigator.getBattery().then(b => {
-            raw('battery', 'charging:'+b.charging+' level:'+b.level);
-        }).catch(e => err('battery', e));
-    } else raw('battery', 'no');
-
-    raw('vibrate', typeof navigator.vibrate == 'function');
-
-    if(navigator.getGamepads) {
-        let pads = navigator.getGamepads();
-        let count = 0;
-        for(let i=0;i<pads.length;i++) if(pads[i]) count++;
-        raw('gamepads connected', count);
-    } else raw('gamepads', 'no');
-
-    raw('payment', typeof PaymentRequest != 'undefined');
-    raw('share', typeof navigator.share == 'function');
-    raw('credentials', !!navigator.credentials);
-
-    try {
-        let blob = new Blob([`onmessage=e=>postMessage('echo:'+e.data)`], {type:'text/javascript'});
-        let url = URL.createObjectURL(blob);
-        let w = new Worker(url);
-        w.onmessage = e => raw('worker echo', e.data);
-        w.postMessage('ping');
-        setTimeout(() => { w.terminate(); URL.revokeObjectURL(url); }, 100);
-    } catch(e) { err('worker', e); }
-
-    raw('WebSocket', typeof WebSocket != 'undefined');
-
-    try {
-        localStorage.setItem('browsertest','x');
-        let ls = localStorage.getItem('browsertest');
-        localStorage.removeItem('browsertest');
-        raw('localStorage', ls);
-    } catch(e) { err('localStorage', e); }
-
-    try {
-        sessionStorage.setItem('browsertest','y');
-        let ss = sessionStorage.getItem('browsertest');
-        sessionStorage.removeItem('browsertest');
-        raw('sessionStorage', ss);
-    } catch(e) { err('sessionStorage', e); }
-
-    raw('cookie raw', document.cookie || '(empty)');
-
-    if(performance && performance.getEntriesByType) {
-        let res = performance.getEntriesByType('resource');
-        raw('resources count', res.length);
-    }
-
-    raw('timeOrigin', performance?.timeOrigin ? new Date(performance.timeOrigin).toISOString() : '?');
-
-    raw('plugins length', navigator.plugins.length);
-    raw('mimeTypes length', navigator.mimeTypes.length);
-
-    if(Intl) {
-        raw('Intl locale', Intl.DateTimeFormat().resolvedOptions().locale);
-    }
-
-    raw('WebAssembly', typeof WebAssembly == 'object');
-    raw('BigInt', typeof BigInt != 'undefined');
-    raw('SharedArrayBuffer', typeof SharedArrayBuffer != 'undefined');
-    raw('Atomics', typeof Atomics != 'undefined');
-
-    setTimeout(() => {
-        out.innerText = log.join('\n');
-    }, 800);
-})();
+                const result = await item.action(vals, this);
+                status.textContent = `Status: Success`;
+                status.classList.add('success');
+                log(`${item.title}: ${result}`, 'success');
+            } catch (err) {
+                status.textContent = `Status: Error`;
+                status.classList.add('error');
+                log(`${item.title}: ${err.message || err}`, 'error');
+            }
+        });
+    });
 </script>
+
 </body>
 </html>

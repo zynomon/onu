@@ -1,10 +1,3 @@
-/*--------------------------
-
-                 Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-                                                     project : Onu 0.5
-
-                                                             -----------------------*/
-
 #pragma once
 #include <QtPlugin>
 #include <QString>
@@ -126,11 +119,3 @@ public:
         }
     }
 };
-
-
-/*--------------------------
-
-                 Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-                                                     project : Onu 0.5
-
-                                                             -----------------------*/

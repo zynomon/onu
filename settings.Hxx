@@ -12,7 +12,7 @@ public:
         QString base = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
         QString lastFolder = QFileInfo(base).fileName();
         if (lastFolder.compare("Onu", Qt::CaseInsensitive) == 0) {
-            return base;                 // Bruh sometimes the Onu path gets nested eg. Onu/Onu so this check ensures no nesting happen
+            return base;
         } else {
             return base + "/Onu";
         }
@@ -81,7 +81,6 @@ public:
             {"Open Keybinds", "Ctrl+K"},
             {"Open Extensions", "Ctrl+E"},
             {"Quit Browser", "Ctrl+Q"},
-            {"Print Page", "Ctrl+P"},
             {"Save Page", "Ctrl+S"},
             {"View Page Source", "Ctrl+U"},
             {"Toggle Developer Tools", "F12"},
@@ -91,7 +90,9 @@ public:
             {"Select All", "Ctrl+A"},
             {"Copy", "Ctrl+C"},
             {"Cut", "Ctrl+X"},
-            {"Paste", "Ctrl+V"}
+            {"Paste", "Ctrl+V"},
+            {"Site Info", "Ctrl+I"},
+            {"Sites Manager", "Ctrl+P"}
         };
         return defaults;
     }
@@ -315,7 +316,7 @@ public:
     bool adblockEnabled() const { return publicValue("adblock/enabled", true).toBool(); }
     QString currentTheme() const { return publicValue("theme/current", "System").toString(); }
     void setCurrentTheme(const QString &theme) { setPublicValue("theme/current", theme); }
-    QString chromiumFlags() const { return publicValue("flags/chromium", "--disable-gpu").toString(); }
+    QString chromiumFlags() const { return publicValue("flags/chromium", "").toString(); }
     bool devMode() const { return publicValue("developer/enabled", false).toBool(); }
     bool developerMode() const { return devMode(); }
     bool javascriptEnabled() const { return publicValue("privacy/javascript", true).toBool(); }
@@ -345,8 +346,8 @@ public:
     }
 
     void setEncryptionMethod(const QString &method) {
-        m_private->setValue("encryption/method", method);                 // this aint that much sensitive to use some advanced tech here,
-        m_private->sync();                                                 // but this is sensitive enough to save in different file than where your config lives
+        m_private->setValue("encryption/method", method);
+        m_private->sync();
     }
 
     void setSessionKey(const QByteArray &key) {
@@ -458,7 +459,6 @@ public:
         QString maintainer;
         int state;
     };
-
     QList<ExtState> loadExtensionStates() const {
         QList<ExtState> list;
         int count = m_private->value("ext/count", 0).toInt();
@@ -491,6 +491,11 @@ public:
                 return s.state;
             }
         }
+
+        if (id == "Onboarding" && maintainer == "Onu Team") {
+            return 1;
+        }
+
         return 0;
     }
 
@@ -512,6 +517,130 @@ public:
             list.append(s);
         }
         saveExtensionStates(list);
+    }
+
+    QVariant privateValue(const QString &key, const QVariant &def = QVariant()) const {
+        return m_private->value(key, def);
+    }
+
+    void setPrivateValue(const QString &key, const QVariant &val) {
+        m_private->setValue(key, val);
+        m_private->sync();
+    }
+
+
+    QString normalizeOrigin(const QString &origin) const {
+        // If it's already in the right format, return as-is
+        if (origin.contains("://")) {
+            QUrl url(origin);
+            if (url.isValid() && !url.host().isEmpty()) {
+                return url.scheme() + "://" + url.host();
+            }
+        }
+
+        QUrl url = QUrl::fromUserInput(origin);
+        if (url.isValid() && !url.host().isEmpty()) {
+            return url.scheme() + "://" + url.host();
+        }
+
+        return origin;
+    }
+
+    int getGlobalPermission(const QString &permission) const {
+        return privateValue("permissions/global/" + permission, 0).toInt();
+    }
+
+    void setGlobalPermission(const QString &permission, int state) {
+        setPrivateValue("permissions/global/" + permission, state);
+    }
+
+    int getSitePermission(const QString &origin, const QString &permission) const {
+        QString normalized = normalizeOrigin(origin);
+        QString obfuscated = obfuscateOrigin(normalized);
+        QString key = QString("permissions/sites/%1/%2").arg(obfuscated, permission);
+        QVariant v = privateValue(key);
+        if (!v.isValid()) {
+            return getGlobalPermission(permission);
+        }
+        return v.toInt();
+    }
+
+    void setSitePermission(const QString &origin, const QString &permission, int state) {
+        QString normalized = normalizeOrigin(origin);
+        QString obfuscated = obfuscateOrigin(normalized);
+        QString key = QString("permissions/sites/%1/%2").arg(obfuscated, permission);
+        setPrivateValue(key, state);
+        storeOriginMapping(normalized);
+    }
+
+    void storeOriginMapping(const QString &origin) {
+        QString normalized = normalizeOrigin(origin);
+        QString obfuscated = obfuscateOrigin(normalized);
+        setPrivateValue("permissions/origins/" + obfuscated, normalized);
+    }
+
+    QStringList getPermissionSites() const {
+        QSet<QString> sites;
+        m_private->beginGroup("permissions/origins");
+        QStringList hashes = m_private->childKeys();
+        for (const QString &hash : hashes) {
+            QString origin = m_private->value(hash).toString();
+            if (!origin.isEmpty()) {
+                sites.insert(origin);
+            }
+        }
+        m_private->endGroup();
+        return QStringList(sites.begin(), sites.end());
+    }
+
+    QMap<QString, int> getSitePermissions(const QString &origin) const {
+        QMap<QString, int> perms;
+        QString normalized = normalizeOrigin(origin);
+        QString obfuscated = obfuscateOrigin(normalized);
+        m_private->beginGroup("permissions/sites/" + obfuscated);
+        QStringList keys = m_private->childKeys();
+        for (const QString &key : keys) {
+            perms[key] = m_private->value(key).toInt();
+        }
+        m_private->endGroup();
+        return perms;
+    }
+
+    void clearSitePermissions(const QString &origin) {
+        QString normalized = normalizeOrigin(origin);
+        QString obfuscated = obfuscateOrigin(normalized);
+        m_private->beginGroup("permissions/sites/" + obfuscated);
+        m_private->remove("");
+        m_private->endGroup();
+        m_private->remove("permissions/origins/" + obfuscated);
+        m_private->sync();
+    }
+
+    void clearAllSitePermissions() {
+        m_private->beginGroup("permissions/sites");
+        m_private->remove("");
+        m_private->endGroup();
+        m_private->beginGroup("permissions/origins");
+        m_private->remove("");
+        m_private->endGroup();
+        m_private->sync();
+    }
+
+    static QStringList allPermissionTypes() {
+        return {
+            "geolocation",
+            "camera",
+            "microphone",
+            "camera_microphone",
+            "mouselock",
+            "notifications",
+            "popups",
+            "clipboard",
+            "localFonts",
+            "desktopVideo",
+            "desktopAudioVideo",
+            "fileAccess"
+        };
     }
 
 private:
@@ -548,6 +677,15 @@ private:
         return list;
     }
 
+    QString obfuscateOrigin(const QString &origin) const {
+        QByteArray data = origin.toUtf8();
+        QByteArray result = data;
+        for (int i = 0; i < result.size(); ++i) {
+            result[i] = result[i] ^ m_secretKey[i % m_secretKey.size()];
+        }
+        return QString::fromLatin1(result.toHex());
+    }
+
     QByteArray m_secretKey;
     std::unique_ptr<QSettings> m_public;
     std::unique_ptr<QSettings> m_private;
@@ -556,6 +694,6 @@ private:
 /*--------------------------
 
                  Zynomon aelius <zynomon@proton.me> ©️2026, Apache 2.0
-                                                     project : Onu 0.5
+                                                     project : Onu 0.6
 
-                                                             -----------------------*/
+                     */
