@@ -12,13 +12,12 @@ Note: Each version has a unique label. For example, version 0.4 cannot be Stable
 
 ---
 
-## Other Projects
-
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zynomon?tab=repositories)
+Why not check my other projects?
+👉 [here](https://github.com/zynomon?tab=repositories)
 
 ---
 
-## Releases (Order: Oldest → Newest)
+<h2><img src=https://github.com/zynomon/onu/raw/release/Notices/icons/pkg.svg height=32 width=32> Releases <sub>Order: Oldest → Newest</sub></h2>
 
 | Version | Package Links | Type |
 |---------|---------------|------|
