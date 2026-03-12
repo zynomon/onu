@@ -1,25 +1,24 @@
-# 🛑 Onu Releases
+# Onu Releases
 
 This branch hosts packaged applications that have been tested and labeled based on their behavior:
 
-| Label   | Criteria                                      |
-|---------|-----------------------------------------------|
-| ⚠️ `beta`   |  experimental release, has a few known issues        |
-| 🛡️ `alpha`  |  stable upto date release / Release with lesser bugs |
-| ⚛️ `Legacy (LTS)`  |  long time servicing release  |
+| Release Type | Criteria |
+|--------------|----------|
+| [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=for-the-badge&logo=speedtest&logoColor=white)](#) | Experimental release, has a few known issues |
+| [![Alpha](https://img.shields.io/badge/Alpha-4CAF50?style=for-the-badge&logo=testing&logoColor=white)](#) | Stable up-to-date release / Release with fewer bugs |
+| [![LTS](https://img.shields.io/badge/LTS-2196F3?style=for-the-badge&logo=security&logoColor=white)](#) | Long-term servicing release |
 
-
-Each version has a unique label, eg.  0.4 cant be Stable, but 0.5 can be ( although both arent );
-After 0.9 we will use github releases. as for now let this build become more usable.
-
+Note: Each version has a unique label. For example, version 0.4 cannot be Stable, but 0.5 can be (although both are not). After version 0.9, we will use GitHub releases. For now, let this build become more usable.
 
 ---
 
-Why not check my other projects?  
-👉 [Click here](https://github.com/zynomon?tab=repositories)
+## Other Projects
+
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/zynomon?tab=repositories)
 
 ---
 
+<<<<<<< Updated upstream
 <h2><img src=https://github.com/zynomon/onu/raw/release/Notices/icons/pkg.svg height=32 width=32> Releases <sub>Order: Oldest → Newest</sub></h2>
 
 
@@ -35,6 +34,19 @@ Why not check my other projects?
 
 
 ---
+=======
+## Releases (Order: Oldest → Newest)
+
+| Version | Package Links | Type |
+|---------|---------------|------|
+| `0.1`   | [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.1.deb) [![.src.7z](https://img.shields.io/badge/.src.7z-000000?style=flat-square&logo=files&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.1-source-code.7z) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.2`   | [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.2.deb) [![.src.7z](https://img.shields.io/badge/.src.7z-000000?style=flat-square&logo=files&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.2-source-code.7z) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.3`   | [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.3.deb) [![.src.7z](https://img.shields.io/badge/.src.7z-000000?style=flat-square&logo=files&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.3-source-code.7z) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.4`   | [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.4.deb) [![.src.7z](https://img.shields.io/badge/.src.7z-000000?style=flat-square&logo=files&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.4-source-code.7z) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.5`   | [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.deb) [![.rpm](https://img.shields.io/badge/.rpm-FF6600?style=flat-square&logo=redhat&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.rpm) [![.src.7z](https://img.shields.io/badge/.src.7z-000000?style=flat-square&logo=files&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5-source-code.7z) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.5.9` | [![.AppImage](https://img.shields.io/badge/.AppImage-9745F5?style=flat-square&logo=appimage&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.AppImage) [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.deb) [![.rpm](https://img.shields.io/badge/.rpm-FF6600?style=flat-square&logo=redhat&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.rpm) [![.tar.zst](https://img.shields.io/badge/.tar.zst-2C8EBB?style=flat-square&logo=archive&logoColor=white)](https://github.com/zynomon/raw/tree/release/beta/onu-0.5.9.tar.zst) | [![Beta](https://img.shields.io/badge/Beta-FB8C00?style=flat-square&logo=speedtest&logoColor=white)](#) |
+| `0.6`   | [![.AppImage](https://img.shields.io/badge/.AppImage-9745F5?style=flat-square&logo=appimage&logoColor=white)](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.AppImage) [![.deb](https://img.shields.io/badge/.deb-D70A53?style=flat-square&logo=debian&logoColor=white)](https://github.com/zynomon/raw/tree/release/alpha/onu_0.6.deb) [![.rpm](https://img.shields.io/badge/.rpm-FF6600?style=flat-square&logo=redhat&logoColor=white)](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.rpm) [![.tar.zst](https://img.shields.io/badge/.tar.zst-2C8EBB?style=flat-square&logo=archive&logoColor=white)](https://github.com/zynomon/raw/tree/release/alpha/onu-0.6.tar.zst) | [![Alpha](https://img.shields.io/badge/Alpha-4CAF50?style=flat-square&logo=testing&logoColor=white)](#) |
+>>>>>>> Stashed changes
 
 ### CHANGELOGS
 
