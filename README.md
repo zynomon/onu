@@ -14,11 +14,12 @@ Its made for powerusers customizers and beginners ( frankly ).
 ---
 
 <h1> <img src="https://github.com/zynomon/onu/raw/release/Notices/icons/pkg.svg" height="48" width="48"> Download</h1>
-
 if your desktop environment is KDE ( linux ) Most packages are under 1MB . If you're on GNOME or something else, dependencies might take up to 200MB.
+Appimages are typically under 100Mb they contain the libraries intact 
 
+```markdown
 # Before starting;
-Onu browser version 0.5.9 was ended too soon next version is coming in few months, so we had made an issue that is not embedding the libtrigonometry inside the packages 
+Onu browser version 0.6 is released. They are might be some issues but closest release will fix that,
 
 ## Trigonometry Library
 
@@ -31,8 +32,8 @@ sudo mv libcrash.so /usr/share/trigonometry/
 
 If you're on Debian and want the easy route ( Few commands to install it real quick):
 ```bash
-wget https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.deb
-sudo dpkg -i onu-0.5.9.deb
+wget https://github.com/zynomon/onu/blob/release/beta/onu-0.6.deb
+sudo dpkg -i onu-0.6.deb
 sudo apt install -f
 wget https://github.com/zynomon/libtrigonometry/raw/main/Release%20files/libcrash.so
 sudo mv libcrash.so /usr/share/trigonometry/
@@ -40,9 +41,9 @@ sudo mv libcrash.so /usr/share/trigonometry/
 
 
 **Latest releases:**
-- 🔗 **[Download Onu 0.5.9 AppImage](https://github.com/zynomon/onu/raw/release/beta/onu-0.5.9.AppImage)** (96MB due to embedded libraries, also you dont need libtrigonometry in this version along with Qt libraries)
-- 🔗 **[Download Onu 0.5.9 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.deb)**
-- 🔗 **[Download Onu 0.5.9 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.9.rpm)**
+- 🔗 **[Download Onu 0.6 AppImage](https://github.com/zynomon/onu/raw/release/beta/onu-0.6.AppImage)** (96MB due to embedded libraries, also you dont need libtrigonometry in this version along with Qt libraries)
+- 🔗 **[Download Onu 0.6 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.6.deb)**
+- 🔗 **[Download Onu 0.6 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu-0.6.rpm)**
 - 🔗 **[Download Onu 0.5 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.deb)**
 - 🔗 **[Download Onu 0.5 (.rpm)](https://github.com/zynomon/onu/blob/release/beta/onu-0.5.rpm)**
 
@@ -55,7 +56,7 @@ sudo mv libcrash.so /usr/share/trigonometry/
 - 🔗 **[Onu 0.1 (.deb)](https://github.com/zynomon/onu/blob/release/beta/onu-0.1.deb)**
 - 🔗 **[Source code archives](https://github.com/zynomon/onu/blob/release/)**
 
-</details>
+</details><summary><b>For Advanced users and other distros</b></summary>
 
 
 ---
@@ -73,7 +74,10 @@ sudo apt install -f
 # ONLY FOR DEBIAN LIKE AND DEBIAN LINUX
 ```
 
+<details>
 If you use other distros, check https://github.com/zynomon/libtrigonometry and compile it for your OS instead of installing that .deb.
+and also
+
 
 ```bash
 # Clone the repository
@@ -91,6 +95,10 @@ make -j$(nproc) && make install
 ```
 
 If you face any issues while compiling, feel free to open an issue.
+and also you may need to add some additions to make it compile for your distro if its obscure.
+
+</details>
+
 And as for forking check this [#Forking](#creating-a-fork-very-easily)
 
 ---
