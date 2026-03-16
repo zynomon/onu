@@ -1,12 +1,10 @@
 #!/bin/bash
 
 post_install() {
-mkdir -p /usr/share/icons/hicolor/scalable/
-
 for icon in duckduckgo eco google; do
     if ! find /usr/share/icons $HOME/.local/share/icons -name "${icon}.svg" -o -name "${icon}.png" 2>/dev/null | grep -q .; then
         echo "Creating $icon.svg"
-
+        
         case $icon in
             duckduckgo)
                 cat > /usr/share/icons/hicolor/scalable/duckduckgo.svg << 'EOF'
@@ -26,7 +24,7 @@ for icon in duckduckgo eco google; do
  <path style="fill:#2d4f8e" d="M 9.500384,6 C 9.7770703,6 10,6.2233927 10,6.498849 10,6.7756073 9.7770703,7 9.500384,7 9.225217,7 9,6.7756073 9,6.498849 9,6.2233927 9.225217,6 9.500384,6 Z"/>
  <path style="fill:#ffffff" d="m 9.7218573,6.2034723 c -0.070528,0 -0.1287586,0.058375 -0.1287586,0.1294817 0,0.072047 0.058231,0.1294093 0.1287586,0.1294093 0.073566,0 0.129988,-0.057362 0.129988,-0.1294093 0,-0.071107 -0.056422,-0.1294817 -0.129988,-0.1294817"/>
 </svg>
-EOF
+                 EOF
                 ;;
             eco)
                 cat > /usr/share/icons/hicolor/scalable/eco.svg << 'EOF'
@@ -34,8 +32,7 @@ EOF
  <circle cx="8" cy="8" r="8" style="fill:#3b6ec5"/>
  <path d="m2 2.71875a8 8 0 0 0-2 5.28125 8 8 0 0 0 8 8 8 8 0 0 0 7.410156-5h-0.410156v-1-4h0.740234a8 8 0 0 0-1.740234-3.2773438v0.2773438h-1v2h1v4h-1v1h-2v-2h1v-1h-3v2h1v2h-1v1h1v1h-2v-1h-2v-2h1v-1h-2v-2h1v-1h-1v-1h-1v2h-2v-1h1v-2h-1v-1.28125z" style="fill:#53c457"/>
  <circle cx="9" cy="5" r="1" style="fill:#ffffff"/>
-</svg>
-EOF
+                EOF
                 ;;
             google)
                 cat > /usr/share/icons/hicolor/scalable/google.svg << 'EOF'
@@ -49,22 +46,11 @@ EOF
  <path style="fill:#359950" d="M 20.90625 36.546875 L 14.332031 41.171875 C 17.772267 47.600446 24.683303 52 32.423828 52 C 37.555024 52 42.1448 50.07048 45.599609 46.884766 L 38.947266 41.767578 A 12 12 0 0 1 32 44 A 12 12 0 0 1 20.90625 36.546875 z"/>
  <path style="fill:#ffffff;opacity:0.2" d="M 32 4 A 28 28 0 0 0 4 32 A 28 28 0 0 0 4.0214844 32.585938 A 28 28 0 0 1 32 5 A 28 28 0 0 1 59.978516 32.414062 A 28 28 0 0 0 60 32 A 28 28 0 0 0 32 4 z"/>
 </svg>
-EOF
+                EOF
                 ;;
         esac
     fi
 done
-
-if [ -f /etc/skel/.local/Onu/Conf/extensions/Onboarding.so ]; then
-    for home_dir in /home/*; do
-        if [ -d "$home_dir" ]; then
-             mkdir -p "$home_dir/.local/Onu/Conf/extensions/"
-             cp /etc/skel/.local/Onu/Conf/extensions/Onboarding.so "$home_dir/.local/Onu/Conf/extensions/Onboarding.so"
-        fi
-    done
-fi
-
-exit 0
 }
 
 post_upgrade() {
@@ -73,7 +59,6 @@ post_upgrade() {
 post_remove() {
     echo ":: onu user data preserved at: /home/*/.local/share/Onu"
     echo ":: To remove manually: rm -rf /home/*/.local/share/Onu"
-    echo ":: also remove /etc/skel/.local/share/Onu"
     echo "---------------------------------------------------------------------------------------------------<!>"
-    echo "pacman doesnt supports use of stdin in script so how unfortunate this is;"
+     echo "pacman doesnt supports use of stdin in script so how unfortunate this is;"
 }
